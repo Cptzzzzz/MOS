@@ -3,8 +3,8 @@
 gcc -Wall $1 -o test 2> warning.txt
 t=$?
 grep warning warning.txt | sed 's/warning: //g' > result.txt
-#echo $t
-if (($t))
+
+if ((!$t))
 then
 
 	#echo "haha" >> result.txt
