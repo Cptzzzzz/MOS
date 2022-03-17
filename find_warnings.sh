@@ -3,8 +3,9 @@ gcc -Wall $1 -o test 2> warning.txt
 
 grep warning warning.txt | sed s/warning: /i/g > result.txt
 
+
 if(($?))
-do
+then
 
 	n=0
 	while((n<$2))
@@ -14,7 +15,7 @@ do
 		echo $n
 		
 	done
-done
+fi
 pwd >> result.txt
 
 	
