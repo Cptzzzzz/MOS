@@ -14,7 +14,6 @@ then
 		echo $n > tem
 		./test < tem >> result.txt
 		let "n++"
-		
 	done
 fi
 pwd >> result.txt
