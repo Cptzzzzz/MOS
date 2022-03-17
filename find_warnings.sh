@@ -4,19 +4,20 @@ gcc -Wall $1 -o test 2> warning.txt
 
 grep warning warning.txt | sed 's/warning: //g' > result.txt
 
-
-if(($?))
+if ((!$?))
 then
 
-	n=0
-	while((n<$2))
+	#echo "haha" >> result.txt
+	n=1
+	while((n<=$2))
 	do
-		./test >> result.txt
+		echo $n > tem
+		./test < tem >> result.txt
 		let "n++"
-		echo $n
 		
 	done
 fi
 pwd >> result.txt
 
 	
+

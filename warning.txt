@@ -1,3 +1,7 @@
-he.c:1:9: error: expected '=', ',', ';', 'asm' or '__attribute__' before '<' token
-    1 | include <stdio.h>
-      |         ^
+he.c: In function 'main':
+he.c:6:8: warning: comparisons like 'X<=Y<=Z' do not have their mathematical meaning [-Wparentheses]
+    6 |  if(2<3<4)
+      |        ^
+he.c:5:8: warning: unused variable 'b' [-Wunused-variable]
+    5 |  int a,b;
+      |        ^

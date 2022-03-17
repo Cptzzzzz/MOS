@@ -1,1 +1,9 @@
+he.c:6:8: comparisons like 'X<=Y<=Z' do not have their mathematical meaning [-Wparentheses]
+he.c:5:8: unused variable 'b' [-Wunused-variable]
+haha
+2
+4
+6
+8
+10
 /home/git/19377251
