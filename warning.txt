@@ -1,3 +1,0 @@
-he.c:1:9: error: expected '=', ',', ';', 'asm' or '__attribute__' before '<' token
-    1 | include <stdio.h>
-      |         ^
