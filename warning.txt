@@ -1,7 +1,3 @@
-he.c: In function 'main':
-he.c:5:8: warning: comparisons like 'X<=Y<=Z' do not have their mathematical meaning [-Wparentheses]
-    5 |  if(2<3<4)
-      |        ^
-he.c:4:8: warning: unused variable 'b' [-Wunused-variable]
-    4 |  int a,b;
-      |        ^
+he.c:1:9: error: expected '=', ',', ';', 'asm' or '__attribute__' before '<' token
+    1 | include <stdio.h>
+      |         ^
