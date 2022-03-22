@@ -128,7 +128,7 @@ void lp_Print(void (*output)(void *, char *, int),
 		if (*fmt == 'l')
 		{
 			longFlag = 1;
-			++fmt
+			++fmt;
 		}
 
 		/* check for long */
