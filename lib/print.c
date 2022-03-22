@@ -142,7 +142,9 @@ lp_Print(void (*output)(void *, char *, int),
 	    } else { 
 		num = va_arg(ap, int); 
 	    }
-	    
+	    if(num<0){
+			negFlag=1;
+		}
 		length=PrintNum(buf,(unsigned int)num,10,negFlag,width,ladjust,padc,0);
 		OUTPUT(arg,buf,length);	
 	    /*  Part2:
