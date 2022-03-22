@@ -65,7 +65,7 @@ lp_Print(void (*output)(void *, char *, int),
     for(;;) {
 
         /* Part1: your code here */
-        while(*fmt!='%'&&*fmt!='\0')
+	while(*fmt!='%'&&*fmt!='\0')
 	{ 
 	    /* scan for the next '%' */
 	    /* flush the string found so far */
@@ -73,8 +73,9 @@ lp_Print(void (*output)(void *, char *, int),
 		fmt++;
 	    /* check "are we hitting the end?" */
 	}
-
+	
 	if(*fmt=='\0')break;
+	fmt++;
 	/* we found a '%' */
 	ladjust=0;
 	padc=' ';
@@ -106,16 +107,7 @@ lp_Print(void (*output)(void *, char *, int),
 	if(*fmt=='l'){
 		longFlag=1;
 	}
-	{ 
-	    /* scan for the next '%' */
-	    /* flush the string found so far */
 
-	    /* check "are we hitting the end?" */
-	}
-
-	
-	/* we found a '%' */
-	
 	/* check for long */
 
 	/* check for other prefixes */
@@ -142,12 +134,13 @@ lp_Print(void (*output)(void *, char *, int),
 	    } else { 
 		num = va_arg(ap, int); 
 	    }
-	    if(num<0){
+		if(num<0){
 			negFlag=1;
+			num=-num;
 		}
-		length=PrintNum(buf,(unsigned int)num,10,negFlag,width,ladjust,padc,0);
-		OUTPUT(arg,buf,length);	
-	    /*  Part2:
+	    length=PrintNum(buf,num,10,negFlag,width,ladjust,padc,0);
+		OUTPUT(arg,buf,length);
+		/*  Part2:
 			your code here.
 			Refer to other part (case 'b',case 'o' etc.) and func PrintNum to complete this part.
 			Think the difference between case 'd' and others. (hint: negFlag).
