@@ -84,22 +84,22 @@ void lp_Print(void (*output)(void *, char *, int),
 		/* we found a '%' */
 		ladjust = 0;
 		padc = ' ';
-		if (*fmt == '-')
+		while (*fmt == '-')
 		{
 			ladjust = 1;
 			fmt++;
 		}
-		if (*fmt == '0')
+		while (*fmt == '0')
 		{
 			padc = '0';
 			fmt++;
 		}
-		if (*fmt == '-')
+		while (*fmt == '-')
 		{
 			ladjust = 1;
 			fmt++;
 		}
-		if (*fmt == '0')
+		while (*fmt == '0')
 		{
 			padc = '0';
 			fmt++;
