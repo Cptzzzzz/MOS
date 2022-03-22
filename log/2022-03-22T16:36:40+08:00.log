@@ -1,0 +1,15 @@
+[33m[01m[05m[ You are changing the branch: lab1 ][0m
+Autotest: Begin at Tue Mar 22 16:36:40 CST 2022
+[32m[ readelf.c found ][0m
+rm -rf *.o
+rm -rf readelf
+gcc -I./ -c main.c
+gcc -I./ -c readelf.c
+readelf.c: In function 'readelf':
+readelf.c:64:16: error: expected expression before 'Elf32_Shdr'
+   64 |         shdr=(*Elf32_Shdr)(binary+ehdr->e_shoff);
+      |                ^~~~~~~~~~
+make: *** [Makefile:5: readelf.o] Error 1
+[31m[01m[ Cannot find your readelf something wrong with your Makefile ][0m
+[33m[01m[ You got 0 (of 100) this time. Tue Mar 22 16:36:41 CST 2022 ][0m
+Autotest: End at Tue Mar 22 16:36:41 CST 2022
