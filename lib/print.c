@@ -107,20 +107,20 @@ void lp_Print(void (*output)(void *, char *, int),
 
 		width = 0;
 
-		while (*fmt >= '0' && *fmt <= '9')
+		while (IsDigit(*fmt))
 		{
 			width *= 10;
-			width = width + (*fmt - '0');
+			width = width + Ctod(*fmt);
 			fmt++;
 		}
 		prec = 0;
 		if (*fmt == '.')
 		{
 			++fmt;
-			while (*fmt >= '0' && *fmt <= '9')
+			while (IsDigit(*fmt))
 			{
 				prec *= 10;
-				prec = prec + (*fmt - '0');
+				prec = prec + Ctod(*fmt);
 				fmt++;
 			}
 		}
