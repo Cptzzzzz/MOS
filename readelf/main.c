@@ -39,7 +39,7 @@ int main(int argc,char *argv[])
         fread(p,fsize,1,fp);
         p[fsize] = 0;
 
-
+	//printf("fsize:%d\n",fsize);
 	readelf(p,fsize);
         return 0;
 }

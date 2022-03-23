@@ -61,7 +61,29 @@ int readelf(u_char *binary, int size)
                 printf("not a standard elf format\n");
                 return 0;
         }
-        shdr=(Elf32_Shdr*)(binary+ehdr->e_shoff);
+	/*
+	printf("Unsigned int:%ld\n",sizeof(unsigned int));
+	printf("Ehdt:%ld\n",sizeof(Elf32_Ehdr));
+	unsigned int *shoff=(unsigned int*)(binary+20);
+	for(int i=0;i<11;i++){
+		printf("%u ",shoff[i]);
+	}
+	printf("start read section\n");
+	printf("offset %u %u\n",ehdr->e_shoff,ehdr->e_phoff);
+	printf("e_shnum:%u e_phnum: %u\n",ehdr->e_shnum,ehdr->e_phnum);
+        */
+	/*
+	unsigned int *shoff=(unsigned int*)(binary+20);
+	printf("%u\n",shoff[5]);
+	shdr=(Elf32_Shdr*)(binary+shoff[5]);
+	int cnt=*((short*)(binary+48));
+	printf("%d\n",cnt);
+	for(int i=0;i<64;i++){
+		printf("%d ",binary[i]);
+		if((i+1)%8==0)printf("\n");
+	}*/
+	
+	shdr=(Elf32_Shdr*)(binary+ehdr->e_shoff);
         for(sh_entry_count=0;sh_entry_count<(ehdr->e_shnum);sh_entry_count++){
                 printf("%d:0x%x\n",sh_entry_count,shdr[sh_entry_count].sh_addr);
         }
