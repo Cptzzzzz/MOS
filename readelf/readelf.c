@@ -85,7 +85,7 @@ int readelf(u_char *binary, int size)
 	}*/
 	int flag=1;
 	Elf32_Word base=0,base2=0;
-
+	if(flag==0)
 	for(int i=0;i<(ehdr->e_phnum);i++){
 		if(i!=0&&((base2/0x1000)==(pt[i].p_offset/0x1000))){
 			printf("Overlay at page va : 0x%x\n",(base/4096)*4096);
