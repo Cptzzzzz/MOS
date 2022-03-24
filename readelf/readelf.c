@@ -90,14 +90,16 @@ int readelf(u_char *binary, int size)
 		if(i!=0&&(base/4048)==(pt[i].p_offset/4048)){
 			printf("Overlay at page va : 0x%x\n",(base/4048)*4048);
 			flag=0;
+			break;
 		}
-		if(flag==0)break;
-		if(i!=0&&base>= pt[i].p_offset){
+	
+		if(i!=0&&base>= pt[i].p_vaddr){
 			printf("Conflict at page va : 0x%x\n",(base/4048)*4048);
 			flag=0;
+			break;
 		}
-		if(flag==0)break;
-		base=pt[i].p_offset+pt[i].p_filesz;
+		
+		base=pt[i].p_vaddr+pt[i].p_memsz;
 	}
 
 
