@@ -93,7 +93,7 @@ int readelf(u_char *binary, int size)
 			break;
 		}
 	
-		if(i!=0&&((base2>=pt[i].p_offset) ||(base>= pt[i].p_vaddr))){
+		if(i!=0&&(base2>=pt[i].p_offset)){
 			printf("Conflict at page va : 0x%x\n",(base/0x1000)*0x1000);
 			flag=0;
 			break;
