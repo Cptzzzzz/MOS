@@ -92,8 +92,8 @@ int readelf(u_char *binary, int size)
 			flag=0;
 		}
 		if(flag==0)break;
-		if(i!=0&&base>pt[i].p_offset){
-			printf("Conflict at page va : 0x%x\n",pt[i-1].p_vaddr);
+		if(i!=0&&base>= pt[i].p_offset){
+			printf("Conflict at page va : 0x%x\n",(base/4048)*4048);
 			flag=0;
 		}
 		if(flag==0)break;
