@@ -87,14 +87,13 @@ int readelf(u_char *binary, int size)
 	Elf32_Word base=0;
 
 	for(int i=0;i<(ehdr->e_phnum);i++){
-		
-		if(i!=0&&base/4048==pt[i].p_offset/4048){
+		if(i!=0&&(base/4048)==(pt[i].p_offset/4048)){
 			printf("Overlay at page va : 0x%x\n",(base/4048)*4048);
 			flag=0;
 		}
 		if(flag==0)break;
 		if(i!=0&&base>pt[i].p_offset){
-			printf("Comflict at page va :0x%x\n",(base/4048)*4048);
+			printf("Comflict at page va : 0x%x\n",(base/4048)*4048);
 			flag=0;
 		}
 		if(flag==0)break;
