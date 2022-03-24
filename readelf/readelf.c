@@ -88,12 +88,12 @@ int readelf(u_char *binary, int size)
 
 	for(int i=0;i<(ehdr->e_phnum);i++){
 		if(i!=0&&(base/4048)==(pt[i].p_offset/4048)){
-			printf("Overlay at page va : 0x%x\n",(base/4048)*4048);
+			printf("Overlay at page va : 0x%x\n",pt[i].p_vaddr);
 			flag=0;
 		}
 		if(flag==0)break;
 		if(i!=0&&base>pt[i].p_offset){
-			printf("Comflict at page va : 0x%x\n",(base/4048)*4048);
+			printf("Conflict at page va : 0x%x\n",pt[i].p_vaddr);
 			flag=0;
 		}
 		if(flag==0)break;
