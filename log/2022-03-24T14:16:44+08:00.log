@@ -1,0 +1,21 @@
+[33m[01m[05m[ You are changing the branch: lab1-1-exam ][0m
+Autotest: Begin at Thu Mar 24 14:16:44 CST 2022
+[32m[ readelf.c found ][0m
+rm -rf *.o
+rm readelf
+rm: cannot remove 'readelf': No such file or directory
+make: *** [Makefile:16: clean] Error 1
+gcc -I./ -c main.c
+gcc -I./ -c readelf.c
+readelf.c: In function 'readelf':
+readelf.c:89: error: unterminated #if
+   89 | #if(cnt>=2&&cnt<=3)
+      | 
+readelf.c:88:9: error: expected declaration or statement at end of input
+   88 |         for(;cnt<(ehdr->e_shnum);cnt++){
+      |         ^~~
+readelf.c:88:9: error: expected declaration or statement at end of input
+make: *** [Makefile:6: readelf.o] Error 1
+[31m[01m[ Cannot find your readelf. Please check your readelf.c. ][0m
+[33m[01m[ You got 10 (of 100) this time. Thu Mar 24 14:16:45 CST 2022 ][0m
+Autotest: End at Thu Mar 24 14:16:45 CST 2022
