@@ -1,7 +1,7 @@
 INCLUDES := -I./
 CC        := gcc
 
-
+   
 %.o: %.c
 	$(CC) $(INCLUDES) -c $<
 
