@@ -32,14 +32,14 @@ void lp_Print(void (*output)(void *, char *, int),
 			  va_list ap)
 {
 
-
-
+/*
+#define SIZE_C 3
 struct my_struct {
 	int size;
 	char c;
 	int array[SIZE_C];
 };
-
+*/
 #define OUTPUT(arg, s, l)                                                 \
 	{                                                                     \
 		if (((l) < 0) || ((l) > LP_MAX_BUF))                              \
