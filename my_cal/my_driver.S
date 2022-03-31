@@ -25,6 +25,6 @@ END(_my_putchar)
 
 LEAF(_my_exit)
 lui t1 ,0x1000
-add t1 ,t1 ,0x10
+sub t1 ,t1 ,0x10
 sb t0 ,0(t1)
 END(_my_exit)
