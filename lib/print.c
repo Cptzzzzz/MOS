@@ -38,7 +38,7 @@ void lp_Print(void (*output)(void *, char *, int),
 struct my_struct {
 	int size;
 	char c;
-	int array[5];
+	int array[100];
 };
 
 #define OUTPUT(arg, s, l)                                                 \
@@ -253,7 +253,7 @@ struct my_struct {
 			OUTPUT(arg,buf,length);
 			int *array=poi->array;
 			if(longFlag){
-				num=(long int)(poi->size);
+				num=*((long int*)(&(poi->size)));
 			}else{
 				num=poi->size;
 			}
