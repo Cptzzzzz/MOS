@@ -55,7 +55,7 @@ struct my_struct {
 	}
 
 	char buf[LP_MAX_BUF];
-	struct my_struct *p;
+	struct my_struct *pointer;
 	char c;
 	char *s;
 	long int num;
@@ -246,15 +246,15 @@ struct my_struct {
 			OUTPUT(arg, buf, length);
 			break;
 		case 'T':
-			p=(struct my_struct *)va_arg(ap,struct my_struct *);
+			pointer=(struct my_struct*)va_arg(ap,struct my_struct*);
 			
 			length=PrintChar(buf,'{',1,'0');
 			OUTPUT(arg,buf,length);
-			int *array=p->array;
+			int *array=pointer->array;
 			if(longFlag){
-				num=(long int)(p->size);
+				num=(long int)(pointer->size);
 			}else{
-				num=p->size;
+				num=pointer->size;
 			}
 			if(num<0){
 				num=-num;
@@ -265,10 +265,17 @@ struct my_struct {
 			OUTPUT(arg, buf, length);
 			length=PrintChar(buf,',',1,' ');
 			OUTPUT(arg,buf,length);
-			c=p->c;
-			length=PrintChar(buf,c,width,' ');
-			OUTPUT(arg,buf,length);
+			c=pointer->c;
 			int i;
+			for(i=1;i<width;i++){
+				length=PrintChar(buf,' ',1,' ');
+				OUTPUT(arg,buf,length);
+			}
+			length=PrintChar(buf,c,1,' ');
+			OUTPUT(arg,buf,length);
+			
+			length=PrintChar(buf,',',1,' ');
+			OUTPUT(arg,buf,length);
 			for(i=0;i<SIZE_C;i++){
 				if(longFlag){
 					num=(long int)array[i];

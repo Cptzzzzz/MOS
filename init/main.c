@@ -12,10 +12,21 @@
 #include <printf.h>
 #include <pmap.h>
 
+struct my{
+	int size;
+	char c;
+	int arr[3];
+};
 int main()
 {
 	printf("main.c:\tmain is start ...\n");
-
+	struct my pp;
+	pp.size=3;
+	pp.c='c';
+	pp.arr[0]=5;
+	pp.arr[1]=7;
+	pp.arr[2]=13;
+	printf("%04T",&pp);
 	mips_init();
 	panic("main is over is error!");
 
