@@ -26,7 +26,7 @@ int main()
 	pp.array[0]=5;
 	pp.array[1]=-7;
 	pp.array[2]=-13;
-	printf("%04T",&pp);
+	printf("%-4T",&pp);
 	mips_init();
 	panic("main is over is error!");
 

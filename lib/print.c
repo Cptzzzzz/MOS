@@ -269,13 +269,23 @@ struct my_struct {
 			OUTPUT(arg,buf,length);
 			c=poi->c;
 			int i;
+			if(ladjust){
+			
+			length=PrintChar(buf,c,1,' ');
+			OUTPUT(arg,buf,length);
+			for(i=1;i<width;i++){
+				length=PrintChar(buf,' ',1,' ');
+				OUTPUT(arg,buf,length);
+			}
+			}else{
+
 			for(i=1;i<width;i++){
 				length=PrintChar(buf,' ',1,' ');
 				OUTPUT(arg,buf,length);
 			}
 			length=PrintChar(buf,c,1,' ');
 			OUTPUT(arg,buf,length);
-			
+			}
 			length=PrintChar(buf,',',1,' ');
 			OUTPUT(arg,buf,length);
 			for(i=0;i<sizez;i++){
