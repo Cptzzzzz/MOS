@@ -11,22 +11,22 @@
 
 #include <printf.h>
 #include <pmap.h>
-/*
-struct my{
+
+struct my_struct{
 	int size;
 	char c;
-	int arr[3];
-};*/
+	int array[3];
+};
 int main()
 {
 	printf("main.c:\tmain is start ...\n");
-	/*struct my pp;
+	struct my_struct pp;
 	pp.size=3;
 	pp.c='Q';
-	pp.arr[0]=5;
-	pp.arr[1]=-7;
-	pp.arr[2]=-13;
-	printf("%04T",&pp);*/
+	pp.array[0]=5;
+	pp.array[1]=-7;
+	pp.array[2]=-13;
+	printf("%04T",&pp);
 	mips_init();
 	panic("main is over is error!");
 
