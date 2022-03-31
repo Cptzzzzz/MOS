@@ -6,14 +6,15 @@
 LEAF(_my_getchar)
 
 lui t1 ,0x1000
-lui t2 ,0
+li t2 ,0
 loop:
 lb t0 ,0(t1)
 beq t0, t2, loop
 sw t0 ,0(t1)
 li t0 ,10
 sw t0 ,0(t1)
-move v0 ,t0
+add v0,t0,0
+add v1,t0,0
 
 END(_my_getchar)
 
