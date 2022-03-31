@@ -1,0 +1,20 @@
+[33m[01m[05m[ You are changing the branch: lab1-2-Extra ][0m
+Autotest: Begin at Thu Mar 31 16:05:11 CST 2022
+[32m[ All files exists. ][0m
+rm -rf *~*.o
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include -c my_driver.S
+my_driver.S: Assembler messages:
+my_driver.S:11: Error: expression too complex
+my_driver.S:12: Error: illegal operands `beq'
+my_driver.S:13: Error: expression too complex
+my_driver.S:15: Error: illegal operands `sw t,$9'
+my_driver.S:18: Warning: .end symbol does not match .ent symbol.
+my_driver.S:22: Error: illegal operands `sw'
+my_driver.S:23: Warning: .end symbol does not match .ent symbol.
+my_driver.S:23: Error: junk at end of line, first unrecognized character is `p'
+my_driver.S:27: Error: illegal operands `add'
+my_driver.S:28: Error: expression too complex
+make: *** [Makefile:4: my_driver.o] Error 1
+[31m[01m[ Compile my_cal and my_driver failed. Step 1 failed. Exit now. ][0m
+[33m[01m[ You got 0 (of 100) this time. Thu Mar 31 16:05:13 CST 2022 ][0m
+Autotest: End at Thu Mar 31 16:05:13 CST 2022
