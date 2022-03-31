@@ -261,6 +261,8 @@ struct my_struct {
 			if(num<0){
 				num=-num;
 				negFlag=1;
+			}else{
+				negFlag=0;
 			}
 			int sizez=num;
 			length = PrintNum(buf, num, 10, negFlag, width, ladjust, padc, 0);
