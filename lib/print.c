@@ -274,13 +274,13 @@ struct my_struct {
 			length=PrintChar(buf,c,1,' ');
 			OUTPUT(arg,buf,length);
 			for(i=1;i<width;i++){
-				length=PrintChar(buf,' ',1,' ');
+				length=PrintChar(buf,padc,1,' ');
 				OUTPUT(arg,buf,length);
 			}
 			}else{
 
 			for(i=1;i<width;i++){
-				length=PrintChar(buf,' ',1,' ');
+				length=PrintChar(buf,padc,1,' ');
 				OUTPUT(arg,buf,length);
 			}
 			length=PrintChar(buf,c,1,' ');
