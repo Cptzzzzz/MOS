@@ -34,12 +34,13 @@ void lp_Print(void (*output)(void *, char *, int),
 
 /*
 #define SIZE_C 3
+*/
 struct my_struct {
 	int size;
 	char c;
-	int array[SIZE_C];
+	int array[5];
 };
-*/
+
 #define OUTPUT(arg, s, l)                                                 \
 	{                                                                     \
 		if (((l) < 0) || ((l) > LP_MAX_BUF))                              \
@@ -66,6 +67,7 @@ struct my_struct {
 	int ladjust;
 	char padc;
 
+			struct my_struct* poi; 
 	int length;
 
 	/*
@@ -245,16 +247,15 @@ struct my_struct {
 			OUTPUT(arg, buf, length);
 			break;
 		case 'T':
-			struct my_struct *pointer;
-			pointer=(struct my_struct*)va_arg(ap,struct my_struct*);
 			
+			poi=(struct my_struct*)va_arg(ap,struct my_struct*);
 			length=PrintChar(buf,'{',1,'0');
 			OUTPUT(arg,buf,length);
-			int *array=pointer->array;
+			int *array=poi->array;
 			if(longFlag){
-				num=(long int)(pointer->size);
+				num=(long int)(poi->size);
 			}else{
-				num=pointer->size;
+				num=poi->size;
 			}
 
 			if(num<0){
@@ -266,7 +267,7 @@ struct my_struct {
 			OUTPUT(arg, buf, length);
 			length=PrintChar(buf,',',1,' ');
 			OUTPUT(arg,buf,length);
-			c=pointer->c;
+			c=poi->c;
 			int i;
 			for(i=1;i<width;i++){
 				length=PrintChar(buf,' ',1,' ');
