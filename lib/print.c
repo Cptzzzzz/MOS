@@ -274,13 +274,13 @@ struct my_struct {
 			length=PrintChar(buf,c,1,' ');
 			OUTPUT(arg,buf,length);
 			for(i=1;i<width;i++){
-				length=PrintChar(buf,padc,1,' ');
+				length=PrintChar(buf,' ',1,' ');
 				OUTPUT(arg,buf,length);
 			}
 			}else{
 
 			for(i=1;i<width;i++){
-				length=PrintChar(buf,padc,1,' ');
+				length=PrintChar(buf,' ',1,' ');
 				OUTPUT(arg,buf,length);
 			}
 			length=PrintChar(buf,c,1,' ');
@@ -297,6 +297,8 @@ struct my_struct {
 				if(num<0){
 					num=-num;
 					negFlag=1;
+				}else{
+					negFlag=0;
 				}
 				length = PrintNum(buf, num, 10, negFlag, width, ladjust, padc, 0);
 				OUTPUT(arg,buf,length);
