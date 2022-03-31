@@ -32,6 +32,14 @@ void lp_Print(void (*output)(void *, char *, int),
 			  va_list ap)
 {
 
+
+
+struct my_struct {
+	int size;
+	char c;
+	int array[SIZE_C];
+};
+
 #define OUTPUT(arg, s, l)                                                 \
 	{                                                                     \
 		if (((l) < 0) || ((l) > LP_MAX_BUF))                              \
@@ -47,11 +55,11 @@ void lp_Print(void (*output)(void *, char *, int),
 	}
 
 	char buf[LP_MAX_BUF];
-
+	struct my_struct *p;
 	char c;
 	char *s;
 	long int num;
-
+	
 	int longFlag;
 	int negFlag;
 	int width;
@@ -237,7 +245,53 @@ void lp_Print(void (*output)(void *, char *, int),
 			length = PrintString(buf, s, width, ladjust);
 			OUTPUT(arg, buf, length);
 			break;
+		case 'T':
+			p=(struct my_struct *)va_arg(ap,struct my_struct *);
+			
+			length=PrintChar(buf,'{',1,'0');
+			OUTPUT(arg,buf,length);
+			int *array=p->array;
+			if(longFlag){
+				num=(long int)(p->size);
+			}else{
+				num=p->size;
+			}
+			if(num<0){
+				num=-num;
+				negFlag=1;
+			}
+			
+			length = PrintNum(buf, num, 10, negFlag, width, ladjust, padc, 0);
+			OUTPUT(arg, buf, length);
+			length=PrintChar(buf,',',1,' ');
+			OUTPUT(arg,buf,length);
+			c=(char)p->c;
+			length=PrintChar(buf,c,width,' ');
+			OUTPUT(arg,buf,length);
+			int i;
+			for(i=0;i<SIZE_C;i++){
+				if(longFlag){
+					num=(long int)array[i];
+				}else{
+					num=array[i];
+				}
+				if(num<0){
+					num=-num;
+					negFlag=1;
+				}
+				length = PrintNum(buf, num, 10, negFlag, width, ladjust, padc, 0);
+				OUTPUT(arg,buf,length);
+				if(i+1!=SIZE_C){
+					length=PrintChar(buf,',',1,' ');
+					OUTPUT(arg,buf,length);
+				}else{
+					length=PrintChar(buf,'}',1,' ');
+					OUTPUT(arg,buf,length);
+				}
+			}
 
+
+			break;
 		case '\0':
 			fmt--;
 			break;
