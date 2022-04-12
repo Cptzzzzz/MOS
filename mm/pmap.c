@@ -186,8 +186,8 @@ void page_init(void)
 
 	/* Step 3: Mark all memory blow `freemem` as used(set `pp_ref`
 	 * filed to 1) */
-
-	for(int i=0;i<npage;i++){
+	int i;
+	for(i=0;i<npage;i++){
 		if(page2kva(pages+i)<freemem)
 			pages[i].pp_ref=1;
 		else{
