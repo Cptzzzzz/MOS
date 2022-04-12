@@ -6,7 +6,7 @@
 
 drivers_dir	  := drivers
 boot_dir	  := boot
-init_dir	  := init
+init_dir	  := init 
 lib_dir		  := lib
 mm_dir		  := mm
 tools_dir	  := tools
