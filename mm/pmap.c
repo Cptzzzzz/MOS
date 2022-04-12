@@ -179,14 +179,22 @@ void page_init(void)
 {
 	/* Step 1: Initialize page_free_list. */
 	/* Hint: Use macro `LIST_INIT` defined in include/queue.h. */
-
+	LIST_INIT(&page_free_list);
 
 	/* Step 2: Align `freemem` up to multiple of BY2PG. */
-
+	freemem=ROUND(freemem,BY2PG);
 
 	/* Step 3: Mark all memory blow `freemem` as used(set `pp_ref`
 	 * filed to 1) */
 
+	for(int i=0;i<npage;i++){
+		if(page2kva(pages+i)<freemem)
+			pages[i].pp_ref=1;
+		else{
+			pages[i].pp_ref=0;
+			LIST_INSERT_HEAD(&page_free_list,pages+i,pp_link);
+		}
+	}
 
 	/* Step 4: Mark the other memory as free. */
 }
@@ -211,12 +219,16 @@ int page_alloc(struct Page **pp)
 	struct Page *ppage_temp;
 
 	/* Step 1: Get a page from free memory. If fail, return the error code.*/
+	if(LIST_EMPTY(&page_free_list)) return -E_NO_MEM;
+	ppage_temp=LIST_FIRST(&page_free_list);
+	LIST_REMOVE(ppage_temp,pp_link);
 
 
 	/* Step 2: Initialize this page.
 	 * Hint: use `bzero`. */
-
-
+	bzero( page2kva(ppage_temp),BY2PG);
+	*pp=ppage_temp;
+	return 0;
 }
 
 /* Exercise 2.5 */
@@ -227,7 +239,10 @@ When you free a page, just insert it to the page_free_list.*/
 void page_free(struct Page *pp)
 {
 	/* Step 1: If there's still virtual address referring to this page, do nothing. */
-
+	if(pp->pp_ref==0){
+		LIST_INSERT_HEAD(&page_free_list,pp,pp_link);
+		return;
+	}else if(pp->pp_ref>0)return;
 
 	/* Step 2: If the `pp_ref` reaches 0, mark this page as free and return. */
 
@@ -459,7 +474,6 @@ void physical_memory_manage_check(void)
 		//printf("0x%x  0x%x\n",&test_pages[i], test_pages[i].pp_link.le_next);
 		LIST_INSERT_TAIL(&test_free,&test_pages[i],pp_link);
 		//printf("0x%x  0x%x\n",&test_pages[i], test_pages[i].pp_link.le_next);
-
 	}
 	p = LIST_FIRST(&test_free);
 	int answer1[]={0,1,2,3,4,5,6,7,8,9};
