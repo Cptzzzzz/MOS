@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2007 Beihang University
 # Written by Zhu Like ( zlike@cse.buaa.edu.cn )
-#
+# 
 
 drivers_dir	  := drivers
 boot_dir	  := boot
