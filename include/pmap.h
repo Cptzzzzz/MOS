@@ -20,7 +20,9 @@ struct Page {
 
 	u_short pp_ref;
 };
-
+void buddy_init(void);
+int buddy_alloc(u_int size,u_int *pa,u_char *pi);
+void buddy_free(u_int pa);
 extern struct Page *pages;
 
 static inline u_long

@@ -198,7 +198,83 @@ void page_init(void)
 
 	/* Step 4: Mark the other memory as free. */
 }
-
+static int status[10000];
+static u_long address[10000];
+static u_int bsize[10000];
+static int nextt[10000];
+static int tot=1;
+static int fa[10000];
+void buddy_init(void){
+	u_long maxv=KADDR(maxpa);
+	u_long start=maxv-8*4*(1<<20);
+	int i;
+	for(i=1;i<=8;i++){
+		nextt[i]=i+1;
+		status[i]=0;
+		bsize[i]=4*(1<<20);
+		fa[i]=i;
+		address[i]=start+(i-1)*bsize[i];
+	}
+	nextt[8]=0;
+	tot=8;
+}
+void divv(int x){
+	++tot;
+	nextt[tot]=nextt[x];
+	status[tot]=0;
+	address[tot]=address[x]+bsize[x]/2;
+	bsize[tot]=bsize[x]/2;
+	fa[tot]=x;
+	bsize[x]/=2;
+	nextt[x]=tot;
+}
+int buddy_alloc(u_int size,u_int *pa,u_char *pi){
+	int go=1;
+	for(;go>0;go=nextt[go]){
+		if(bsize[go]>=size&&status[go]==0){
+			while(1){
+				if(bsize[go]<2*size||bsize[go]==4*(1<<10)){
+					break;
+				}
+				divv(go);
+			}
+			status[go]=1;
+			*pa=address[go];
+			int temp=bsize[go];
+			temp/=(4*(1<<10));
+			*pi=0;
+			while(temp>1){
+				temp>>=1;
+				*pi=*pi+1;
+			}
+			return 0;
+		}
+	}
+	return -1;
+}
+int merge(){
+	int go=1;
+	for(;go>0;go=nextt[go]){
+		if(status[go]==0&&nextt[go]>0){
+			int ne=nextt[go];
+			if(status[ne]==0&&fa[ne]==go&&bsize[go]==bsize[ne]){
+				bsize[go]+=bsize[ne];
+				nextt[go]=nextt[ne];
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+void buddy_free(u_int pa){
+	int go=1;
+	for(;go>0;go=nextt[go]){
+		if(address[go]==pa)break;
+	}
+	status[go]=0;
+	while(merge());
+	return;
+}
 /* Exercise 2.4 */
 /*Overview:
   Allocates a physical page from free memory, and clear this page.
