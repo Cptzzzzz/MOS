@@ -188,8 +188,11 @@ void page_init(void)
 	 * filed to 1) */
 	int i;
 	for(i=0;i<npage;i++){
-		if(page2kva(pages+i)<freemem)
+		pages[i].status=0;
+		pages[i].used=0;
+		if(page2kva(pages+i)<freemem){
 			pages[i].pp_ref=1;
+			pages[i].used=1;}
 		else{
 			pages[i].pp_ref=0;
 			LIST_INSERT_HEAD(&page_free_list,pages+i,pp_link);
@@ -199,6 +202,22 @@ void page_init(void)
 	/* Step 4: Mark the other memory as free. */
 }
 
+int page_protect(struct Page *pp){
+	if(pp->status==0 && pp->used==0){
+		pp->status=1;
+		return 0;
+	}
+	if(pp->status==1){
+		return -2;
+	}
+	return -1;
+}
+
+int page_status_query(struct Page *pp){
+	if(pp->status==1) return 3;
+	if(pp->status==0 && pp->used==0) return 2;
+	return 1;
+}
 /* Exercise 2.4 */
 /*Overview:
   Allocates a physical page from free memory, and clear this page.
@@ -221,8 +240,11 @@ int page_alloc(struct Page **pp)
 	/* Step 1: Get a page from free memory. If fail, return the error code.*/
 	if(LIST_EMPTY(&page_free_list)) return -E_NO_MEM;
 	ppage_temp=LIST_FIRST(&page_free_list);
+	while(ppage_temp->status==1){
+		ppage_temp=LIST_NEXT((ppage_temp),pp_link);
+	}
 	LIST_REMOVE(ppage_temp,pp_link);
-
+	ppage_temp->used=1;
 
 	/* Step 2: Initialize this page.
 	 * Hint: use `bzero`. */
