@@ -198,12 +198,12 @@ void page_init(void)
 
 	/* Step 4: Mark the other memory as free. */
 }
-static int status[10000];
-static u_long address[10000];
-static u_int bsize[10000];
-static int nextt[10000];
+static int status[1010];
+static u_long address[1010];
+static u_int bsize[1010];
+static int nextt[1010];
 static int tot=1;
-static int fa[10000];
+static int fa[1010];
 void buddy_init(void){
 	u_long maxv=KADDR(maxpa);
 	u_long start=maxv-8*4*(1<<20);
