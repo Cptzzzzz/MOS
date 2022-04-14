@@ -205,8 +205,8 @@ static int nextt[1010];
 static int tot=1;
 static int fa[1010];
 void buddy_init(void){
-	u_long maxv=KADDR(maxpa);
-	u_long start=maxv-8*4*(1<<20);
+	
+	u_long start=0x2000000;
 	int i;
 	for(i=1;i<=8;i++){
 		nextt[i]=i+1;
@@ -217,6 +217,7 @@ void buddy_init(void){
 	}
 	nextt[8]=0;
 	tot=8;
+	printf("init ok\n");
 }
 void divv(int x){
 	++tot;
