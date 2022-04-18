@@ -91,16 +91,16 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
 
 	Pde *pgdir_entry=pgdir+PDX(va);
 	Pte *pgtable, *pgtable_entry;
-	
+	pgtable=KADDR(PTE_ADDR(*pgdir_entry));
 	if((*pgdir_entry & PTE_V)==0){
 		if(create){
-			*pgdir_entry=(Pte*)alloc(sizeof(u_long)*1024,1,1);
-			*pgdir_entry&=0xfffff000;
-			*pgdir_entry|=(PTE_V|PTE_R);
+			pgtable=alloc(BY2PG,BY2PG,1);
+			*pgdir_entry=PADDR(pgtable);
+			*pgdir_entry|=PTE_V|PTE_R;
 		}else return 0;
 	}
 
-	return ((Pte*)(KADDR(PTE_ADDR(*pgdir_entry))))+PTX(va);
+	return pgtable+PTX(va);
 
 	/* Step 1: Get the corresponding page directory entry and page table. */
 	/* Hint: Use KADDR and PTE_ADDR to get the page table from page directory
@@ -134,7 +134,7 @@ void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm)
 		*pgtable_entry=(pa+i)|perm|PTE_V;
 	}
 	/* Step 1: Check if `size` is a multiple of BY2PG. */
-
+    
 
 	/* Step 2: Map virtual address space to physical address. */
 	/* Hint: Use `boot_pgdir_walk` to get the page table entry of virtual address `va`. */
@@ -297,7 +297,7 @@ int pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte)
 			return 0;
 		}
 	}
-	*ppte=((Pte*)(KADDR(PTE_ADDR(*pgdir_entry))))+PTX(va);
+	*ppte=((Pte*)(KADDR(PTE_ADDR(*pgdir))))+PTX(va);
 
 	/* Step 1: Get the corresponding page directory entry and page table. */
 
@@ -327,11 +327,10 @@ If there is already a page mapped at `va`, call page_remove() to release this ma
 The `pp_ref` should be incremented if the insertion succeeds.*/
 int page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm)
 {
-	u_int PERM;
-	int ret;
+
 	Pte *pgtable_entry;
 	perm = perm | PTE_V;
-
+	int ret;
 	/* Step 1: Get corresponding page table entry. */
 	pgdir_walk(pgdir, va, 0, &pgtable_entry);
 
@@ -345,15 +344,12 @@ int page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm)
 		}
 	}
 
+	/* Step 2: Update TLB. */
 	tlb_invalidate(pgdir,va);
 	if((ret=pgdir_walk(pgdir,va,1,&pgtable_entry))<0)return ret;
-	
+	/* hint: use tlb_invalidate function */
 	*pgtable_entry=(page2pa(pp))|perm;
 	pp->pp_ref++;
-	/* Step 2: Update TLB. */
-
-	/* hint: use tlb_invalidate function */
-
 
 	/* Step 3: Do check, re-get page table entry to validate the insertion. */
 
