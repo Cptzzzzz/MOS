@@ -96,7 +96,7 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
 		if(create){
 			pgtable=alloc(BY2PG,BY2PG,1);
 			*pgdir_entry=PADDR(pgtable);
-			*pgdir_entry|=PTE_V|PTE_R;
+			*pgdir_entry=(*pgdir_entry)|PTE_V|PTE_R;
 		}else return 0;
 	}
 
@@ -131,7 +131,7 @@ void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm)
 	Pte *pgtable_entry;
 	for(i=0,size=ROUND(size,BY2PG);i<size;i+=BY2PG){
 		pgtable_entry=boot_pgdir_walk(pgdir,va+i,1);
-		*pgtable_entry=(pa+i)|perm|PTE_V;
+		*pgtable_entry=(PTE_ADDR(pa)+i)|perm|PTE_V;
 	}
 	/* Step 1: Check if `size` is a multiple of BY2PG. */
     
@@ -297,7 +297,7 @@ int pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte)
 			return 0;
 		}
 	}
-	*ppte=((Pte*)(KADDR(PTE_ADDR(*pgdir))))+PTX(va);
+	*ppte=((Pte*)(KADDR(PTE_ADDR(*pgdir_entry))))+PTX(va);
 
 	/* Step 1: Get the corresponding page directory entry and page table. */
 
