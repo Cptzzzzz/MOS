@@ -291,7 +291,7 @@ int pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte)
 	if((*pgdir_entry & PTE_V)==0){
 		if(create){
 			if((ret=page_alloc(&page))<0)return ret;
-			// page->pp_ref++;
+			page->pp_ref++;
 			*pgdir_entry=(page2pa(page))|PTE_V|PTE_R;
 		}else{
 			*ppte=0;
