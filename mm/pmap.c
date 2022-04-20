@@ -434,7 +434,7 @@ void page_remove(Pde *pgdir, u_long va)
 // Overview:
 // 	Update TLB.
 void tlb_invalidate(Pde *pgdir, u_long va)
-{
+{ 
 	if (curenv) {
 		tlb_out(PTE_ADDR(va) | GET_ENV_ASID(curenv->env_id));
 	} else {
