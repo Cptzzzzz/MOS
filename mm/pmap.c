@@ -35,7 +35,7 @@ void mips_detect_memory()
 
 	printf("Physical memory: %dK available, ", (int)(maxpa / 1024));
 	printf("base = %dK, extended = %dK\n", (int)(basemem / 1024),
-			(int)(extmem / 1024));
+			(int)(extmem / 1024)); 
 }
 
 /* Overview:
