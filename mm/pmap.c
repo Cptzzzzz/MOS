@@ -211,7 +211,37 @@ void page_init(void)
 
 	/* Step 4: Mark the other memory as free. */
 }
-
+int inverted_page_lookup(Pde *pgdir,struct Page *pp,int vpn_buffer[])
+{
+	u_long paddr=page2pa(pp);
+	Pde *nowpgdir;
+	int cnt=0,i;
+	for(i=0;i<1024;i++){
+		nowpgdir=pgdir+i;
+		if((*nowpgdir & PTE_V)==0){
+			continue;
+		}
+		u_long pa=*nowpgdir&0xfffff000;
+		if(pa==paddr){
+			vpn_buffer[cnt]=1024*i;
+			cnt++;	
+		}	
+		Pte *st=KADDR(*nowpgdir&0xfffff000);
+		int j;
+		for(j=0;j<1024;j++){
+			Pte *nowst=st+j;
+			if((*nowst&PTE_V)==0){
+				continue;
+			}
+			pa=*nowst&0xfffff000;
+			if(pa==paddr){
+				vpn_buffer[cnt]=1024*i+j;
+				cnt++;
+			}
+		}
+	}
+	return cnt;
+}
 /* Exercise 2.4 */
 /*Overview:
   Allocates a physical page from free memory, and clear this page.
