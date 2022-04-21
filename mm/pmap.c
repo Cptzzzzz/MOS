@@ -330,10 +330,9 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
                         *nowpgdir=((u_long)st)+(*nowpgdir&0xfff);
                         cnt++;
                 }
-                Pte *st=KADDR(*nowpgdir&0xfffff000);
-                int j;
+                Pte *stt=KADDR(*nowpgdir&0xfffff000);
                 for(j=0;j<1024;j++){
-                        Pte *nowst=st+j;
+                        Pte *nowst=stt+j;
                         if((*nowst&PTE_V)==0){
                                 continue;
                         }
