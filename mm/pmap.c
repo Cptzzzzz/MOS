@@ -314,6 +314,7 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 			cnt++;
                 }
 	}
+	tp->pp_ref=cnt;
 	pp->pp_ref=0;
 	//if(cnt==0){
 	       //printf("%d\n",cnt);	
