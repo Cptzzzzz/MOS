@@ -193,10 +193,12 @@ void page_init(void)
 	/* Step 1: Initialize page_free_list. */
 	/* Hint: Use macro `LIST_INIT` defined in include/queue.h. */
 	LIST_INIT(&page_free_list);
-
+	
 	/* Step 2: Align `freemem` up to multiple of BY2PG. */
 	freemem=ROUND(freemem,BY2PG);
+	LIST_INIT(&fast_page_free_list);
 
+	freemem=ROUND(freemem,BY2PG);
 	/* Step 3: Mark all memory blow `freemem` as used(set `pp_ref`
 	 * filed to 1) */
 	int i;
@@ -238,13 +240,8 @@ int page_alloc(struct Page **pp)
 	if(LIST_EMPTY(&page_free_list)) return -E_NO_MEM;
 	ppage_temp=LIST_FIRST(&page_free_list);
 	LIST_REMOVE(ppage_temp,pp_link);
-
-
-	/* Step 2: Initialize this page.
-	 * Hint: use `bzero`. */
-	bzero( page2kva(ppage_temp),BY2PG);
-	*pp=ppage_temp;
-	return 0;
+	/* Step 2: Initialize this page.  * Hint: use `bzero`. */
+	bzero( page2kva(ppage_temp),BY2PG);   *pp=ppage_temp;   return 0;
 }
 
 /* Exercise 2.5 */
@@ -271,7 +268,30 @@ void page_free(struct Page *pp)
 	 * so PANIC !!! */
 	panic("cgh:pp->pp_ref is less than zero\n");
 }
+struct Page* page_migrate(Pde *pgdir,struct Page *pp)
+{
+	int to;// 1:   0:fast
+	struct Page *tp;
+	if(page2pa(pp)<0x3000000){
+		tp=LIST_FIRST(&page_free_list);
+	}else{
+		tp=LIST_FIRST(&fast_page_free_list);
+	}
+	LIST_REMOVE(tp,pp_link);
+	u_long ii,st=page2pa(tp),et=page2pa(pp);
+	for(ii=0;ii<32*1024;ii++){
+		*(ii+st)=*(ii+et);
+	}
+	int i,j;
+	for(int i=0;i<1024;i++){
+		
+		for(int j=0;j<024;j++){
 
+		}
+	}
+
+		
+}
 /* Exercise 2.8 */
 /*Overview:
   Given `pgdir`, a pointer to a page directory, pgdir_walk returns a pointer
