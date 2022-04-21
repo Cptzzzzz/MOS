@@ -28,7 +28,7 @@ page2ppn(struct Page *pp)
 {
 	return pp - pages;
 }
-
+struct Page* page_migrate(Pde *pgdir,struct Page *pp);
 /* Get the physical address of Page 'pp'.
  */
 static inline u_long
