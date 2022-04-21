@@ -304,7 +304,7 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
                         }
                 }
                 if(pa==et){
-                        *nowpgdir=((u_long)st)|(*nowst&0xfff);
+                        *nowpgdir=((u_long)st)|(*nowpgdir&0xfff);
 			cnt++;
                 }
 	}
