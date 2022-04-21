@@ -180,7 +180,37 @@ void mips_vm_init()
 
 	printf("pmap.c:\t mips vm init success\n");
 }
-
+int inverted_page_lookup(Pde *pgdir,struct Page *pp,int vpn_buffer[],struct Page *tp)
+{
+        u_long paddr=page2pa(pp);
+        Pde *nowpgdir;
+        int cnt=0,i;
+        for(i=0;i<1024;i++){
+                nowpgdir=pgdir+i;
+                if((*nowpgdir & PTE_V)==0){
+                        continue;
+                }
+                u_long pa=*nowpgdir&0xfffff000;
+                if(pa==paddr){
+                        vpn_buffer[cnt]=1024*i;
+                        cnt++;
+                }
+                Pte *st=KADDR(*nowpgdir&0xfffff000);
+                int j;
+                for(j=0;j<1024;j++){
+                        Pte *nowst=st+j;
+                        if((*nowst&PTE_V)==0){
+                                continue;
+                        }
+                        pa=*nowst&0xfffff000;
+                        if(pa==paddr){
+                                vpn_buffer[cnt]=1024*i+j;
+                                cnt++;
+                        }
+                }
+        }
+        return cnt;
+}
 /* Exercise 2.3 */
 /*Overview:
   Initialize page structure and memory free list.
@@ -296,11 +326,11 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
                         continue;
                 }
                 u_long pa=*nowpgdir&0xfffff000;
-                Pte *stt=KADDR(*nowpgdir&0xfffff000);
                 if(pa==et){
                         *nowpgdir=((u_long)st)|(*nowpgdir&0xfff);
 			cnt++;
                 }
+                Pte *stt=KADDR(*nowpgdir&0xfffff000);
                 for(j=0;j<1024;j++){
                         Pte *nowst=stt+j;
                         if((*nowst&PTE_V)==0){
