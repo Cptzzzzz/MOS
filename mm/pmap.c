@@ -277,11 +277,11 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 		tp=LIST_FIRST(&fast_page_free_list);
 	}
 	LIST_REMOVE(tp,pp_link);
-	/*u_long ii;
-	for(ii=0;ii<32*1024;ii++){
-		*(ii+st)=*(ii+et);
-	}*/
+	int ii;
 	u_long *st=page2pa(tp),*et=page2pa(pp);
+	for(ii=0;ii<BY2PG;ii++){
+		*(ii+st)=*(ii+et);
+	}
 	int i,j,cnt;
 	Pde *nowpgdir;
 	for(i=0;i<1024;i++){
