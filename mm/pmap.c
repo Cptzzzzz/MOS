@@ -270,7 +270,7 @@ void page_free(struct Page *pp)
 }
 struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 {
-	int to;// 1:   0:fast
+	/*int to;// 1:   0:fast
 	struct Page *tp;
 	if(page2pa(pp)<0x3000000){
 		tp=LIST_FIRST(&page_free_list);
@@ -310,7 +310,8 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 	}
 	if(cnt==0) page_free(pp);
 	return tp;
-		
+	*/
+return pp;	
 }
 /* Exercise 2.8 */
 /*Overview:
