@@ -279,8 +279,9 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 	LIST_REMOVE(tp,pp_link);
 	int ii;
 	u_long *st=page2pa(tp),*et=page2pa(pp);
+	u_long *start=page2kva(tp),*end=page2kva(pp);
 	for(ii=0;ii<BY2PG;ii++){
-		*(ii+st)=*(ii+et);
+		*(ii+start)=*(ii+end);
 	}
 	int i,j,cnt;
 	Pde *nowpgdir;
