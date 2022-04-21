@@ -277,13 +277,13 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 		tp=LIST_FIRST(&fast_page_free_list);
 	}
 	LIST_REMOVE(tp,pp_link);
-	u_long ii;
-	u_long *st=page2pa(tp),*et=page2pa(pp);
+	/*u_long ii;
 	for(ii=0;ii<32*1024;ii++){
 		*(ii+st)=*(ii+et);
-	}
+	}*/
+	u_long *st=page2pa(tp),*et=page2pa(pp);
 	int i,j,cnt;
-	Pde *nowpgdir;/*
+	Pde *nowpgdir;
 	for(i=0;i<1024;i++){
 		nowpgdir=pgdir+i;
 		if((*nowpgdir & PTE_V)==0){
@@ -307,7 +307,6 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 			cnt++;
                 }
 	}
-	*/
 	if(cnt==0) page_free(pp);
 	return tp;
 		
