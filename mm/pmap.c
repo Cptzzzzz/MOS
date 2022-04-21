@@ -321,12 +321,14 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 	int i,j,cnt=0;
 	Pde *nowpgdir;
 	int loca[501];
+
+
 	int num=inverted_page_lookup(pgdir,pp,loca);
-	for(i=0;i<num;i++){
-		u_long *s=(u_long)pgdir+(u_long)(loca[i]<<12);
-		*s=((u_long)st)|(*s&0xfff);
-	}
 	
+	for(i=0;i<num;i++){
+		Pde *now=pgdir+loca[i];
+		*now=(*now&0xfff)|((u_long)st);
+	}
 	tp->pp_ref=cnt;
 	pp->pp_ref=0;
 	//if(cnt==0){
