@@ -240,6 +240,7 @@ int page_alloc(struct Page **pp)
 	if(LIST_EMPTY(&page_free_list)) return -E_NO_MEM;
 	ppage_temp=LIST_FIRST(&page_free_list);
 	LIST_REMOVE(ppage_temp,pp_link);
+	
 	/* Step 2: Initialize this page.  * Hint: use `bzero`. */
 	bzero( page2kva(ppage_temp),BY2PG);   *pp=ppage_temp;   return 0;
 }
@@ -252,12 +253,15 @@ When you free a page, just insert it to the page_free_list.*/
 void page_free(struct Page *pp)
 {
 	/* Step 1: If there's still virtual address referring to this page, do nothing. */
+	
 	if(pp->pp_ref==0)
 	{
-		if(page2pa(pp)<0x3000000)
+		if(page2pa(pp)<0x3000000){
+//	printf("free %d to pagelist",page2ppn(pp));	
 		LIST_INSERT_HEAD(&page_free_list,pp,pp_link);
-		else
+		}else{
 		LIST_INSERT_HEAD(&fast_page_free_list,pp,pp_link);
+		}
 		return;
 	}else if(pp->pp_ref>0)return;
 
@@ -271,6 +275,7 @@ void page_free(struct Page *pp)
 struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 {
 	struct Page *tp;
+	//printf("in migrate %d\n",page2ppn(pp));
 	if(page2pa(pp)>=0x3000000){
 		tp=LIST_FIRST(&page_free_list);
 	}else{
@@ -283,7 +288,7 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 	for(ii=0;ii<BY2PG;ii++){
 		*(ii+start)=*(ii+end);
 	}
-	int i,j,cnt;
+	int i,j,cnt=0;
 	Pde *nowpgdir;
 	for(i=0;i<1024;i++){
 		nowpgdir=pgdir+i;
@@ -309,7 +314,13 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 			cnt++;
                 }
 	}
-	if(cnt==0) page_free(pp);
+	pp->pp_ref=0;
+	//if(cnt==0){
+	       //printf("%d\n",cnt);	
+	//	printf("free %d\n",page2ppn(pp));
+		page_free(pp);
+		
+	//}
 	return tp;
 		
 }

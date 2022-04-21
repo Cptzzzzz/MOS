@@ -26,12 +26,16 @@ void mips_init()
 static void page_migrate_test(){
 	struct Page *pp;
 	page_alloc(&pp);
-	printf("%x\n",page2pa(pp));
+	//printf("%d\n",page2ppn(pp));
 	Pde *pgdir = (Pde*)page2kva(pp);
 	page_alloc(&pp);
+//	printf("%d\n",page2ppn(pp));
+
 	page_insert(pgdir, pp, 0x23300000, 0);
 	page_insert(pgdir, pp, 0x23400000, 0);
 	page_insert(pgdir, pp, 0x23500000, 0);
+	
+//	printf("%ds\n",page2ppn(pp));
 	pp = page_migrate(pgdir, pp);
 	printf("%d\n", page2ppn(pp));
 	pp = page_migrate(pgdir, pp);
