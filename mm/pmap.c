@@ -270,9 +270,8 @@ void page_free(struct Page *pp)
 }
 struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 {
-	/*int to;// 1:   0:fast
 	struct Page *tp;
-	if(page2pa(pp)<0x3000000){
+	if(page2pa(pp)>=0x3000000){
 		tp=LIST_FIRST(&page_free_list);
 	}else{
 		tp=LIST_FIRST(&fast_page_free_list);
@@ -284,7 +283,7 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 		*(ii+st)=*(ii+et);
 	}
 	int i,j,cnt;
-	Pde *nowpgdir;
+	Pde *nowpgdir;/*
 	for(i=0;i<1024;i++){
 		nowpgdir=pgdir+i;
 		if((*nowpgdir & PTE_V)==0){
@@ -308,10 +307,10 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 			cnt++;
                 }
 	}
+	*/
 	if(cnt==0) page_free(pp);
 	return tp;
-	*/
-return pp;	
+		
 }
 /* Exercise 2.8 */
 /*Overview:
