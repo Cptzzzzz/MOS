@@ -16,7 +16,7 @@ Pde *boot_pgdir;
 struct Page *pages;
 static u_long freemem;
 
-static struct Page_list page_free_list;	/* Free list of physical pages */
+struct Page_list page_free_list,fast_page_free_list;	/* Free list of physical pages */
 
 
 /* Exercise 2.1 */
@@ -205,7 +205,10 @@ void page_init(void)
 			pages[i].pp_ref=1;
 		else{
 			pages[i].pp_ref=0;
+			if(page2pa(pages+i)<0x3000000)
 			LIST_INSERT_HEAD(&page_free_list,pages+i,pp_link);
+			else
+				LIST_INSERT_HEAD(&fast_page_free_list,pages+i,pp_link);
 		}
 	}
 
@@ -252,8 +255,12 @@ When you free a page, just insert it to the page_free_list.*/
 void page_free(struct Page *pp)
 {
 	/* Step 1: If there's still virtual address referring to this page, do nothing. */
-	if(pp->pp_ref==0){
+	if(pp->pp_ref==0)
+	{
+		if(page2pa(pp)<0x3000000)
 		LIST_INSERT_HEAD(&page_free_list,pp,pp_link);
+		else
+		LIST_INSERT_HEAD(&fast_page_free_list,pp,pp_link);
 		return;
 	}else if(pp->pp_ref>0)return;
 
