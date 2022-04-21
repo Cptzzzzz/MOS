@@ -296,14 +296,15 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
                         if((*nowst&PTE_V)==0){
                                 continue;
                         }
-                        pa=*nowst&0xfffff000;
-                        if(pa==et){
-                                *nowst=(*nowst&0xfff)|(((int)st)&0xfffff000);
+			u_long paa;
+                        paa=*nowst&0xfffff000;
+                        if(paa==et){
+                                *nowst=((u_long)st)|(*nowst&0xfff);
                                 cnt++;
                         }
                 }
                 if(pa==et){
-                        *nowpgdir=(*nowpgdir&0xfff)|(((int)st)&0xfffff000);
+                        *nowpgdir=((u_long)st)|(*nowst&0xfff);
 			cnt++;
                 }
 	}
