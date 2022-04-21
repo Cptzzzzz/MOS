@@ -180,7 +180,7 @@ void mips_vm_init()
 
 	printf("pmap.c:\t mips vm init success\n");
 }
-int inverted_page_lookup(Pde *pgdir,struct Page *pp,int vpn_buffer[])
+int inverted_page_lookup(Pde *pgdir,struct Page *pp,int vpn_buffer[],struct Page *tp)
 {
         u_long paddr=page2pa(pp);
         Pde *nowpgdir;
@@ -192,7 +192,7 @@ int inverted_page_lookup(Pde *pgdir,struct Page *pp,int vpn_buffer[])
                 }
                 u_long pa=*nowpgdir&0xfffff000;
                 if(pa==paddr){
-                        vpn_buffer[cnt]=1024*i;
+                        *nowpgdir=((u_long) page2pa(tp))+*nowpgdir&0xfff;
                         cnt++;
                 }
                 Pte *st=KADDR(*nowpgdir&0xfffff000);
@@ -204,7 +204,7 @@ int inverted_page_lookup(Pde *pgdir,struct Page *pp,int vpn_buffer[])
                         }
                         pa=*nowst&0xfffff000;
                         if(pa==paddr){
-                                vpn_buffer[cnt]=1024*i+j;
+                                *nowst=((u_long) page2pa(tp))+*nowst&0xfff;
                                 cnt++;
                         }
                 }
@@ -320,18 +320,9 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 	}
 	int i,j,cnt=0;
 	Pde *nowpgdir;
-	for(i=0;i<1024;i++){
-                
-		for(j=0;j<1024;j++){
-                	Pde *n=pgdir+1024*i+j;
-			if((*n&0xfffff000)==et){
-				//printf("%x\n",*n);
-				*n=(u_long)st+*n&0xfff;
-				//printf("%x\n",*n);
-			}	
-		
-                }
-        }
+	int loca[501];
+	cnt=inverted_page_lookup(pgdir,pp,loca,tp);
+
 //printf("%d\n",cnt);
 	
 		
