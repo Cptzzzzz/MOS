@@ -31,7 +31,7 @@ page2ppn(struct Page *pp)
 struct Page* page_migrate(Pde *pgdir,struct Page *pp);
 /* Get the physical address of Page 'pp'.
  */
-int inverted_page_lookup(Pde *pgdir,struct Page *pp,int vpn_buffer[],struct Page *tp);
+int inverted_page_lookup(Pde *pgdir,struct Page *pp,int vpn_buffer[]);
 static inline u_long
 page2pa(struct Page *pp)
 {

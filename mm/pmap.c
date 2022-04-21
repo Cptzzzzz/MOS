@@ -180,7 +180,7 @@ void mips_vm_init()
 
 	printf("pmap.c:\t mips vm init success\n");
 }
-int inverted_page_lookup(Pde *pgdir,struct Page *pp,int vpn_buffer[],struct Page *tp)
+int inverted_page_lookup(Pde *pgdir,struct Page *pp,int vpn_buffer[])
 {
         u_long paddr=page2pa(pp);
         Pde *nowpgdir;
@@ -320,31 +320,13 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 	}
 	int i,j,cnt=0;
 	Pde *nowpgdir;
-	for(i=0;i<1024;i++){
-		nowpgdir=pgdir+i;
-		if((*nowpgdir & PTE_V)==0){
-                        continue;
-                }
-                u_long pa=*nowpgdir&0xfffff000;
-                if(pa==et){
-                        *nowpgdir=((u_long)st)|(*nowpgdir&0xfff);
-			cnt++;
-                }
-                Pte *stt=KADDR(*nowpgdir&0xfffff000);
-                for(j=0;j<1024;j++){
-                        Pte *nowst=stt+j;
-                        if((*nowst&PTE_V)==0){
-                                continue;
-                        }
-			u_long paa;
-                        paa=*nowst&0xfffff000;
-                        if(paa==et){
-                                *nowst=((u_long)st)|(*nowst&0xfff);
-                                cnt++;
-
-                        }
-                }
+	int loca[501];
+	int num=inverted_page_lookup(pgdir,pp,loca);
+	for(i=0;i<num;i++){
+		u_long *s=(u_long)pgdir+(u_long)(loca[i]<<12);
+		*s=((u_long)st)|(*s&0xfff);
 	}
+	
 	tp->pp_ref=cnt;
 	pp->pp_ref=0;
 	//if(cnt==0){
