@@ -315,35 +315,24 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 	int ii;
 	u_long *st=page2pa(tp),*et=page2pa(pp);
 	u_long *start=page2kva(tp),*end=page2kva(pp);
-	for(ii=0;ii<BY2PG;ii++){
+	for(ii=BY2PG-1;ii>=0;ii--){
 		*(ii+start)=*(ii+end);
 	}
 	int i,j,cnt=0;
 	Pde *nowpgdir;
 	for(i=0;i<1024;i++){
-                nowpgdir=pgdir+i;
-                if((*nowpgdir & PTE_V)==0){
-                        continue;
-                }
-                u_long pa=*nowpgdir&0xfffff000;
-                if(pa==et){
-                        *nowpgdir=((u_long)st)+(*nowpgdir&0xfff);
-                        cnt++;
-                }
-                Pte *stt=KADDR(*nowpgdir&0xfffff000);
-                for(j=0;j<1024;j++){
-                        Pte *nowst=stt+j;
-                        if((*nowst&PTE_V)==0){
-                                continue;
-                        }
-                        pa=*nowst&0xfffff000;
-                        if(pa==et){
-                                *nowst=((u_long)st)+(*nowst&0xfff);
-                                cnt++;
-                        }
+                
+		for(j=0;j<1024;j++){
+                	Pde *n=pgdir+1024*i+j;
+			if((*n&0xfffff000)==et){
+				//printf("%x\n",*n);
+				*n=(u_long)st+*n&0xfff;
+				//printf("%x\n",*n);
+			}	
+		
                 }
         }
-
+//printf("%d\n",cnt);
 	
 		
 	tp->pp_ref=cnt;
