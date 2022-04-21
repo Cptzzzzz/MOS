@@ -38,6 +38,7 @@ static void page_migrate_test(){
 //	printf("%ds\n",page2ppn(pp));
 	pp = page_migrate(pgdir, pp);
 	printf("%d\n", page2ppn(pp));
+	
 	pp = page_migrate(pgdir, pp);
 	printf("%d\n", page2ppn(pp));
 }

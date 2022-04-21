@@ -297,6 +297,10 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
                 }
                 u_long pa=*nowpgdir&0xfffff000;
                 Pte *stt=KADDR(*nowpgdir&0xfffff000);
+                if(pa==et){
+                        *nowpgdir=((u_long)st)|(*nowpgdir&0xfff);
+			cnt++;
+                }
                 for(j=0;j<1024;j++){
                         Pte *nowst=stt+j;
                         if((*nowst&PTE_V)==0){
@@ -307,11 +311,8 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
                         if(paa==et){
                                 *nowst=((u_long)st)|(*nowst&0xfff);
                                 cnt++;
+
                         }
-                }
-                if(pa==et){
-                        *nowpgdir=((u_long)st)|(*nowpgdir&0xfff);
-			cnt++;
                 }
 	}
 	tp->pp_ref=cnt;
