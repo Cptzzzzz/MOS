@@ -320,15 +320,33 @@ struct Page* page_migrate(Pde *pgdir,struct Page *pp)
 	}
 	int i,j,cnt=0;
 	Pde *nowpgdir;
-	int loca[501];
+	for(i=0;i<1024;i++){
+                nowpgdir=pgdir+i;
+                if((*nowpgdir & PTE_V)==0){
+                        continue;
+                }
+                u_long pa=*nowpgdir&0xfffff000;
+                if(pa==et){
+                        *nowpgdir=((u_long)st)+(*nowpgdir&0xfff);
+                        cnt++;
+                }
+                Pte *st=KADDR(*nowpgdir&0xfffff000);
+                int j;
+                for(j=0;j<1024;j++){
+                        Pte *nowst=st+j;
+                        if((*nowst&PTE_V)==0){
+                                continue;
+                        }
+                        pa=*nowst&0xfffff000;
+                        if(pa==et){
+                                *nowst=((u_long)st)+(*nowst&0xfff);
+                                cnt++;
+                        }
+                }
+        }
 
-
-	int num=inverted_page_lookup(pgdir,pp,loca);
 	
-	for(i=0;i<num;i++){
-		Pde *now=pgdir+loca[i];
-		*now=(*now&0xfff)|((u_long)st);
-	}
+		
 	tp->pp_ref=cnt;
 	pp->pp_ref=0;
 	//if(cnt==0){
