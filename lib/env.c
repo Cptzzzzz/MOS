@@ -168,7 +168,7 @@ env_setup_vm(struct Env *e)
     /* Step 1: Allocate a page for the page directory
      *   using a function you completed in the lab2 and add its pp_ref.
      *   pgdir is the page directory of Env e, assign value for it. */
-    if ( page_alloc(&p)!=0 ) {
+    if ( (r=page_alloc(&p))!=0 ) {
         panic("env_setup_vm - page alloc error\n");
         return r;
     }
@@ -194,7 +194,7 @@ env_setup_vm(struct Env *e)
     e->env_cr3=PADDR(pgdir);
     e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V | PTE_R;
     /* UVPT maps the env's own page table, with read-only permission.*/
-    e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V;
+    e->env_pgdir[PDX(VPT)]  = e->env_cr3;
     return 0;
 }
 
@@ -225,7 +225,10 @@ env_alloc(struct Env **new, u_int parent_id)
     struct Env *e;
 
     /* Step 1: Get a new Env from env_free_list*/
-    if(LIST_EMPTY(&env_free_list)) return *new=NULL,-E_NO_FREE_ENV;
+    if(LIST_EMPTY(&env_free_list)) {
+        *new=NULL;
+        return -E_NO_FREE_ENV;
+    }
     e=LIST_FIRST(&env_free_list);
 
     /* Step 2: Call a certain function (has been completed just now) to init kernel memory layout for this new Env.
@@ -245,6 +248,7 @@ env_alloc(struct Env **new, u_int parent_id)
     /* Step 5: Remove the new Env from env_free_list. */
     LIST_REMOVE(e,env_link);
     *new =e;
+    return 0;
 }
 
 /* Overview:
