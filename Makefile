@@ -27,7 +27,8 @@ all: $(modules) vmlinux
 
 vmlinux: $(modules)
 	$(LD) -o $(vmlinux_elf) -N -T $(link_script) $(objects)
-
+test: all
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 gxemul/vmlinux
 $(modules):
 	$(MAKE) --directory=$@
 
