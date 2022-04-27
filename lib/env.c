@@ -92,8 +92,11 @@ int envid2env(u_int envid, struct Env **penv, int checkperm)
     struct Env *e;
     /* Hint: If envid is zero, return curenv.*/
     /* Step 1: Assign value to e using envid. */
-
-
+    if(envid==0){
+        *penv=curenv;
+        return 0;
+    }
+    e=&envs[ENVX(envid)];
 
     if (e->env_status == ENV_FREE || e->env_id != envid) {
         *penv = 0;
@@ -106,6 +109,10 @@ int envid2env(u_int envid, struct Env **penv, int checkperm)
      *    must be either curenv or an immediate child of curenv.
      *  If not, error! */
     /*  Step 2: Make a check according to checkperm. */
+    if(checkperm && e!=curenv && e->env_parent_id!=curenv->env_id){
+        *penv=0;
+        return -E_BAD_ENV;
+    }
 
 
 
@@ -128,14 +135,17 @@ env_init(void)
 {
     int i;
     /* Step 1: Initialize env_free_list. */
-
+    LIST_INIT(&env_free_list);
 
     /* Step 2: Traverse the elements of 'envs' array,
      *   set their status as free and insert them into the env_free_list.
      * Choose the correct loop order to finish the insertion.
      * Make sure, after the insertion, the order of envs in the list
      *   should be the same as that in the envs array. */
-
+    for(i=NENV-1;i>=0;i--){
+        envs[i].env_status=ENV_FREE;
+        LIST_INSERT_HEAD(&env_free_list,envs+i,env_link);
+    }
 
 }
 
@@ -158,29 +168,31 @@ env_setup_vm(struct Env *e)
     /* Step 1: Allocate a page for the page directory
      *   using a function you completed in the lab2 and add its pp_ref.
      *   pgdir is the page directory of Env e, assign value for it. */
-    if (      ) {
+    if ( page_alloc(&p)!=0 ) {
         panic("env_setup_vm - page alloc error\n");
         return r;
     }
-
-
+    p->pp_ref++;
+    pgdir=(Pde*)page2kva(p);
 
     /* Step 2: Zero pgdir's field before UTOP. */
-
-
-
-
+    for(i=0;i<PDX(UTOP);i++)pgdir[i]=0;
 
     /* Step 3: Copy kernel's boot_pgdir to pgdir. */
-
+    for(i=PDX(UTOP);i<PTE2PT;i++){
+        if(i!=PDX(UVPT)){
+            pgdir[i]=boot_pgdir[i];
+        }
+    }
     /* Hint:
      *  The VA space of all envs is identical above UTOP
      *  (except at UVPT, which we've set below).
      *  See ./include/mmu.h for layout.
      *  Can you use boot_pgdir as a template?
      */
-
-
+    e->env_pgdir=pgdir;
+    e->env_cr3=PADDR(pgdir);
+    e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V | PTE_R;
     /* UVPT maps the env's own page table, with read-only permission.*/
     e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V;
     return 0;
@@ -213,22 +225,26 @@ env_alloc(struct Env **new, u_int parent_id)
     struct Env *e;
 
     /* Step 1: Get a new Env from env_free_list*/
-
+    if(LIST_EMPTY(&env_free_list)) return *new=NULL,-E_NO_FREE_ENV;
+    e=LIST_FIRST(&env_free_list);
 
     /* Step 2: Call a certain function (has been completed just now) to init kernel memory layout for this new Env.
      *The function mainly maps the kernel address to this new Env address. */
-
+    env_setup_vm(e);
 
     /* Step 3: Initialize every field of new Env with appropriate values.*/
-
+    e->env_id=mkenvid(e);
+    e->env_parent_id=parent_id;
+    e->env_status=ENV_RUNNABLE;
+    e->env_runs=0;
 
     /* Step 4: Focus on initializing the sp register and cp0_status of env_tf field, located at this new Env. */
     e->env_tf.cp0_status = 0x10001004;
-
-
+    e->env_tf.regs[29]=USTACKTOP;
+    
     /* Step 5: Remove the new Env from env_free_list. */
-
-
+    LIST_REMOVE(e,env_link);
+    *new =e;
 }
 
 /* Overview:
