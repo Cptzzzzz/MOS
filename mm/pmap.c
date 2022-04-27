@@ -204,6 +204,7 @@ void page_init(void)
 		if(page2kva(pages+i)<freemem)
 			pages[i].pp_ref=1;
 		else{
+			if(page2kva(pages+i)<=TIMESTACK&&TIMESTACK<=page2kva(pages+i)+BY2PG) continue;
 			pages[i].pp_ref=0;
 			LIST_INSERT_HEAD(&page_free_list,pages+i,pp_link);
 		}

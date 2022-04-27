@@ -273,19 +273,52 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
 {
     struct Env *env = (struct Env *)user_data;
     struct Page *p = NULL;
-    u_long i;
+    u_long i=0;
     int r;
     u_long offset = va - ROUNDDOWN(va, BY2PG);
-
+    int size;
+    if(offset){
+        p=page_lookup(env->env_pgdir,va,NULL);
+        if(p==0){
+            r=page_alloc(&p);
+            if(r!=0)return r;
+            page_insert(env->env_pgdir,p,va,PTE_R);
+        }
+        size=MIN(bin_size,BY2PG-offset);
+        bcopy((void*)bin,(void*)(page2kva(p)+offset),size);
+        i+=size;
+    }
     /* Step 1: load all content of bin into memory. */
-    for (i = 0; i < bin_size; i += BY2PG) {
+    for (; i < bin_size;) {
         /* Hint: You should alloc a new page. */
+        size=MIN(BY2PG,bin_size-i);
+        r=page_alloc(&p);
+        if(r!=0)return r;
+        page_insert(env->env_pgdir,p,va+i,PTE_R);
+        bcopy((void*)bin+i,(void*)(page2kva(p)),size);
+        i+=size;  
     }
     /* Step 2: alloc pages to reach `sgsize` when `bin_size` < `sgsize`.
      * hint: variable `i` has the value of `bin_size` now! */
+    offset=va+i-ROUNDDOWN(va+i,BY2PG);
+    if(offset){
+        p=page_lookup(env->env_pgdir,va+i,NULL);
+        if(p==0){
+            r=page_alloc(&p);
+            if(r!=0)return r;
+            page_insert(env->env_pgdir,p,va+i,PTE_R);
+        }
+        size=MIN(sgsize-i,BY2PG-offset);
+        bzero((void*)(page2kva(p)+offset),size);
+        i+=size;
+    }
     while (i < sgsize) {
-
-
+        size=MIN(BY2PG,sgsize-i);
+        r=page_alloc(&p);
+        if(r!=0) return r;
+        page_insert(env->env_pgdir,p,va+i,PTE_R);
+        bzero((void*)page2kva(p),size);
+        i+=size;
     }
     return 0;
 }
@@ -317,11 +350,14 @@ load_icode(struct Env *e, u_char *binary, u_int size)
     u_long perm;
 
     /* Step 1: alloc a page. */
-
+    r=page_alloc(&p);
+    if(r!=0)return;
+    perm=PTE_V|PTE_R;
+    page_insert(e->env_pgdir,p,USTACKTOP-BY2PG,perm);
 
     /* Step 2: Use appropriate perm to set initial stack for new Env. */
     /* Hint: Should the user-stack be writable? */
-
+    load_elf(binary,size,&entry_point,(void*)e,load_icode_mapper);
 
     /* Step 3: load the binary using elf loader. */
 
@@ -345,12 +381,13 @@ env_create_priority(u_char *binary, int size, int priority)
 {
     struct Env *e;
     /* Step 1: Use env_alloc to alloc a new env. */
-
+    if(env_alloc(&e,0)) return;
     /* Step 2: assign priority to the new env. */
-
+    e->env_pri=priority;
     /* Step 3: Use load_icode() to load the named elf binary,
        and insert it into env_sched_list using LIST_INSERT_HEAD. */
-
+    load_icode(e,binary,size);
+    LIST_INSERT_HEAD(&env_sched_list[0] , e , env_sched_link);
 }
 /* Overview:
  * Allocate a new env with default priority value.
@@ -363,7 +400,7 @@ void
 env_create(u_char *binary, int size)
 {
      /* Step 1: Use env_create_priority to alloc a new env with priority 1 */
-
+    env_create_priority(binary,size,1);
 }
 
 /* Overview:
@@ -452,13 +489,19 @@ env_run(struct Env *e)
     /* Hint: if there is an environment running, 
      *   you should switch the context and save the registers. 
      *   You can imitate env_destroy() 's behaviors.*/
-
+    if(curenv){
+        struct Trapframe *old;
+        old=(struct Trapframe*)(TIMESTACK - sizeof(struct Trapframe));
+        bcopy(old,&(curenv->env_tf),sizeof(struct Trapframe));
+        curenv->env_tf.pc=curenv->env_tf.cp0_epc;
+    }
 
     /* Step 2: Set 'curenv' to the new environment. */
-
+    curenv=e;
+    curenv->env_runs++;
 
     /* Step 3: Use lcontext() to switch to its address space. */
-
+    lcontext((u_int)(curenv->env_pgdir));
 
     /* Step 4: Use env_pop_tf() to restore the environment's
      *   environment   registers and return to user mode.
@@ -466,7 +509,7 @@ env_run(struct Env *e)
      * Hint: You should use GET_ENV_ASID there. Think why?
      *   (read <see mips run linux>, page 135-144)
      */
-
+    env_pop_tf(&(curenv->env_tf),GET_ENV_ASID(curenv->env_id));
 }
 
 void env_check()
