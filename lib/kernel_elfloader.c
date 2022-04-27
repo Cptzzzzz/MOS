@@ -74,6 +74,7 @@ int load_elf(u_char *binary, int size, u_long *entry_point, void *user_data,
 	/* Your task here!  */
         /* Real map all section at correct virtual address.Return < 0 if error. */
         /* Hint: Call the callback function you have achieved before. */
+                        // printf("sgsize:%x bin_size%x \n",phdr->p_memsz,phdr->p_filesz);
                         r=map(phdr->p_vaddr,
                         phdr->p_memsz,
                         binary+(phdr->p_offset),
