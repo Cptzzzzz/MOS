@@ -24,7 +24,7 @@ nop
 	tlbwi
 	// insert tlbp or tlbwi
 NOFOUND:
-
+ 
 	mtc0	k1,CP0_ENTRYHI
 	
 	j	ra
