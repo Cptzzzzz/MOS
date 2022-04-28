@@ -20,7 +20,87 @@ extern char *KERNEL_SP;
 
 static u_int asid_bitmap[2] = {0}; // 64
 
+/* part 1
+在今天的实验里我们要求你实现一个简易的 fork 函数（并不包括实际load代码段），通过给定的原始进程块(输入参数struct Env *e)生成一个新的进程控制块，并返回新进程控制块的env_id。同学们需要在 lib/env.c 和 include/env.h 中分别定义和声明 fork 函数，函数接口如下：
+u_int fork(struct Env *e);
+要求如下：
+1. 从 env_free_list 中从头申请一个新的进程控制块
+2. 新进程控制块的 env_status、env_pgdir、env_cr3、env_pri和原进程控制块保持一致。
+3. 为新进程控制块生成对应的 env_id
+4. env_parent_id 的值为原进程控制块的 env_id
+5. 返回值为新进程的env_id*/
+/* 在Env结构体中增加字段  
+int son_num;   u_int son_id_arr[1024];
+分别代表总儿子数和存儿子的数组*/
+/*
+u_int fork(struct Env *e){
+    struct Env *new_e;
+    env_alloc(&new_e,e->env_id);
+    new_e->env_status=e->env_status;
+    new_e->env_pgdir=e->env_pgdir;
+    new_e->env_cr3=e->env_cr3;
+    new_e->env_pri=e->env_pri;
 
+    int son_num = e->son_num;
+    e->son_id_arr[son_num] = new_e->env_id;
+    e->son_num += 1;
+
+    return new_e->env_id;
+    // new_e->env_parent_id=e->env_id;
+    // e->env_id=mkenvid(new_e);
+}*/
+
+/*PART2
+void lab3_output(u_int env_id);
+本部分要求修改struct Env，在进程控制块中增加字段（具体增加哪些内容请自行组织）组织起进程间的父子、兄弟关系，并按照要求在 lib/env.c 和 include/env.h 中分别定义和声明 lab3_output 函数输出相关内容，详情如下：
+函数lab3_output的定义如下：
+`void lab3_output(u_int env_id);`
+要求输出的内容有其父进程的env_id、其第一个子进程的env_id、其前一个兄弟进程的env_id以及其后一个兄弟进程的env_id
+所有的子进程都由fork创建，两个进程如果是兄弟，它们的父进程一定相同。
+以某进程第一个子进程是指，由该进程作为父进程使用fork创建的第一个子进程。
+兄弟进程间的顺序即为这些进程被创建的顺序，前一个兄弟进程为较早被创建的进程
+需要在PART1的fork函数中进行对添加字段的修改
+输出格式为：printf("%08x %08x %08x %08x\n", a, b, c, d);
+其中a, b, c, d分别为父进程的env_id、第一个子进程的env_id、前一个兄弟进程的env_id以及后一个兄弟进程的env_id
+如果a, b, c, d中有不存在的参数，则输出0*/
+/*
+void lab3_output(u_int env_id)
+{
+    struct Env *e;
+    envid2env(env_id,&e,0);
+    u_int a=0,b=0,c=0,d=0;
+    a=e->env_parent_id;
+    b=e->son_id_arr[0];
+    if(a!=0){
+        struct Env *father;
+        envid2env(a,&father,0);
+        int index=0;
+        for(;index<father->son_num;index++){
+            if(env_id==father->son_id_arr[index])break;
+        }
+        if(index>0)c=father->son_id_arr[index-1];
+        if(index+1<father->son_num) d=father->son_id_arr[index+1];
+    }
+    printf("%08x %08x %08x %08x\n",a,b,c,d);
+}*/
+/*PART3
+在PART2的基础上，在 lib/env.c 和 include/env.h 
+中分别定义和声明 lab3_get_sum 函数，函数的功能为：
+给定一个进程的env_id，返回以该进程为根节点的子进程
+树中进程的数目（包括它本身），具体接口如下：
+int lab3_get_sum(u_int env_id);*/
+/*
+int lab3_get_sum(u_int env_id)
+{
+    struct Env *e;
+    envid2env(env_id,&e,0);
+    int res=1;
+    int i;
+    for(i=0;i<e->son_num;i++){
+        res+=lab3_get_sum(e->son_id_arr[i]);
+    }
+    return res;
+}*/
 /* Overview:
  *  This function is to allocate an unused ASID
  *
