@@ -330,6 +330,26 @@ env_alloc(struct Env **new, u_int parent_id)
     *new =e;
     return 0;
 }
+u_int arr1[10005];
+u_int arr2[10005];
+int front1=0,front2=0;
+int rear1=0,rear2=0;
+
+int check_wait(struct Env *e)
+{
+	int i;
+	if(e->state1){
+		for(i=rear1;i<front1;i++){
+			if(arr1[i]==e->env_id)return 1;
+		}	
+	}
+	if(e->state2){
+		for(i=rear2;i<front2;i++){
+			if(arr2[i]==e->env_id)return 1;
+		}
+	}
+	return 0;
+}
 int resource[5];
 void S_init(int s,int num)
 {
@@ -337,7 +357,10 @@ void S_init(int s,int num)
 }
 int P(struct Env*e,int s)
 {
+	if(check_wait)return -1;
+	if(s==1){
 
+	}
 }
 int V(struct Env*e,int s)
 {
@@ -345,11 +368,19 @@ int V(struct Env*e,int s)
 }
 int get_status(struct Env *e)
 {
-
+	if(check_wait(e))return 1;
+	if(e->source1>0||e->source2>0)return 2;
+	return 3;	
 }
 int my_env_create()
 {
-
+	struct Env *e;
+	if(env_alloc(&e,0)!=0)return -1;
+	e->source1=0;
+	e->source2=0;
+	e->state1=0;
+	e->state2=0;
+	return e->env_id;
 }
 /* Overview:
  *   This is a call back function for kernel's elf loader.
