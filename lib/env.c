@@ -404,7 +404,7 @@ int V(struct Env*e,int s)
 			u_int id=arr2[rear2];
 			envid2env(id,&temp,0);
 			temp->source2++;
-			resouece[s]--;
+			resource[s]--;
 			rear2++;
 		}
 	}
