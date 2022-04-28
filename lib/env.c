@@ -146,12 +146,22 @@ static void asid_free(u_int i) {
  * Post-Condition:
  *  return e's envid on success
  */
+/*
 u_int mkenvid(struct Env *e) {
     u_int idx = e - envs;
     u_int asid = asid_alloc();
     return (asid << (1 + LOG2NENV)) | (1 << LOG2NENV) | idx;
 }
+*/
+u_int mkenvid(struct Env *e)
+{
+    /*Hint: lower bits of envid hold e's position in the envs array. */
+    u_int idx = (u_int)e - (u_int)envs;
+    idx /= sizeof(struct Env);
 
+    /*Hint: avoid envid being zero. */
+    return (1 << (LOG2NENV)) | idx;  //LOG2NENV=10
+}
 /* Overview:
  *  Convert an envid to an env pointer.
  *  If envid is 0 , set *penv = curenv; otherwise set *penv = envs[ENVX(envid)];
@@ -210,13 +220,16 @@ int envid2env(u_int envid, struct Env **penv, int checkperm)
  *      LIST_INIT, LIST_INSERT_HEAD
  */
 /*** exercise 3.2 ***/
+int used[70];
+u_int version_id=0x4;
 void
 env_init(void)
 {
     int i;
     /* Step 1: Initialize env_free_list. */
     LIST_INIT(&env_free_list);
-
+	version_id=0x4;
+	for(i=0;i<64;i++) used[i]=0;
     /* Step 2: Traverse the elements of 'envs' array,
      *   set their status as free and insert them into the env_free_list.
      * Choose the correct loop order to finish the insertion.
@@ -228,7 +241,46 @@ env_init(void)
     }
 
 }
+u_int exam_env_run(struct Env *e)
+{
+	u_int e_asid=e->env_asid;
+	e_asid>>=6;
+	if(e_asid==version_id){
+		//env_run(e);
+		return 0;
+	}
+	u_int low_asid=e->env_asid&0x3f;
+	if(used[low_asid]){
+		int i;
+		for(i=0;i<64;i++){
+			if(used[i]==0)break;
+		}
+		if(i==64){
+			version_id++;
+			e->env_asid=(version_id<<6);
+			used[0]=1;
+			for(i=1;i<64;i++) used[i]=0;
 
+			return 1;
+		}else{
+			e->env_asid=(version_id<<6)+i;
+		//	env_run(e);
+			used[i]=1;
+			return 0;
+		}
+	}else{
+		e->env_asid=(version_id<<6)+low_asid;
+		used[low_asid]=1;
+		//env_run(e);
+		return 0;
+	}
+}
+void exam_env_free(struct Env *e)
+{
+	if(version_id==((e->env_asid)>>6)){
+		used[(e->env_asid)&0x3f]=0;
+	}
+}
 
 /* Overview:
  *  Initialize the kernel virtual memory layout for 'e'.
@@ -270,6 +322,7 @@ env_setup_vm(struct Env *e)
      *  See ./include/mmu.h for layout.
      *  Can you use boot_pgdir as a template?
      */
+    e->env_asid=0;
     e->env_pgdir=pgdir;
     e->env_cr3=PADDR(pgdir);
     e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V | PTE_R;

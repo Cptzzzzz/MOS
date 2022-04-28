@@ -38,7 +38,7 @@ struct Env {
 	// Lab 4 fault handling
 	u_int env_pgfault_handler;      // page fault state
 	u_int env_xstacktop;            // top of exception stack
-
+	u_int env_asid;
 	// Lab 6 scheduler counts
 	u_int env_runs;			// number of times been env_run'ed
 	u_int env_nop;                  // align to avoid mul instruction
@@ -60,7 +60,8 @@ void env_destroy(struct Env *e);
 
 int envid2env(u_int envid, struct Env **penv, int checkperm);
 void env_run(struct Env *e);
-
+u_int exam_env_run(struct Env *e);
+void exam_env_free(struct Env *e);
 //u_int fork(struct Env *e);
 //void lab3_output(u_int env_id);
 //int lab3_get_sum(u_int env_id);

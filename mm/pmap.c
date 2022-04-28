@@ -209,7 +209,7 @@ void page_init(void)
 			LIST_INSERT_HEAD(&page_free_list,pages+i,pp_link);
 		}
 	}
-
+	
 	/* Step 4: Mark the other memory as free. */
 }
 
