@@ -382,9 +382,9 @@ int P(struct Env*e,int s)
 int V(struct Env*e,int s)
 {
 	if(check_wait(e))return -1;
+	resource[s]++;
 	if(s==1){
-		if(e->source1>0){e->source1--;
-	resource[s]++;}
+		if(e->source1>0){e->source1--;}
 		if(e->source1==0)e->state1=0;
 		if(front1>rear1){
 			struct Env *temp;
@@ -397,7 +397,6 @@ int V(struct Env*e,int s)
 	}else{
 		
 		if(e->source2>0){e->source2--;
-	resource[s]++;
 		}
 		if(e->source2==0)e->state2=0;
 		if(front2>rear2){
