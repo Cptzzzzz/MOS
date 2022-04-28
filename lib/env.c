@@ -330,8 +330,8 @@ env_alloc(struct Env **new, u_int parent_id)
     *new =e;
     return 0;
 }
-u_int arr1[100005];
-u_int arr2[100005];
+u_int arr1[1000005];
+u_int arr2[1000005];
 int front1=0,front2=0;
 int rear1=0,rear2=0;
 
