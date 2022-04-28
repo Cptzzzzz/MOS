@@ -390,7 +390,7 @@ int V(struct Env*e,int s)
 			struct Env *temp;
 			u_int id=arr1[rear1];
 			envid2env(id,&temp,0);
-			P(temp,1);
+			temp->source1++;
 			rear1++;
 		}
 	}else{
@@ -401,7 +401,7 @@ int V(struct Env*e,int s)
 			struct Env *temp;
 			u_int id=arr2[rear2];
 			envid2env(id,&temp,0);
-			P(temp,2);
+			temp->source2++;
 			rear2++;
 		}
 	}
