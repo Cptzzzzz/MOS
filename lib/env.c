@@ -330,7 +330,27 @@ env_alloc(struct Env **new, u_int parent_id)
     *new =e;
     return 0;
 }
+int resource[5];
+void S_init(int s,int num)
+{
+	resource[s]=num;
+}
+int P(struct Env*e,int s)
+{
 
+}
+int V(struct Env*e,int s)
+{
+
+}
+int get_status(struct Env *e)
+{
+
+}
+int my_env_create()
+{
+
+}
 /* Overview:
  *   This is a call back function for kernel's elf loader.
  * Elf loader extracts each segment of the given binary image.
