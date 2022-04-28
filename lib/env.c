@@ -357,14 +357,55 @@ void S_init(int s,int num)
 }
 int P(struct Env*e,int s)
 {
-	if(check_wait)return -1;
+	if(check_wait(e))return -1;
 	if(s==1){
-
+		if(resource[s]){
+			resource[s]--;
+			e->state1=1;
+			e->source1++;
+		}else{
+			e->state1=1;
+			arr1[front1++]=e->env_id;
+		}
+	}else{
+		if(resource[s]){
+			resource[s]--;
+			e->state2=1;
+			e->source2++;
+		}else{   
+			e->state2=1;
+			arr2[front2++]=e->env_id;
+		}
 	}
+	return 0;
 }
 int V(struct Env*e,int s)
 {
-
+	if(check_wait(e))return -1;
+	resource[s]++;
+	if(s==1){
+		if(e->source1>0)e->source1--;
+		if(e->source1==0)e->state1=0;
+		if(front1>rear1){
+			struct Env *temp;
+			u_int id=arr1[rear1];
+			envid2env(id,temp,0);
+			P(temp,1);
+			rear1++;
+		}
+	}else{
+		
+		if(e->source2>0)e->source2--;
+		if(e->source2==0)e->state2=0;
+		if(front2>rear2){
+			struct Env *temp;
+			u_int id=arr2[rear2];
+			envid2env(id,temp,0);
+			P(temp,2);
+			rear1++;
+		}
+	}
+	return 0;
 }
 int get_status(struct Env *e)
 {
