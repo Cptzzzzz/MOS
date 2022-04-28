@@ -397,7 +397,7 @@ env_alloc(struct Env **new, u_int parent_id)
  *   bin can't be NULL.
  *   Hint: va may be NOT aligned with 4KB.
  *
- * Post-Condition:
+ *  Post-Condition:
  *   return 0 on success, otherwise < 0.
  */
 /*** exercise 3.6 ***/
