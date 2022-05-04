@@ -5,29 +5,6 @@
 #include <kclock.h>
 #include <trap.h>
 
-void self_check() {
-	int i, j;
-	struct Env* root;
-	env_alloc(&root, 0);
-	printf(">>> ROOT ALLOC OK: %x\n", root->env_id);
-	assert(lab3_get_sum(root) == 1);
-	for (i = 0;i < 4;i++) {
-	u_int son = fork(root);
-	printf(">>> SON FORK OK: %x\n", son);
-	assert(lab3_get_sum(son) == 1);
-	for (j = 0;j < 2;j++) {
-		struct Env* subsonparent;
-		assert(envid2env(son, &subsonparent, 0) == 0);
-		int subson = fork(subsonparent);
-		printf(">>> SUB SON FORK OK: %x\n", subson);
-	}
-		assert(lab3_get_sum(son) == 3);
-		lab3_output(son);
-	}
-	printf(">>> ROOT SUM: %d\n", lab3_get_sum(root));
-	assert(lab3_get_sum(root->env_id) == 13);
-	printf("【EXAM PASSED】");
-}
 void mips_init()
 {
 	printf("init.c:\tmips_init() is called\n");
@@ -48,7 +25,6 @@ void mips_init()
 	ENV_CREATE_PRIORITY(user_A, 2);
 	ENV_CREATE_PRIORITY(user_B, 1);
 
-	self_check();
 	// trap_init();
 	// kclock_init();
 	panic("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
