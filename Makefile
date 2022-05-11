@@ -23,6 +23,7 @@ objects		  := $(boot_dir)/start.o			  \
 
 .PHONY: all $(modules) clean
 
+
 all: $(modules) vmlinux
 
 vmlinux: $(modules)
