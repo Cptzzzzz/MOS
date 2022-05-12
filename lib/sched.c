@@ -34,10 +34,8 @@ void sched_yield(void)
     if(count<=0||curenv==NULL||curenv->env_status!=ENV_RUNNABLE){
         if(curenv!=NULL){
             nextpoint=next_index(point);
-            if((curenv->env_pri)%2==0){
-                
-
-                nextpoint=next_index(next_index(point));
+            if(((curenv->env_pri)%2)==0){
+                nextpoint=next_index(nextpoint);
             }
             LIST_INSERT_TAIL(&env_sched_list[nextpoint],curenv,env_sched_link);
         }
