@@ -12,30 +12,46 @@
  *  3. CANNOT use `return` statement!
  */
 /*** exercise 3.15 ***/
+int next_index(int x)
+{
+    return (x+1)%3;
+}
+int weight_point(int x)
+{
+    if(x==0)return 1;
+    if(x==1)return 2;
+    return 4;
+}
 void sched_yield(void)
 {
     static int count = 0; // remaining time slices of current env
     static int point = 0; // current env_sched_list index
     struct Env *e;
     count--;
-
+    int nextpoint;
     if(count<=0||curenv==NULL||curenv->env_status!=ENV_RUNNABLE){
         if(curenv!=NULL){
-           LIST_INSERT_TAIL(&env_sched_list[1-point],curenv,env_sched_link);
+            if(e->env_pri%2==1){
+                nextpoint=next_index(point);
+            }else{
+                nextpoint=next_index(next_index(point));
+            }
+            LIST_INSERT_TAIL(&env_sched_list[nextpoint],curenv,env_sched_link);
         }
         if(LIST_EMPTY(&env_sched_list[point])){
-            point=1-point;
+            point=next_index(point);
         }
         LIST_FOREACH(e,&env_sched_list[point],env_sched_link){
             if(e->env_status==ENV_RUNNABLE&&e->env_pri!=0){
                 LIST_REMOVE(e,env_sched_link);
-                count=e->env_pri;
+                count=e->env_pri*weight_point(point);
                 env_run(e);
                 break;
             }
         }
     } 
     env_run(curenv);  
+    printf("\n");
     /*
     count--;
 
