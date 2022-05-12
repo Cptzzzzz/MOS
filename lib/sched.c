@@ -24,6 +24,8 @@ int weight_point(int x)
 }
 void sched_yield(void)
 {
+    // printf("hh\n");
+    printf("\n");
     static int count = 0; // remaining time slices of current env
     static int point = 0; // current env_sched_list index
     struct Env *e;
@@ -31,7 +33,7 @@ void sched_yield(void)
     int nextpoint;
     if(count<=0||curenv==NULL||curenv->env_status!=ENV_RUNNABLE){
         if(curenv!=NULL){
-            if(e->env_pri%2==1){
+            if((curenv->env_pri)%2==1){
                 nextpoint=next_index(point);
             }else{
                 nextpoint=next_index(next_index(point));
@@ -74,7 +76,7 @@ void sched_yield(void)
         }
     } 
     env_run(curenv);  
-    printf("\n");
+    
     /*
     count--;
 
