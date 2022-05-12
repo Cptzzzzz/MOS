@@ -31,7 +31,7 @@ void sched_yield(void)
     struct Env *e;
     count--;
     int nextpoint;
-    if(count<=0||curenv==NULL||curenv->env_status!=ENV_RUNNABLE){
+    if(count<=0||curenv==NULL){
         if(curenv!=NULL){
             nextpoint=next_index(point);
             if(((curenv->env_pri)%2)==0){
@@ -50,8 +50,7 @@ void sched_yield(void)
                     break;
                 }
             }
-            if(state==0)
-            point=next_index(point);
+            if(state==0) point=next_index(point);
             else break;
         }
     } 
