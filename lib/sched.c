@@ -54,7 +54,7 @@ void sched_yield(void)
             point=next_index(point);
             else break;
         }
-    } else
+    } 
     env_run(curenv);  
     
     /*
