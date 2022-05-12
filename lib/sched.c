@@ -27,7 +27,7 @@ void sched_yield(void)
             point=1-point;
         }
         LIST_FOREACH(e,&env_sched_list[point],env_sched_link){
-            if(e->env_status==ENV_RUNNABLE){
+            if(e->env_status==ENV_RUNNABLE&&e->env_pri!=0){
                 LIST_REMOVE(e,env_sched_link);
                 count=e->env_pri;
                 env_run(e);
