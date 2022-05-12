@@ -51,6 +51,7 @@ void sched_yield(void)
                     break;
                 }
             }
+            if(state==0)
             point=next_index(point);
         }
     } 
