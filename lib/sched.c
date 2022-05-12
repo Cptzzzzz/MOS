@@ -33,15 +33,14 @@ void sched_yield(void)
     int nextpoint;
     if(count<=0||curenv==NULL||curenv->env_status!=ENV_RUNNABLE){
         if(curenv!=NULL){
-            if((curenv->env_pri)%2==1){
+            nextpoint=next_index(point);
+            if((curenv->env_pri)%2==0){
                 nextpoint=next_index(point);
-            }else{
-                nextpoint=next_index(next_index(point));
             }
             LIST_INSERT_TAIL(&env_sched_list[nextpoint],curenv,env_sched_link);
         }
         int state=0;
-        while(state==0){
+        while(1){
             LIST_FOREACH(e,&env_sched_list[point],env_sched_link){
                 if((e->env_status==ENV_RUNNABLE)){
                     LIST_REMOVE(e,env_sched_link);
@@ -53,8 +52,9 @@ void sched_yield(void)
             }
             if(state==0)
             point=next_index(point);
+            else break;
         }
-    } 
+    } else
     env_run(curenv);  
     
     /*
