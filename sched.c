@@ -19,6 +19,12 @@ void FCFS (int number_of_jobs,const int job_submitted_time [],const int job_requ
 int heap[2005];
 int heapl=0;
 int arr1[2005],arr2[2005];
+int greater(int a,int b)
+{
+    if(arr2[b]<arr2[a])return 1;
+    if(arr2[b]==arr2[a]&&b<a)return 1;
+    return 0;
+}
 int getn()
 {
     int res=heap[1];
@@ -26,8 +32,8 @@ int getn()
     heapl--;
     int go=1,nextt=1;
     while(1){
-        if(2*go<=heapl&&arr2[heap[go]]>arr2[heap[2*go]])nextt=2*go;
-        if(2*go+1<=heapl&&arr2[heap[nextt]]>arr2[heap[2*go+1]])nextt=2*go+1;
+        if(2*go<=heapl&&greater(heap[go],heap[2*go]))nextt=2*go;
+        if(2*go+1<=heapl&&greater(heap[nextt],heap[2*go+1]))nextt=2*go+1;
         if(nextt==go)break;
         heap[go]^=heap[nextt]^=heap[go]^=heap[nextt];
         go=nextt;
@@ -39,7 +45,7 @@ int addn(int now)
 {
     heap[++heapl]=now;
     int go=heapl;
-    while(go>1&&arr2[heap[go]]<arr2[heap[go/2]]){
+    while(go>1&&greater(heap[go/2],heap[go])){
         heap[go]^=heap[go/2]^=heap[go]^=heap[go/2];
         go>>=1;
     }
