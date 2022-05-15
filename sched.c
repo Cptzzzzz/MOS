@@ -52,10 +52,6 @@ void SJF (int number_of_jobs,const int job_submitted_time [],const int job_requi
         arr2[i]=job_required_time[i];
     }
     for(int i=0;i<number_of_jobs;i++){
-        if(job_submitted_time[i]<=s){
-            addn(i);
-            continue;
-        }
         while(job_submitted_time[i]>s){
             if(heapl==0){
                 s=job_submitted_time[i];
