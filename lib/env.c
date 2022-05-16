@@ -242,7 +242,7 @@ env_alloc(struct Env **new, u_int parent_id)
     e->env_runs=0;
 
     /* Step 4: Focus on initializing the sp register and cp0_status of env_tf field, located at this new Env. */
-    e->env_tf.cp0_status = 0x10001004;
+    e->env_tf.cp0_status = 0x1000100c;
     e->env_tf.regs[29]=USTACKTOP;
     
     /* Step 5: Remove the new Env from env_free_list. */
@@ -309,7 +309,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
             page_insert(env->env_pgdir,p,va+i,PTE_R);
         }
         size=MIN(sgsize-i,BY2PG-offset);
-        bzero((void*)(page2kva(p)+offset),size);
+        // bzero((void*)(page2kva(p)+offset),size);
         i+=size;
     }
     while (i < sgsize) {
@@ -317,7 +317,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
         r=page_alloc(&p);
         if(r!=0) return r;
         page_insert(env->env_pgdir,p,va+i,PTE_R);
-        bzero((void*)page2kva(p),size);
+        // bzero((void*)page2kva(p),size);
         i+=size;
     }
     return 0;
