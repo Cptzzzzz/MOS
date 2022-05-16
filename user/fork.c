@@ -82,9 +82,9 @@ void user_bzero(void *v, u_int n)
 static void
 pgfault(u_int va)
 {
-	u_int *tmp=UTOP-2*BY2PG;
-	u_long perm=(*vpt)[VPN(va)]&0xfff;
-	if((perm&PTE_COW)!=PTE_COW){
+	u_int *tmp=USTACKTOP;
+	u_long perm=((Pte *)(*vpt))[VPN(va)]&0xfff;
+	if((perm&PTE_COW)==0){
 		user_panic("pgfault err: COW not found");
 	}
 	perm-=PTE_COW;
