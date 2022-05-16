@@ -6,10 +6,10 @@
 
 
 /* These variables are set by mips_detect_memory() */
-u_long maxpa;            /* Maximum physical address */
-u_long npage;            /* Amount of memory(in pages) */
-u_long basemem;          /* Amount of base memory(in bytes) */
-u_long extmem;           /* Amount of extended memory(in bytes) */
+u_long maxpa=1<<26;            /* Maximum physical address */
+u_long npage=1<<14;            /* Amount of memory(in pages) */
+u_long basemem=1<<26;          /* Amount of base memory(in bytes) */
+u_long extmem=0;           /* Amount of extended memory(in bytes) */
 
 Pde *boot_pgdir;
 
@@ -27,10 +27,10 @@ void mips_detect_memory()
 {
 	/* Step 1: Initialize basemem.
 	 * (When use real computer, CMOS tells us how many kilobytes there are). */
-	maxpa=64*(1<<20);
-	basemem=maxpa;
-	npage=basemem/BY2PG;
-	extmem=0;
+	// maxpa=64*(1<<20);
+	// basemem=maxpa;
+	// npage=basemem/BY2PG;
+	// extmem=0;
 	// Step 2: Calculate corresponding npage value.
 
 	printf("Physical memory: %dK available, ", (int)(maxpa / 1024));
