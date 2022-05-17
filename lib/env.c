@@ -189,7 +189,7 @@ env_setup_vm(struct Env *e)
      *  (except at UVPT, which we've set below).
      *  See ./include/mmu.h for layout.
      *  Can you use boot_pgdir as a template?
-     */
+     */ 
     e->env_pgdir=pgdir;
     e->env_cr3=PADDR(pgdir);
     e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V | PTE_R;
