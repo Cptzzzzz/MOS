@@ -82,6 +82,11 @@ static void *alloc(u_int n, u_int align, int clear)
 
 /* Exercise 2.6 */
 /* Overview:
+   static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)，它返回
+   一级页表基地址 pgdir 对应的两级页表结构中，va 这个虚拟地址所在的二级页表项，如
+   果 create 不为 0 且对应的二级页表不存在则会使用 alloc 函数分配一页物理内存用于
+   存放。这里之所以使用 alloc 而不用 page_alloc 是因为这个函数是在内核启动过程中
+   使用的，此时还没有建立好物理内存管理机制。
    Get the page table entry for virtual address `va` in the given
    page directory `pgdir`.
    If the page table is not exist and the parameter `create` is set to 1,
@@ -119,6 +124,11 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
 
 /* Exercise 2.7 */
 /*Overview:
+void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int
+perm)，它的作用是将一级页表基地址 pgdir 对应的两级页表结构做区间地址映射，将
+虚拟地址区间 [va, va + size − 1] 映射到物理地址区间 [pa, pa + size − 1]，因为是按页映
+射，要求 size 必须是页面大小的整数倍。同时为相关页表项的权限为设置为 perm。这
+个函数调用了 boot_pgdir_walk，它也是在内核启动过程中使用的
   Map [va, va+size) of virtual address space to physical [pa, pa+size) in the page
   table rooted at pgdir.
   Use permission bits `perm | PTE_V` for the entries.
@@ -131,7 +141,7 @@ void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm)
 	Pte *pgtable_entry;
 	for(i=0,size=ROUND(size,BY2PG);i<size;i+=BY2PG){
 		pgtable_entry=boot_pgdir_walk(pgdir,va+i,1);
-		*pgtable_entry=(PTE_ADDR(pa)+i)|perm|PTE_V|PTE_R;
+		*pgtable_entry=(PTE_ADDR(pa)+i)|perm|PTE_V;
 	}
 	/* Step 1: Check if `size` is a multiple of BY2PG. */
     
