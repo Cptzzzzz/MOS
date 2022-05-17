@@ -179,7 +179,7 @@ env_setup_vm(struct Env *e)
     for(i=0;i<PDX(UTOP);i++)pgdir[i]=0;
 
     /* Step 3: Copy kernel's boot_pgdir to pgdir. */
-    for(i=PDX(UTOP);i<PDX(ULIM);i++){
+    for(i=PDX(UTOP);i<PDX(~0);i++){
         if(i!=PDX(UVPT)){
             pgdir[i]=boot_pgdir[i];
         }
