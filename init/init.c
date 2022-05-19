@@ -14,10 +14,13 @@ void mips_init() {
 
 	env_init();
 	// printf("haha\n");
-	ENV_CREATE(user_tltest);
+	// ENV_CREATE(user_tltest);
 	// ENV_CREATE(user_fktest);
 	// ENV_CREATE(user_pingpong);
-
+	int i;
+	for(i=0;i<10;i++){
+		ENV_CREATE(user_lktest);
+	}
 	trap_init();
 	kclock_init();
 
