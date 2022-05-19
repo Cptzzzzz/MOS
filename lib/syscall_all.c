@@ -16,7 +16,7 @@ extern struct Env *curenv;
  */
 void sys_putchar(int sysno, int c, int a2, int a3, int a4, int a5)
 {
-	printcharc((char) c);
+	printcharc((char) c); 
 	return ;
 }
 
