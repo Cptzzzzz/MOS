@@ -14,6 +14,8 @@ extern struct Env *env;
 void
 ipc_send(u_int whom, u_int val, u_int srcva, u_int perm)
 {
+	syscall_ipc_can_send(whom,val,srcva,perm);
+	return ;
 	int r;
 
 	while ((r = syscall_ipc_can_send(whom, val, srcva, perm)) == -E_IPC_NOT_RECV) {

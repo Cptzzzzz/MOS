@@ -352,13 +352,40 @@ void sys_panic(int sysno, char *msg)
  * ENV_NOT_RUNNABLE, giving up cpu.
  */
 /*** exercise 4.7 ***/
+static int heads[10005];
+
+static int envids[10005];
+static int values[10005];
+static int srcvas[10005];
+static int perms[10005];
+static int nextt[10005];
+static int totmessage=1;
+void addm(u_int a,u_int b,u_int c,u_int d,u_int e)
+{
+	++totmessage;
+	envids[totmessage]=b;
+	values[totmessage]=c;
+	srcvas[totmessage]=d;
+	perms[totmessage]=e;
+	nextt[totmessage]=heads[a];
+	heads[a]=totmessage;
+}
 void sys_ipc_recv(int sysno, u_int dstva)
 {
 	if(dstva>=UTOP)return;
-	curenv->env_ipc_recving=1;
-	curenv->env_ipc_dstva=dstva;
-	curenv->env_status=ENV_NOT_RUNNABLE;
-	sys_yield();
+	if(heads[curenv->env_id]==0){
+		curenv->env_ipc_recving=1;
+		return;
+	}
+	int t=heads[curenv->env_id];
+	curenv->env_ipc_from=envids[t];
+	curenv->env_ipc_value=values[t];
+	if(srcvas[t]!=0){
+		int r=sys_mem_map(sysno,envids[t],srcvas[t],curenv->env_id,dstva,perms[t]);
+		if(r!=0)return r;
+		curenv->env_ipc_perm=perms[t];
+	}
+	heads[curenv->env_id]=nextt[t];
 }
 
 /* Overview:
@@ -388,9 +415,14 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 	struct Page *p;
 	r=envid2env(envid,&e,0);
 	if(r<0)return r;
+	
 	if(e->env_ipc_recving==0){
-		return -E_IPC_NOT_RECV;
+		addm(envid,curenv->env_id,value,srcva,perm);
+		curenv->env_status=ENV_NOT_RUNNABLE;
+		// sys_yield();
+		return 0;
 	}
+
 	e->env_ipc_recving=0;
 	e->env_ipc_from=curenv->env_id;
 	e->env_ipc_value=value;
