@@ -381,10 +381,10 @@ void sys_ipc_recv(int sysno, u_int dstva)
 		return;
 	}
 	int t=heads[curenv->env_id];
-	// struct Env *e;
-	// int r=envid2env(envids[t],&e,0);
-	// if(r<0)return r;
-	// e->env_status=ENV_RUNNABLE;
+	struct Env *e;
+	int r=envid2env(envids[t],&e,0);
+	if(r<0)return r;
+	e->env_status=ENV_RUNNABLE;
 	curenv->env_ipc_from=envids[t];
 	curenv->env_ipc_value=values[t];
 	if(srcvas[t]!=0){
@@ -393,6 +393,7 @@ void sys_ipc_recv(int sysno, u_int dstva)
 		curenv->env_ipc_perm=perms[t];
 	}
 	heads[curenv->env_id]=nextt[t];
+	sys_yield();
 }
 
 /* Overview:
@@ -426,7 +427,7 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 	if(e->env_ipc_recving==0){
 		addm(envid,curenv->env_id,value,srcva,perm);
 		curenv->env_status=ENV_NOT_RUNNABLE;
-		// sys_yield();
+		sys_yield();
 		return 0;
 	}
 
