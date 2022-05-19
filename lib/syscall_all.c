@@ -381,10 +381,10 @@ void sys_ipc_recv(int sysno, u_int dstva)
 		return;
 	}
 	int t=heads[curenv->env_id];
-	struct Env *e;
-	int r=envid2env(envids[t],&e,0);
-	if(r<0)return r;
-	e->env_status=ENV_RUNNABLE;
+	// struct Env *e;
+	// int r=envid2env(envids[t],&e,0);
+	// if(r<0)return r;
+	// e->env_status=ENV_RUNNABLE;
 	curenv->env_ipc_from=envids[t];
 	curenv->env_ipc_value=values[t];
 	if(srcvas[t]!=0){
