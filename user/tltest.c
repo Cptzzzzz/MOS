@@ -8,3 +8,4 @@ void umain() {
     *(int *) KERNBASE = 0;
     writef("My mission completed!\n");
 }
+ 
