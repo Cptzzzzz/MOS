@@ -58,7 +58,7 @@ inline static int syscall_env_alloc(void)
 {
     return msyscall(SYS_env_alloc, 0, 0, 0, 0, 0);
 }
-
+int make_shared(void *va);
 int syscall_set_env_status(u_int envid, u_int status);
 int syscall_set_trapframe(u_int envid, struct Trapframe *tf);
 void syscall_panic(char *msg);
