@@ -185,12 +185,13 @@ int make_shared(void* va)
 	int v=(int)va;
 	if(v>=UTOP)return -1;
 	if(  ((*vpd)[v>>22]&PTE_V) && ((*vpt)[v>>12]&PTE_V) ){
-		if(((*vpt)[v>>12])&PTE_LIBRARY==0){
-			(*vpt)[v>>12]+=PTE_LIBRARY;
-		}
+		
 	}else{
 		if(syscall_mem_alloc(0,va,PTE_R|PTE_V|PTE_LIBRARY)) return -1;
 		
+	}
+	if(((*vpt)[v>>12])&PTE_LIBRARY==0){
+		(*vpt)[v>>12]+=PTE_LIBRARY;
 	}
 	return ((*vpt)[v>>12]>>12)<<12;
 }
