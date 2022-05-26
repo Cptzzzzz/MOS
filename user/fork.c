@@ -190,8 +190,8 @@ int make_shared(void* va)
 		if(syscall_mem_alloc(0,va,PTE_R|PTE_V|PTE_LIBRARY)) return -1;
 		
 	}
-	if(((*vpt)[v>>12])&PTE_LIBRARY==0){
-		(*vpt)[v>>12]+=PTE_LIBRARY;
-	}
+	
+	(*vpt)[v>>12]|=PTE_LIBRARY;
+	(*vpd)[v>>22]|=PTE_LIBRARY;
 	return ((*vpt)[v>>12]>>12)<<12;
 }
