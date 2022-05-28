@@ -152,7 +152,6 @@ fork(void)
 	extern struct Env *env;
 	u_int i;
 
-
 	//The parent installs pgfault using set_pgfault_handler
 	set_pgfault_handler(pgfault);
 	//alloc a new alloc
