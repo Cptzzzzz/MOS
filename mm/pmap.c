@@ -131,7 +131,7 @@ void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm)
 	Pte *pgtable_entry;
 	for(i=0,size=ROUND(size,BY2PG);i<size;i+=BY2PG){
 		pgtable_entry=boot_pgdir_walk(pgdir,va+i,1);
-		*pgtable_entry=(PTE_ADDR(pa)+i)|perm|PTE_V|PTE_R;
+		*pgtable_entry=PTE_ADDR(pa+i)|perm|PTE_V|PTE_R;
 	}
 	/* Step 1: Check if `size` is a multiple of BY2PG. */
     
