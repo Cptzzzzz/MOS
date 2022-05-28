@@ -161,7 +161,7 @@ fork(void)
 		env=envs+ENVX(syscall_getenvid());
 		return 0;
 	}
-
+ 
 	for(i=0;i<VPN(USTACKTOP);i++){
 		if( ((*vpd)[i>>10]&PTE_V) && ((*vpt)[i]&PTE_V) ) duppage(newenvid,i);
 	}
