@@ -98,6 +98,8 @@ ide_write(u_int diskno, u_int secno, void *src, u_int nsecs)
 		u_int succ;
 		if (syscall_read_dev((u_int)&succ, 0x13000030, 4) < 0)
 			user_panic("ide_write panic");
+		if(!succ)
+			user_panic("ids_write panic");
 		offset += 0x200;
 	}
 }
