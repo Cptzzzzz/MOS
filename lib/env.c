@@ -288,7 +288,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
     for (i = offset ? MIN(bin_size, BY2PG - offset) : 0; i < bin_size; i += BY2PG)
     {
         /* Hint: You should alloc a new page. */
-        if ((r = page_alloc(&p)) != 0)
+        if ((r = page_alloc(&p)) != 0) 
             return r;
         bcopy(bin + i, page2kva(p), MIN(bin_size - i, BY2PG));
         page_insert(env->env_pgdir, p, va + i, PTE_R);
