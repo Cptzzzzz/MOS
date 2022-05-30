@@ -41,10 +41,10 @@ ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs)
 			user_panic("ids_read panic");
 		if(syscall_read_dev((u_int)&cur_offset,0x13000000,4)<0)
 			user_panic("ids_read panic");
-		if(syscall_read_dev((u_int)&zero,0x13000020,4)<0)
+		if(syscall_read_dev((u_int)&zero,0x13000020,1)<0)
 			user_panic("ids_read panic");
 		u_int succ;
-		if(syscall_read_dev((u_int)&succ,0x13000030,4)<0)
+		if(syscall_read_dev((u_int)&succ,0x13000030,1)<0)
 			user_panic("ide_read panic");
 		if(!succ)
 			user_panic("ide_read panic");
@@ -80,7 +80,7 @@ ide_write(u_int diskno, u_int secno, void *src, u_int nsecs)
 	u_int one=1;
 	u_int cur_offset=0;
 	// DO NOT DELETE WRITEF !!!
-	// writef("diskno: %d\n", diskno);
+	writef("diskno: %d\n", diskno);
 
 	while ( offset_begin+offset<offset_end ) {
 		// copy data from source array to disk buffer.
@@ -93,10 +93,10 @@ ide_write(u_int diskno, u_int secno, void *src, u_int nsecs)
 			user_panic("ide_write panic");
 		if (syscall_write_dev((u_int)&cur_offset, 0x13000000, 4) < 0)
 			user_panic("ide_write panic");
-		if (syscall_write_dev((u_int)&one, 0x13000020, 4) < 0)
+		if (syscall_write_dev((u_int)&one, 0x13000020, 1) < 0)
 			user_panic("ide_write panic");
 		u_int succ;
-		if (syscall_read_dev((u_int)&succ, 0x13000030, 4) < 0)
+		if (syscall_read_dev((u_int)&succ, 0x13000030, 1) < 0)
 			user_panic("ide_write panic");
 		if(!succ)
 			user_panic("ids_write panic");
