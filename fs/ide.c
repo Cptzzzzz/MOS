@@ -39,9 +39,9 @@ ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs)
 		cur_offset=offset_begin+offset;
 		if(syscall_write_dev((u_int)&diskno,0x13000010,4)<0)
 			user_panic("ids_read panic");
-		if(syscall_read_dev((u_int)&cur_offset,0x13000000,4)<0)
+		if(syscall_write_dev((u_int)&cur_offset,0x13000000,4)<0)
 			user_panic("ids_read panic");
-		if(syscall_read_dev((u_int)&zero,0x13000020,1)<0)
+		if(syscall_write_dev((u_int)&zero,0x13000020,1)<0)
 			user_panic("ids_read panic");
 		u_int succ;
 		if(syscall_read_dev((u_int)&succ,0x13000030,1)<0)
