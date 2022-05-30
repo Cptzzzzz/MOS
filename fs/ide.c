@@ -44,13 +44,14 @@ ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs)
 			user_panic("ide_read panic");
 		if (syscall_write_dev((u_int)&zero, 0x13000020, 4) < 0)
 			user_panic("ide_read panic");
+		if (syscall_read_dev((u_int)(dst + offset), 0x13004000, 0x200) < 0)
+			user_panic("ide_read panic");
 		u_int succ;
 		if (syscall_read_dev((u_int)&succ, 0x13000030, 4) < 0)
 			user_panic("ide_read panic");
 		if (!succ)
 			user_panic("ide_read panic");
-		if (syscall_read_dev((u_int)(dst + offset), 0x13004000, 0x200) < 0)
-			user_panic("ide_read panic");
+		
 		offset += 0x200;
 	}
 }
@@ -89,13 +90,14 @@ ide_write(u_int diskno, u_int secno, void *src, u_int nsecs)
 		// copy data from source array to disk buffer.
 		// if error occur, then panic.
 		cur_offset = offset_begin + offset;
-		if (syscall_write_dev((u_int)(src + offset), 0x13004000, 0x200) < 0)
-			user_panic("ide_write panic");
+		
 		if (syscall_write_dev((u_int)&diskno, 0x13000010, 4) < 0)
 			user_panic("ide_write panic");
 		if (syscall_write_dev((u_int)&cur_offset, 0x13000000, 4) < 0)
 			user_panic("ide_write panic");
 		if (syscall_write_dev((u_int)&one, 0x13000020, 4) < 0)
+			user_panic("ide_write panic");
+		if (syscall_write_dev((u_int)(src + offset), 0x13004000, 0x200) < 0)
 			user_panic("ide_write panic");
 		u_int succ;
 		if (syscall_read_dev((u_int)&succ, 0x13000030, 4) < 0)
