@@ -32,7 +32,7 @@ ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs)
 
 	u_int zero = 0;
 	u_int cur_offset = 0;
-
+	writef("ide_read in\n");
 	while (offset_begin + offset < offset_end)
 	{
 		// Your code here

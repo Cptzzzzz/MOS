@@ -206,6 +206,10 @@ serve_remove(u_int envid, struct Fsreq_remove *rq)
 	int r;
 	u_char path[MAXPATHLEN];
 
+	user_bcopy(rq->req_path,path,MAXPATHLEN);
+	path[MAXPATHLEN-1]='\0';
+	r=file_remove(path);
+	ipc_send(envid,r,0,0);
 	// Step 1: Copy in the path, making sure it's terminated.
 	// Notice: add \0 to the tail of the path
 
@@ -307,6 +311,7 @@ umain(void)
 	writef("FS can do I/O\n");
 
 	serve_init();
+	writef("ok\n");
 	fs_init();
 	fs_test();
 

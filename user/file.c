@@ -38,6 +38,30 @@ open(const char *path, int mode)
 	u_int va;
 	u_int i;
 
+	r=fd_alloc(&fd);
+	if(r) return r;
+
+	r=fsipc_open(path,mode,fd);
+	if(r)
+		return r;
+	
+	va=fd2data(fd);
+	ffd=fd;
+	size=ffd->f_file.f_size;
+	fileid=ffd->f_fileid;
+
+	for(i=0;i<size;i+=BY2PG){
+		r=syscall_mem_alloc(0,va+i,PTE_R|PTE_V);
+		if(r)
+			return r;
+		r=fsipc_map(fileid,i,va+i);
+		if(r)
+			return r;
+	}
+	int fdnum=fd2num(fd);
+	if(mode&0x1000)
+		seek(fdnum,size);
+	return fdnum;
 	// Step 1: Alloc a new Fd, return error code when fail to alloc.
 	// Hint: Please use fd_alloc.
 
@@ -258,7 +282,7 @@ remove(const char *path)
 {
 	// Your code here.
 	// Call fsipc_remove.
-
+	return fsipc_remove(path);
 }
 
 // Overview:
