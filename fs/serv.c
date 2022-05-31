@@ -311,7 +311,7 @@ umain(void)
 	writef("FS can do I/O\n");
 
 	serve_init();
-	writef("ok\n");
+	// writef("ok\n");
 	fs_init();
 	fs_test();
 

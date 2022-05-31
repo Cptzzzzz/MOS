@@ -16,8 +16,8 @@ int block_is_free(u_int);
 u_int
 diskaddr(u_int blockno)
 {
-	if(super!=NULL && blockno > super->s_nblocks)
-		user_panic("diskaddr panic");
+	if(super!=NULL && blockno >= super->s_nblocks)
+		user_panic("diskaddr(): blockno greater than nblocks!\n");
 	return DISKMAP + blockno*BY2BLK;
 }
 
@@ -86,6 +86,7 @@ unmap_block(u_int blockno)
 
 	// Step 1: check if this block is mapped.
 	u_int addr=block_is_mapped(blockno);
+	if(addr==0)return;
 	if(!block_is_free(blockno)&&block_is_dirty(blockno)){
 		write_block(blockno);
 	}
@@ -207,7 +208,7 @@ void
 free_block(u_int blockno)
 {
 	// Step 1: Check if the parameter `blockno` is valid (`blockno` can't be zero).
-	if(blockno==0)return;
+	if(blockno==0||(super!=NULL&&blockno>=super->s_nblocks))return;
 
 	bitmap[blockno/32]|=(1<<(blockno%32));
 	// Step 2: Update the flag bit in bitmap.
@@ -541,12 +542,12 @@ dir_lookup(struct File *dir, char *name, struct File **file)
 	struct File *f;
 
 	// Step 1: Calculate nblock: how many blocks are there in this dir？
-	nblock=dir->f_size/BY2BLK;
+	nblock=ROUND(dir->f_size,BY2BLK)/BY2BLK;
 
 	for (i = 0; i < nblock; i++) {
 		// Step 2: Read the i'th block of the dir.
 		// Hint: Use file_get_block.
-		r=file_get_block(dir,i,blk);
+		r=file_get_block(dir,i,&blk);
 		if(r)
 			return r;
 		f=(struct File*)blk;
