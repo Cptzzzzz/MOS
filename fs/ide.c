@@ -177,8 +177,8 @@ int raid4_read(u_int blockno,void *dst)
 		ide_read(3,blockno*2+1,dstp+BY2PG/8*6,1);
 		ide_read(4,blockno*2+1,dstp+BY2PG/8*7,1);
 
-		ide_write(5,2*blockno,buf,1);
-		ide_write(5,2*blockno+1,buf+BY2PG/8,1);
+		ide_read(5,2*blockno,buf,1);
+		ide_read(5,2*blockno+1,buf+BY2PG/8,1);
 		for(i=0;i<BY2PG/8;i++){
 			if(buf[i]!=
 				(dstp[i]^
