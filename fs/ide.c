@@ -225,9 +225,9 @@ int raid4_read(u_int blockno,void *dst)
 					if(j+1==wrong)continue;
 					res^=buf[j*(BY2PG/4)+i];
 				}
-				buf[wrong*(BY2PG/4)+i]=res;
+				buf[(wrong-1)*(BY2PG/4)+i]=res;
 			}
-			syscall_write_dev(buf+BY2PG/4*(wrong-1),dst+(wrong-1)*(BY2PG/4),BY2PG/4);
+			user_bcopy(buf+BY2PG/4*(wrong-1),dst+(wrong-1)*(BY2PG/4),BY2PG/4);
 		}
 		return 1;
 	}else{
