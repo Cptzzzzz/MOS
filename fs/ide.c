@@ -232,18 +232,27 @@ int raid4_read(u_int blockno,void *dst)
 				ide_read(4,blockno*2,buf+BY2PG/8*3,1);
 				ide_read(4,blockno*2+1,buf+BY2PG/8*7,1);
 			}
-			
 			ide_read(5,blockno*2,buf+BY2PG,1);
 			ide_read(5,blockno*2+1,buf+BY2PG/8*9,1);
-
-			for(i=0;i<BY2PG/4;i++){
+			for(i=0;i<BY2PG/8;i++){
 				char res=0;
 				int j;
-				for(j=0;j<5;j++){
-					if(j+1==wrong)continue;
-					res^=buf[j*(BY2PG/4)+i];
+				for(j=0;j<4;j++){
+					if(j+1!=wrong)
+					res^=buf[i+j*(BY2PG/8)];
 				}
-				buf[(wrong-1)*(BY2PG/4)+i]=res;
+				res^=buf[BY2PG+i];
+				buf[(wrong-1)*(BY2PG/8)]=res;
+			}
+			for(i=0;i<BY2PG/8;i++){
+				char res=0;
+				int j;
+				for(j=0;j<4;j++){
+					if(j+1!=wrong)
+					res^=buf[i+j*(BY2PG/8)+BY2PG/2];
+				}
+				res^=buf[BY2PG/8*9+i];
+				buf[(wrong-1)*(BY2PG/8)+BY2PG/2]=res;
 			}
 			user_bcopy(buf,dst,BY2PG);
 		}
