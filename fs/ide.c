@@ -137,17 +137,26 @@ int raid4_write(u_int blockno,void *src)
 	for(i=0;i<BY2PG/8;i++){
 		buf[i+BY2PG/8]=(srcp[i+BY2PG/2]^srcp[i+BY2PG/8+BY2PG/2]^srcp[i+BY2PG/2+BY2PG/8*2]^srcp[i+BY2PG/2+BY2PG/8*3]);
 	}
-	ide_write(1,2*blockno,srcp,1);
-	ide_write(2,blockno*2,srcp+BY2PG/8,1);
-	ide_write(3,2*blockno,srcp+BY2PG/4,1);
-	ide_write(4,blockno*2,srcp+BY2PG/8*3,1);
-
-	ide_write(1,2*blockno+1,srcp+BY2PG/2,1);
-	ide_write(2,blockno*2+1,srcp+BY2PG/8*5,1);
-	ide_write(3,2*blockno+1,srcp+BY2PG/8*6,1);
-	ide_write(4,blockno*2+1,srcp+BY2PG/8*7,1);
-	ide_write(5,2*blockno,buf,1);
-	ide_write(5,2*blockno+1,buf+BY2PG/8,1);
+	if(raid4_valid(1)){
+		ide_write(1,2*blockno,srcp,1);
+		ide_write(1,2*blockno+1,srcp+BY2PG/2,1);
+	}
+	if(raid4_valid(2)){
+		ide_write(2,blockno*2,srcp+BY2PG/8,1);
+		ide_write(2,blockno*2+1,srcp+BY2PG/8*5,1);
+	}
+	if(raid4_valid(3)){
+		ide_write(3,2*blockno,srcp+BY2PG/4,1);
+		ide_write(3,2*blockno+1,srcp+BY2PG/8*6,1);
+	}
+	if(raid4_valid(4)){
+		ide_write(4,blockno*2,srcp+BY2PG/8*3,1);
+		ide_write(4,blockno*2+1,srcp+BY2PG/8*7,1);
+	}
+	if(raid4_valid(5)){
+		ide_write(5,2*blockno,buf,1);
+		ide_write(5,2*blockno+1,buf+BY2PG/8,1);
+	}
 	return number;
 }
 int raid4_read(u_int blockno,void *dst)
