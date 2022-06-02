@@ -242,7 +242,7 @@ int raid4_read(u_int blockno,void *dst)
 					res^=buf[i+j*(BY2PG/8)];
 				}
 				res^=buf[BY2PG+i];
-				buf[(wrong-1)*(BY2PG/8)]=res;
+				buf[(wrong-1)*(BY2PG/8)+i]=res;
 			}
 			for(i=0;i<BY2PG/8;i++){
 				char res=0;
@@ -252,7 +252,7 @@ int raid4_read(u_int blockno,void *dst)
 					res^=buf[i+j*(BY2PG/8)+BY2PG/2];
 				}
 				res^=buf[BY2PG/8*9+i];
-				buf[(wrong-1)*(BY2PG/8)+BY2PG/2]=res;
+				buf[(wrong-1)*(BY2PG/8)+BY2PG/2+i]=res;
 			}
 			user_bcopy(buf,dst,BY2PG);
 		}
