@@ -218,7 +218,7 @@ int raid4_read(u_int blockno,void *dst)
 			ide_read(5,blockno*2,buf+BY2PG,1);
 			ide_read(5,blockno*2+1,buf+BY2PG/8*9,1);
 
-			for(i=BY2PG;i<BY2PG*5/4;i++){
+			for(i=0;i<BY2PG/4;i++){
 				char res=0;
 				int j;
 				for(j=0;j<5;j++){
@@ -227,7 +227,7 @@ int raid4_read(u_int blockno,void *dst)
 				}
 				buf[(wrong-1)*(BY2PG/4)+i]=res;
 			}
-			// user_bcopy(buf+BY2PG/4*(wrong-1),dst+(wrong-1)*(BY2PG/4),BY2PG/4);
+			user_bcopy(buf+BY2PG/4*(wrong-1),dst+(wrong-1)*(BY2PG/4),BY2PG/4);
 		}
 		return 1;
 	}else{
