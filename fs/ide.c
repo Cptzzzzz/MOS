@@ -180,10 +180,20 @@ int raid4_read(u_int blockno,void *dst)
 		ide_write(5,2*blockno,buf,1);
 		ide_write(5,2*blockno+1,buf+BY2PG/8,1);
 		for(i=0;i<BY2PG/8;i++){
-			if(buf[i]!=dstp[i]^dstp[i+BY2PG/8]^dstp[i+BY2PG/8*2]^dstp[i+BY2PG/8*3] )return -1;
+			if(buf[i]!=
+				(dstp[i]^
+				dstp[i+BY2PG/8]^
+				dstp[i+BY2PG/8*2]^
+				dstp[i+BY2PG/8*3]) )
+					return -1;
 		}
 		for(i=0;i<BY2PG/8;i++){
-			if(buf[i+BY2PG/8]!=dstp[i+BY2PG/2]^dstp[i+BY2PG/8+BY2PG/2]^dstp[i+BY2PG/8*2+BY2PG/2]^dstp[i+BY2PG/8*3+BY2PG/2] )return -1;
+			if(buf[i+BY2PG/8]!=
+				(dstp[i+BY2PG/2]^
+				dstp[i+BY2PG/8+BY2PG/2]^
+				dstp[i+BY2PG/8*2+BY2PG/2]^
+				dstp[i+BY2PG/8*3+BY2PG/2]) )
+					return -1;
 		}
 		return 0;
 	}else if(number==1){
