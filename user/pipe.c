@@ -86,10 +86,11 @@ _pipeisclosed(struct Fd *fd, struct Pipe *p)
 	// the pipe is closed.
 	int pfd,pfp,runs;
 
-
-	pfd=pageref(fd);
-	pfp=pageref(p);
-
+	do{
+		runs=env->env_runs;
+		pfd=pageref(fd);
+		pfp=pageref(p);
+	}while(runs!=env->env_runs);
 	if(pfd==pfp)return 1;
 	return 0;
 
@@ -187,6 +188,7 @@ pipestat(struct Fd *fd, struct Stat *stat)
 static int
 pipeclose(struct Fd *fd)
 {
+	syscall_mem_unmap(0,fd);
 	syscall_mem_unmap(0, fd2data(fd));
 	return 0;
 }

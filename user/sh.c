@@ -105,13 +105,31 @@ again:
 				exit();
 			}
 			// Your code here -- open t for reading,
+			fd=open(t,O_RDONLY);
+			if(r<0){
+				writef("case '<' : open t failed\n");
+                exit();
+			}
+			dup(fd,0);
+			close(fd);
 			// dup it onto fd 0, and then close the fd you got.
-			user_panic("< redirection not implemented");
+			// user_panic("< redirection not implemented");
 			break;
 		case '>':
 			// Your code here -- open t for writing,
 			// dup it onto fd 1, and then close the fd you got.
-			user_panic("> redirection not implemented");
+			if(gettoken(0,&t)!='w'){
+				writef("syntax error: < not followed by word\n");
+				exit();
+			}
+			fd = open(t, O_WRONLY);
+            if (r<0) {
+                writef("case '>' : open t failed\n");
+                exit();
+            }
+			dup(fd,1);
+			close(fd);
+			// user_panic("> redirection not implemented");
 			break;
 		case '|':
 			// Your code here.
@@ -129,7 +147,29 @@ again:
 			//		set "rightpipe" to the child envid
 			//		goto runit, to execute this piece of the pipeline
 			//			and then wait for the right side to finish
-			user_panic("| not implemented");
+			r=pipe(p);
+			if (r < 0) {
+                user_panic("BUG: in runcmd: pipe: %e\n", r);
+            }
+			r=fork();
+			if (r<0) {
+                writef("| not implemented (fork)\n");
+                exit();
+            }
+			if (r==0) { //this is child.
+                dup(p[0], 0); // p[0] becomes stdin.
+                close(p[0]);
+                close(p[1]);
+                goto again;
+            }
+			if (r > 0) { //this is parent.
+                dup(p[1], 1);// p[1] becomes stdout.
+                close(p[1]);
+                close(p[0]);
+                rightpipe = r;
+                goto runit;
+            }
+			// user_panic("| not implemented");
 			break;
 		}
 	}
