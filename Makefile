@@ -32,7 +32,7 @@ all: $(modules) vmlinux
 vmlinux: $(modules)
 	$(LD) -o $(vmlinux_elf) -N -T $(link_script) $(objects)
 test: all
-	/OSLAB/gxemul -E testmips -C R3000 -M 64 -d gxemul/fs.img gxemul/vmlinux
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 -d 0:gxemul/fs.img -d 1:gxemul/fs1.img -d 2:gxemul/fs2.img -d 3:gxemul/fs3.img -d 4:gxemul/fs4.img -d 5:gxemul/fs5.img gxemul/vmlinux
 $(modules): 
 	$(MAKE) --directory=$@
 

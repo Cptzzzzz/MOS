@@ -123,7 +123,7 @@ int raid4_valid(u_int diskno)
 }
 int raid4_write(u_int blockno,void *src)
 {
-	char * srcp=src;
+	char *srcp=(char*)src;
 	char buf[4096];
 	int number=5;
 	int i;
@@ -131,13 +131,21 @@ int raid4_write(u_int blockno,void *src)
 		if(raid4_valid(i))
 		number--;
 	}
-	for(i=0;i<BY2PG/4;i++){
-		buf[i]=(*(srcp+i))^(*(srcp+i+BY2PG/4))^(*(srcp+i+BY2PG/2))^(*(srcp+i+BY2PG/4*3));
+	for(i=0;i<BY2PG/8;i++){
+		buf[i]=srcp[i]^srcp[i+BY2PG/8]^srcp[i+BY2PG/8*2]^srcp[i+BY2PG/8*3];
 	}
-	ide_write(1,2*blockno,srcp,2);
-	ide_write(2,blockno*2,srcp+BY2PG/4,2);
-	ide_write(3,2*blockno,srcp+BY2PG/2,2);
-	ide_write(4,blockno*2,srcp+BY2PG/4*3,2);
+	for(i=0;i<BY2PG/8;i++){
+		buf[i+BY2PG/8]=srcp[i+BY2PG/2]^srcp[i+BY2PG/8+BY2PG/2]^srcp[i+BY2PG/2+BY2PG/8*2]^srcp[i+BY2PG/2+BY2PG/8*3];
+	}
+	ide_write(1,2*blockno,srcp,1);
+	ide_write(2,blockno*2,srcp+BY2PG/8,1);
+	ide_write(3,2*blockno,srcp+BY2PG/4,1);
+	ide_write(4,blockno*2,srcp+BY2PG/8*3,1);
+
+	ide_write(1,2*blockno+1,srcp+BY2PG/2,1);
+	ide_write(2,blockno*2+1,srcp+BY2PG/8*5,1);
+	ide_write(3,2*blockno+1,srcp+BY2PG/8*6,1);
+	ide_write(4,blockno*2+1,srcp+BY2PG/8*7,1);
 	ide_write(5,2*blockno,buf,2);
 	return number;
 }
@@ -156,14 +164,24 @@ int raid4_read(u_int blockno,void *dst)
 		}
 	}
 	if(number==0){
-		ide_read(1,blockno*2,dstp,2);
-		ide_read(2,blockno*2,dstp+BY2PG/4,2);
-		ide_read(3,blockno*2,dstp+BY2PG/2,2);
-		ide_read(4,blockno*2,dstp+BY2PG/4*3,2);
+		// for(i=0;i<8;i++){
+		// 	ide_read(i%4+1,blockno*2+(i>3?1:0),dstp+BY2PG/8*(i-1),1);
+		// }
+		ide_read(1,blockno*2,dstp+BY2PG/8*0,1);
+		ide_read(2,blockno*2,dstp+BY2PG/8*1,1);
+		ide_read(3,blockno*2,dstp+BY2PG/8*2,1);
+		ide_read(4,blockno*2,dstp+BY2PG/8*3,1);
+		ide_read(1,blockno*2+1,dstp+BY2PG/8*4,1);
+		ide_read(2,blockno*2+1,dstp+BY2PG/8*5,1);
+		ide_read(3,blockno*2+1,dstp+BY2PG/8*6,1);
+		ide_read(4,blockno*2+1,dstp+BY2PG/8*7,1);
+
 		ide_read(5,blockno*2,buf,2);
-		for(i=0;i<BY2PG/4;i++){
-			if(buf[i]!=(*(dstp+i))^(*(dstp+i+BY2PG/4))
-				^(*(dstp+i+BY2PG/2))^(*(dstp+i+BY2PG/4*3)) )return -1;
+		for(i=0;i<BY2PG/8;i++){
+			if(buf[i]!=dstp[i]^dstp[i+BY2PG/8]^dstp[i+BY2PG/8*2]^dstp[i+BY2PG/8*3] )return -1;
+		}
+		for(i=0;i<BY2PG/8;i++){
+			if(buf[i+BY2PG/8]!=dstp[i+BY2PG/2]^dstp[i+BY2PG/8+BY2PG/2]^dstp[i+BY2PG/8*2+BY2PG/2]^dstp[i+BY2PG/8*3+BY2PG/2] )return -1;
 		}
 		return 0;
 	}else if(number==1){

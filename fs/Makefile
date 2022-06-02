@@ -28,7 +28,7 @@ FSIMGFILES := motd newmotd
 
 CFLAGS += -nostdlib -static
 
-all: serv.x fs.img serv.b
+all: serv.x fs.img serv.b extra.x extra.b
 
 %.x: %.b.c
 	echo cc1 $<
@@ -61,6 +61,11 @@ fs.img: $(FSIMGFILES)
 	gcc fsformat.c -o $(tools_dir)/fsformat -m32
 	chmod +x $(tools_dir)/fsformat
 	$(tools_dir)/fsformat ../gxemul/fs.img $(FSIMGFILES)
+	$(tools_dir)/fsformat ../gxemul/fs1.img $(FSIMGFILES)
+	$(tools_dir)/fsformat ../gxemul/fs2.img $(FSIMGFILES)
+	$(tools_dir)/fsformat ../gxemul/fs3.img $(FSIMGFILES)
+	$(tools_dir)/fsformat ../gxemul/fs4.img $(FSIMGFILES)
+	$(tools_dir)/fsformat ../gxemul/fs5.img $(FSIMGFILES)
 
 .PHONY: clean
 
