@@ -105,3 +105,37 @@ ide_write(u_int diskno, u_int secno, void *src, u_int nsecs)
 		offset += 0x200;
 	}
 }
+
+int time_read()
+{
+	int temp=0;
+	syscall_write_dev(&temp,0x15000000,4);
+	syscall_read_dev(0x15000010,&temp,4);
+	return temp;
+}
+
+void raid0_write(u_int secno,void *src,u_int nsecs)
+{
+	u_int i,nowno;
+	for(i=0;i<nsecs;i++){
+		nowno=i+sceno;
+		if(nowno%2==0){
+			ide_write(1,nowno/2,src+i*0x200,1);
+		}else{
+			ide_write(2,nowno/2,src+i*0x200,1);
+		}
+	}
+}
+
+void raid0_read(u_int secno,void *dst,u_int nsecs)
+{
+	u_int i,nowno;
+	for(i=0;i<nsecs;i++){
+		nowno=i+sceno;
+		if(nowno%2==0){
+			ide_read(1,nowno/2,src+i*0x200,1);
+		}else{
+			ide_read(2,nowno/2,src+i*0x200,1);
+		}
+	}
+}
