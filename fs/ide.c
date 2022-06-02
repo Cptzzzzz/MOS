@@ -207,14 +207,23 @@ int raid4_read(u_int blockno,void *dst)
 			ide_read(3,blockno*2+1,dstp+BY2PG/8*6,1);
 			ide_read(4,blockno*2+1,dstp+BY2PG/8*7,1);
 		}else{
-			ide_read(1,blockno*2,buf+BY2PG/8*0,1);
-			ide_read(2,blockno*2,buf+BY2PG/8*1,1);
-			ide_read(3,blockno*2,buf+BY2PG/8*2,1);
-			ide_read(4,blockno*2,buf+BY2PG/8*3,1);
-			ide_read(1,blockno*2+1,buf+BY2PG/8*4,1);
-			ide_read(2,blockno*2+1,buf+BY2PG/8*5,1);
-			ide_read(3,blockno*2+1,buf+BY2PG/8*6,1);
-			ide_read(4,blockno*2+1,buf+BY2PG/8*7,1);
+			if(wrong!=1){
+				ide_read(1,blockno*2,buf+BY2PG/8*0,1);
+				ide_read(1,blockno*2+1,buf+BY2PG/8*4,1);
+			}
+			if(wrong!=2){
+				ide_read(2,blockno*2,buf+BY2PG/8*1,1);
+				ide_read(2,blockno*2+1,buf+BY2PG/8*5,1);
+			}
+			if(wrong!=3){
+				ide_read(3,blockno*2,buf+BY2PG/8*2,1);
+				ide_read(3,blockno*2+1,buf+BY2PG/8*6,1);
+			}
+			if(wrong!=4){
+				ide_read(4,blockno*2,buf+BY2PG/8*3,1);
+				ide_read(4,blockno*2+1,buf+BY2PG/8*7,1);
+			}
+			
 			ide_read(5,blockno*2,buf+BY2PG,1);
 			ide_read(5,blockno*2+1,buf+BY2PG/8*9,1);
 
@@ -227,7 +236,7 @@ int raid4_read(u_int blockno,void *dst)
 				}
 				buf[(wrong-1)*(BY2PG/4)+i]=res;
 			}
-			user_bcopy(buf+BY2PG/4*(wrong-1),dst+(wrong-1)*(BY2PG/4),BY2PG/4);
+			user_bcopy(buf,dst,BY2PG);
 		}
 		return 1;
 	}else{
