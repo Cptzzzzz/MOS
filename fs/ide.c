@@ -198,29 +198,36 @@ int raid4_read(u_int blockno,void *dst)
 		return 0;
 	}else if(number==1){
 		if(wrong==5){
-			ide_read(1,blockno*2,dstp,2);
-			ide_read(2,blockno*2,dstp+BY2PG/4,2);
-			ide_read(3,blockno*2,dstp+BY2PG/2,2);
-			ide_read(4,blockno*2,dstp+BY2PG/4*3,2);
+			ide_read(1,blockno*2,dstp+BY2PG/8*0,1);
+			ide_read(2,blockno*2,dstp+BY2PG/8*1,1);
+			ide_read(3,blockno*2,dstp+BY2PG/8*2,1);
+			ide_read(4,blockno*2,dstp+BY2PG/8*3,1);
+			ide_read(1,blockno*2+1,dstp+BY2PG/8*4,1);
+			ide_read(2,blockno*2+1,dstp+BY2PG/8*5,1);
+			ide_read(3,blockno*2+1,dstp+BY2PG/8*6,1);
+			ide_read(4,blockno*2+1,dstp+BY2PG/8*7,1);
 		}else{
-			ide_read(1,blockno*2,dstp,2);
-			ide_read(2,blockno*2,dstp+BY2PG/4,2);
-			ide_read(3,blockno*2,dstp+BY2PG/2,2);
-			ide_read(4,blockno*2,dstp+BY2PG/4*3,2);
-			ide_read(5,blockno*2,buf,2);
-			ide_read(1,blockno*2,buf+BY2PG/4,2);
-			ide_read(2,blockno*2,buf+BY2PG/2,2);
-			ide_read(3,blockno*2,buf+BY2PG/4*3,2);
-			ide_read(4,blockno*2,buf+BY2PG,2);
-			for(i=BY2PG/4*5;i<BY2PG*3/2;i++){
-				buf[i]=0;
+			ide_read(1,blockno*2,buf+BY2PG/8*0,1);
+			ide_read(2,blockno*2,buf+BY2PG/8*1,1);
+			ide_read(3,blockno*2,buf+BY2PG/8*2,1);
+			ide_read(4,blockno*2,buf+BY2PG/8*3,1);
+			ide_read(1,blockno*2+1,buf+BY2PG/8*4,1);
+			ide_read(2,blockno*2+1,buf+BY2PG/8*5,1);
+			ide_read(3,blockno*2+1,buf+BY2PG/8*6,1);
+			ide_read(4,blockno*2+1,buf+BY2PG/8*7,1);
+			ide_read(5,blockno*2,buf+BY2PG,1);
+			ide_read(5,blockno*2+1,buf+BY2PG/8*9,1);
+
+			for(i=BY2PG;i<BY2PG*5/4;i++){
+				char res=0;
 				int j;
 				for(j=0;j<5;j++){
 					if(j+1==wrong)continue;
-					buf[i]^=buf[j*BY2PG/4+i%(BY2PG/4)];
+					res^=buf[j*(BY2PG/4)+i];
 				}
+				buf[wrong*(BY2PG/4)+i]=res;
 			}
-			syscall_write_dev(buf+BY2PG/4*5,dst+(wrong-1)*(BY2PG/4),BY2PG/4);
+			syscall_write_dev(buf+BY2PG/4*(wrong-1),dst+(wrong-1)*(BY2PG/4),BY2PG/4);
 		}
 		return 1;
 	}else{
