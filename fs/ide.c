@@ -132,10 +132,10 @@ int raid4_write(u_int blockno,void *src)
 		number--;
 	}
 	for(i=0;i<BY2PG/8;i++){
-		buf[i]=srcp[i]^srcp[i+BY2PG/8]^srcp[i+BY2PG/8*2]^srcp[i+BY2PG/8*3];
+		buf[i]=(srcp[i]^srcp[i+BY2PG/8]^srcp[i+BY2PG/8*2]^srcp[i+BY2PG/8*3]);
 	}
 	for(i=0;i<BY2PG/8;i++){
-		buf[i+BY2PG/8]=srcp[i+BY2PG/2]^srcp[i+BY2PG/8+BY2PG/2]^srcp[i+BY2PG/2+BY2PG/8*2]^srcp[i+BY2PG/2+BY2PG/8*3];
+		buf[i+BY2PG/8]=(srcp[i+BY2PG/2]^srcp[i+BY2PG/8+BY2PG/2]^srcp[i+BY2PG/2+BY2PG/8*2]^srcp[i+BY2PG/2+BY2PG/8*3]);
 	}
 	ide_write(1,2*blockno,srcp,1);
 	ide_write(2,blockno*2,srcp+BY2PG/8,1);
