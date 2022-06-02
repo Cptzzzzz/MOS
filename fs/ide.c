@@ -109,8 +109,8 @@ ide_write(u_int diskno, u_int secno, void *src, u_int nsecs)
 int time_read()
 {
 	int temp=0;
-	syscall_write_dev(&temp,0x15000000,4);
-	syscall_read_dev(0x15000010,&temp,4);
+	syscall_write_dev(0x15000000,&temp,4);
+	syscall_read_dev(&temp,0x15000010,4);
 	return temp;
 }
 
