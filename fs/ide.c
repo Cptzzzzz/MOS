@@ -146,7 +146,8 @@ int raid4_write(u_int blockno,void *src)
 	ide_write(2,blockno*2+1,srcp+BY2PG/8*5,1);
 	ide_write(3,2*blockno+1,srcp+BY2PG/8*6,1);
 	ide_write(4,blockno*2+1,srcp+BY2PG/8*7,1);
-	ide_write(5,2*blockno,buf,2);
+	ide_write(5,2*blockno,buf,1);
+	ide_write(5,2*blockno+1,buf+BY2PG/8,1);
 	return number;
 }
 int raid4_read(u_int blockno,void *dst)
@@ -176,7 +177,8 @@ int raid4_read(u_int blockno,void *dst)
 		ide_read(3,blockno*2+1,dstp+BY2PG/8*6,1);
 		ide_read(4,blockno*2+1,dstp+BY2PG/8*7,1);
 
-		ide_read(5,blockno*2,buf,2);
+		ide_write(5,2*blockno,buf,1);
+		ide_write(5,2*blockno+1,buf+BY2PG/8,1);
 		for(i=0;i<BY2PG/8;i++){
 			if(buf[i]!=dstp[i]^dstp[i+BY2PG/8]^dstp[i+BY2PG/8*2]^dstp[i+BY2PG/8*3] )return -1;
 		}
