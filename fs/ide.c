@@ -110,8 +110,8 @@ int raid4_valid(u_int diskno)
 	int r;
 	int succ;
 	int zero=0;
-	r=syscall_write_dev((u_int)&zero, 0x13000000, 4)
-	r=if(r<0)return 0;
+	r=syscall_write_dev((u_int)&zero, 0x13000000, 4);
+	if(r<0)return 0;
 	r=syscall_write_dev((u_int)&diskno,0x13000010,4);
 	if(r<0)return 0;
 	r=syscall_write_dev((u_int)&zero, 0x13000020, 4);
@@ -123,7 +123,7 @@ int raid4_valid(u_int diskno)
 }
 int raid4_write(u_int blockno,void *src)
 {
-	char * scrp=src;
+	char * srcp=src;
 	char buf[4096];
 	int number=5;
 	int i;
