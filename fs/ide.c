@@ -118,7 +118,7 @@ void raid0_write(u_int secno,void *src,u_int nsecs)
 {
 	u_int i,nowno;
 	for(i=0;i<nsecs;i++){
-		nowno=i+sceno;
+		nowno=i+secno;
 		if(nowno%2==0){
 			ide_write(1,nowno/2,src+i*0x200,1);
 		}else{
@@ -131,11 +131,11 @@ void raid0_read(u_int secno,void *dst,u_int nsecs)
 {
 	u_int i,nowno;
 	for(i=0;i<nsecs;i++){
-		nowno=i+sceno;
+		nowno=i+secno;
 		if(nowno%2==0){
-			ide_read(1,nowno/2,src+i*0x200,1);
+			ide_read(1,nowno/2,dst+i*0x200,1);
 		}else{
-			ide_read(2,nowno/2,src+i*0x200,1);
+			ide_read(2,nowno/2,dst+i*0x200,1);
 		}
 	}
 }
