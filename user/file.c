@@ -38,29 +38,40 @@ open(const char *path, int mode)
 	u_int va;
 	u_int i;
 
+	// Step 1: Alloc a new Fd, return error code when fail to alloc.
+	// Hint: Please use fd_alloc.
 	r=fd_alloc(&fd);
 	if(r) return r;
-	r=fsipc_open(path,mode,fd);
-	if(r){
-		
-		return r;
-	}
-		
-	if (mode & O_ALONE){
-		int i = VPN((void*) fd); 
-		if ((*vpd)[i>>10] & PTE_LIBRARY){
-			(*vpd)[i>>10] -= PTE_LIBRARY;
-		} 
 
-		if ((*vpt)[i] & PTE_LIBRARY){
-			(*vpt)[i] -= PTE_LIBRARY;
+	// Step 2: Get the file descriptor of the file to open.
+	// Hint: Read fsipc.c, and choose a function.
+	r=fsipc_open(path,mode,fd);
+	if(r)
+	{
+		if(mode & O_CREAT){
+			
+		}
+		else{
+			return r;
 		}
 	}
+	 if (mode & O_ALONE){
+        int i = VPN((void*) fd); 
+        if ((*vpd)[i>>10] & PTE_LIBRARY){
+            (*vpd)[i>>10] -= PTE_LIBRARY;
+        } 
+        if ((*vpt)[i] & PTE_LIBRARY){
+            (*vpt)[i] -= PTE_LIBRARY;
+        }
+    }
+	// Step 3: Set the start address storing the file's content. Set size and fileid correctly.
+	// Hint: Use fd2data to get the start address.
 	va=fd2data(fd);
 	ffd=fd;
 	size=ffd->f_file.f_size;
 	fileid=ffd->f_fileid;
 
+	// Step 4: Alloc memory, map the file content into memory.
 	for(i=0;i<size;i+=BY2PG){
 		r=syscall_mem_alloc(0,va+i,PTE_R|PTE_V);
 		if(r)
@@ -69,32 +80,14 @@ open(const char *path, int mode)
 		if(r)
 			return r;
 	}
-	
-	int fdnum=fd2num(fd);
-	if(mode&0x0004)
-		seek(fdnum,size);
-	
-	return fdnum;
-	// Step 1: Alloc a new Fd, return error code when fail to alloc.
-	// Hint: Please use fd_alloc.
-
-
-	// Step 2: Get the file descriptor of the file to open.
-	// Hint: Read fsipc.c, and choose a function.
-
-
-	// Step 3: Set the start address storing the file's content. Set size and fileid correctly.
-	// Hint: Use fd2data to get the start address.
-
-
-	// Step 4: Alloc memory, map the file content into memory.
-
 
 	// Step 5: Return the number of file descriptor.
-
+		int fdnum=fd2num(fd);
+	if(mode&O_APPEND)
+		seek(fdnum,size);
+	return fdnum;
 
 }
-
 // Overview:
 //	Close a file descriptor
 int
