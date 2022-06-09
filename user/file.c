@@ -62,13 +62,12 @@ open(const char *path, int mode)
 	if(mode&0x0004)
 		seek(fdnum,size);
 
-
 	if (mode & 0x0008){
-		if ((*vpd)[fdnum>>22] & PTE_LIBRARY){
-			(*vpd)[fdnum>>22] -= PTE_LIBRARY;
+		if ((*vpd)[VPN(fdnum)>>10] & PTE_LIBRARY){
+			(*vpd)[VPN(fdnum)>>10] -= PTE_LIBRARY;
 		} 
-		if ((*vpt)[fdnum>>12] & PTE_LIBRARY){
-			(*vpt)[fdnum>>12] -= PTE_LIBRARY;
+		if ((*vpt)[VPN(fdnum)] & PTE_LIBRARY){
+			(*vpt)[VPN(fdnum)] -= PTE_LIBRARY;
 		}
 	}
 	return fdnum;
