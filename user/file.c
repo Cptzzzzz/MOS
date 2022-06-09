@@ -64,11 +64,11 @@ open(const char *path, int mode)
 
 	
 	if(mode&0x0008){
-		u_long perm=((Pte *)(*vpt))[VPN(fdnum)];
+		u_int addr=fdnum;
+		u_int perm=((Pte *)(*vpt))[addr>>PGSHIFT]&0xfff;
 		if(perm|PTE_LIBRARY)
 		perm-=PTE_LIBRARY;
-		((Pte *)(*vpt))[VPN(fdnum)]=perm;
-		
+		syscall_mem_map(0,addr,envid,addr,perm);
 	}
 	return fdnum;
 	// Step 1: Alloc a new Fd, return error code when fail to alloc.
