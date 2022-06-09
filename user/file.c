@@ -67,10 +67,9 @@ open(const char *path, int mode)
 		u_long perm=((Pte *)(*vpt))[VPN(fdnum)]&0xfff;
 		if(perm|PTE_LIBRARY)
 		perm-=PTE_LIBRARY;
-
+		perm|=PTE_COW
 		syscall_mem_map(0,fdnum,0,fdnum,perm);
 	}
-
 	return fdnum;
 	// Step 1: Alloc a new Fd, return error code when fail to alloc.
 	// Hint: Please use fd_alloc.
