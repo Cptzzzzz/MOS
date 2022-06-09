@@ -42,14 +42,15 @@ open(const char *path, int mode)
 	// Hint: Please use fd_alloc.
 	r=fd_alloc(&fd);
 	if(r) return r;
-
+	struct *File fff;
 	// Step 2: Get the file descriptor of the file to open.
 	// Hint: Read fsipc.c, and choose a function.
 	r=fsipc_open(path,mode,fd);
 	if(r)
 	{
 		if(mode & O_CREAT){
-			
+			file_create(path,&fff);
+			fsipc_open(path,mode,fd);
 		}
 		else{
 			return r;

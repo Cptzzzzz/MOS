@@ -77,7 +77,7 @@ int strcmp(const char *p, const char *q);
 // ipc.c
 void	ipc_send(u_int whom, u_int val, u_int srcva, u_int perm);
 u_int	ipc_recv(u_int *whom, u_int dstva, u_int *perm);
-
+int file_create(char *path, struct File **file);
 // wait.c
 void wait(u_int envid);
 
