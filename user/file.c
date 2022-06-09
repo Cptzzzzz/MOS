@@ -59,8 +59,11 @@ open(const char *path, int mode)
 			return r;
 	}
 	int fdnum=fd2num(fd);
-	if(mode&0x1000)
+	if(mode&0x1000||mode&0x0004)
 		seek(fdnum,size);
+	if(mode&0x0008){
+		syscall_mem_map(0,&fdnum,0,&fdnum,PTE_LIBRARY|PTE_V)
+	}
 	return fdnum;
 	// Step 1: Alloc a new Fd, return error code when fail to alloc.
 	// Hint: Please use fd_alloc.
