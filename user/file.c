@@ -43,9 +43,8 @@ open(const char *path, int mode)
 	r=fsipc_open(path,mode,fd);
 	if(r)
 		return r;
-	if (mode & 0x8){
+	if (mode & O_ALONE){
 		int i = VPN((void*) fd); 
-
 		if ((*vpd)[i>>10] & PTE_LIBRARY){
 			(*vpd)[i>>10] -= PTE_LIBRARY;
 		} 
