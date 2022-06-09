@@ -64,7 +64,16 @@ open(const char *path, int mode)
 
 	
 	if(mode&0x0008){
-		syscall_mem_map(0,fdnum,0,fdnum,PTE_V|PTE_R|PTE_COW);
+		u_int *tmp=USTACKTOP;
+		u_long perm=((Pte *)(*vpt))[VPN(fdnum)]&0xfff;
+		perm-=PTE_LIBRARY;
+		//	writef("fork.c:pgfault():\t va:%x\n",va);
+		//map the new page at a temporary place
+		syscall_mem_alloc(0,tmp,perm);
+		//copy the content
+		user_bcopy(ROUNDDOWN(va,BY2PG),tmp,BY2PG);
+		//map the page on the appropriate place
+		syscall_mem_map(0,tmp,0,va,perm);
 	}
 
 	return fdnum;
