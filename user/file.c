@@ -45,7 +45,7 @@ open(const char *path, int mode)
 	struct File* fff=NULL;
 	// Step 2: Get the file descriptor of the file to open.
 	// Hint: Read fsipc.c, and choose a function.
-	r=fsipc_open(path, mode,fd);
+	r=fsipc_open(path,mode,fd);
 	if(r)
 	{
 		if(mode & O_CREAT){
