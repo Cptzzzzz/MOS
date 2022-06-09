@@ -55,14 +55,15 @@ open(const char *path, int mode)
 			return r;
 		}
 	}
-	 if (mode & O_ALONE){
-        int i = VPN((void*) fd); 
-        if ((*vpd)[i>>10] & PTE_LIBRARY){
-            (*vpd)[i>>10] -= PTE_LIBRARY;
-        } 
-        if ((*vpt)[i] & PTE_LIBRARY){
-            (*vpt)[i] -= PTE_LIBRARY;
-        }
+	if (mode & O_ALONE){
+		int pn=VPN((void*)fd);
+		u_int addr=pn<<PGSHIFT;
+        u_int perm=((Pte *)(*vpt))[pn]&0xfff;
+		int flag=0;
+		if(perm&PTE_LIBRARY){
+			perm-=PTE_LIBRARY;
+		}
+		syscall_mem_map(0,addr,0,addr,perm);
     }
 	// Step 3: Set the start address storing the file's content. Set size and fileid correctly.
 	// Hint: Use fd2data to get the start address.
