@@ -69,7 +69,7 @@ open(const char *path, int mode)
 		if(perm|PTE_LIBRARY)
 		perm-=PTE_LIBRARY;
 		syscall_mem_map(0,addr,0,addr,perm);
-		u_int perm=((Pte *)(*vpt))[addr>>PGSHIFT]&0xfff;
+		perm=((Pte *)(*vpt))[addr>>PGSHIFT]&0xfff;
 		if(perm|PTE_LIBRARY)
 		perm-=PTE_LIBRARY;
 		syscall_mem_map(0,addr,0,addr,perm);
