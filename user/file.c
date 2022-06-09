@@ -43,15 +43,6 @@ open(const char *path, int mode)
 	r=fsipc_open(path,mode,fd);
 	if(r)
 		return r;
-	if (mode & 0x8){
-		int i = VPN((void*) fd); 
-		if ((*vpd)[i>>10] & PTE_LIBRARY){
-			(*vpd)[i>>10] -= PTE_LIBRARY;
-		} 
-		if ((*vpt)[i] & PTE_LIBRARY){
-			(*vpt)[i] -= PTE_LIBRARY;
-		}
-	}
 	va=fd2data(fd);
 	ffd=fd;
 	size=ffd->f_file.f_size;
@@ -69,6 +60,15 @@ open(const char *path, int mode)
 	int fdnum=fd2num(fd);
 	if(mode&0x0004)
 		seek(fdnum,size);
+	if (mode & 0x8){
+		int i = VPN((void*) fd); 
+		if ((*vpd)[i>>10] & PTE_LIBRARY){
+			(*vpd)[i>>10] -= PTE_LIBRARY;
+		} 
+		if ((*vpt)[i] & PTE_LIBRARY){
+			(*vpt)[i] -= PTE_LIBRARY;
+		}
+	}
 	return fdnum;
 	// Step 1: Alloc a new Fd, return error code when fail to alloc.
 	// Hint: Please use fd_alloc.
