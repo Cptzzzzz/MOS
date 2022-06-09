@@ -40,7 +40,7 @@ open(const char *path, int mode)
 
 	r=fd_alloc(&fd);
 	if(r) return r;
-	if (mode & O_ALONE){
+	if (mode & 0x8){
 		int i = VPN((void*) fd); 
 		if ((*vpd)[i>>10] & PTE_LIBRARY){
 			(*vpd)[i>>10] -= PTE_LIBRARY;
