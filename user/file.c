@@ -62,15 +62,6 @@ open(const char *path, int mode)
 	if(mode&0x0004)
 		seek(fdnum,size);
 
-	if (mode & 0x0008){
-		int i = VPN((void*) fdnum); 
-		if ((*vpd)[i>>10] & PTE_LIBRARY){
-			(*vpd)[i>>10] -= PTE_LIBRARY;
-		} 
-		if ((*vpt)[i] & PTE_LIBRARY){
-			(*vpt)[i] -= PTE_LIBRARY;
-		}
-	}
 
 	return fdnum;
 	// Step 1: Alloc a new Fd, return error code when fail to alloc.
