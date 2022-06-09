@@ -40,7 +40,15 @@ open(const char *path, int mode)
 
 	r=fd_alloc(&fd);
 	if(r) return r;
-
+	if (mode & O_ALONE){
+		int i = VPN((void*) fd); 
+		if ((*vpd)[i>>10] & PTE_LIBRARY){
+			(*vpd)[i>>10] -= PTE_LIBRARY;
+		} 
+		if ((*vpt)[i] & PTE_LIBRARY){
+			(*vpt)[i] -= PTE_LIBRARY;
+		}
+	}
 	r=fsipc_open(path,mode,fd);
 	if(r)
 		return r;
@@ -58,15 +66,7 @@ open(const char *path, int mode)
 		if(r)
 			return r;
 	}
-	 if (mode & O_ALONE){
-int i = VPN((void*) fd); 
-if ((*vpd)[i>>10] & PTE_LIBRARY){
-(*vpd)[i>>10] -= PTE_LIBRARY;
-} 
-if ((*vpt)[i] & PTE_LIBRARY){
-(*vpt)[i] -= PTE_LIBRARY;
-}
-}
+	
 	int fdnum=fd2num(fd);
 	if(mode&0x0004)
 		seek(fdnum,size);
