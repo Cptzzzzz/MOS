@@ -42,7 +42,6 @@ open(const char *path, int mode)
 	// Hint: Please use fd_alloc.
 	r=fd_alloc(&fd);
 	if(r) return r;
-	struct File* fff=NULL;
 	// Step 2: Get the file descriptor of the file to open.
 	// Hint: Read fsipc.c, and choose a function.
 	r=fsipc_open(path,mode,fd);
@@ -52,8 +51,9 @@ open(const char *path, int mode)
 			
 		}
 		else{
-			return r;
+			
 		}
+		return r;
 	}
 	if (mode & O_ALONE){
 		int pn=VPN((void*)fd);
