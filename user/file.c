@@ -62,7 +62,7 @@ open(const char *path, int mode)
 		u_int perm=0;
 		perm=(*vpd)[VPN(fd)>>10]|(*vpt)[VPN(fd)];
 		if(perm&PTE_LIBRARY){
-			perm-=PTE_LIBRARY
+			perm-=PTE_LIBRARY;
 		}
 		syscall_mem_map(0,fd,0,fd,perm);
 	}
