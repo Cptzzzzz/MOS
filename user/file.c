@@ -59,7 +59,7 @@ open(const char *path, int mode)
 			return r;
 	}
 	int fdnum=fd2num(fd);
-	if(mode&0x1000||mode&0x0004)
+	if(mode&0x0004)
 		seek(fdnum,size);
 	if(mode&0x0008){
 		syscall_mem_map(0,&fdnum,0,&fdnum,PTE_LIBRARY|PTE_V);
