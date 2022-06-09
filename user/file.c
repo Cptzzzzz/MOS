@@ -47,12 +47,6 @@ open(const char *path, int mode)
 	r=fsipc_open(path,mode,fd);
 	if(r)
 	{
-		if(mode & O_CREAT){
-			
-		}
-		else{
-			
-		}
 		return r;
 	}
 	if (mode & O_ALONE){
