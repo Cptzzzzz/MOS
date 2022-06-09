@@ -68,7 +68,7 @@ open(const char *path, int mode)
 		u_int perm=((Pte *)(*vpt))[addr>>PGSHIFT]&0xfff;
 		if(perm|PTE_LIBRARY)
 		perm-=PTE_LIBRARY;
-		syscall_mem_map(0,addr,envid,addr,perm);
+		syscall_mem_map(0,addr,0,addr,perm);
 	}
 	return fdnum;
 	// Step 1: Alloc a new Fd, return error code when fail to alloc.
