@@ -40,6 +40,9 @@ open(const char *path, int mode)
 
 	r=fd_alloc(&fd);
 	if(r) return r;
+	r=fsipc_open(path,mode,fd);
+	if(r)
+		return r;
 	if (mode & 0x8){
 		int i = VPN((void*) fd); 
 		if ((*vpd)[i>>10] & PTE_LIBRARY){
@@ -49,10 +52,6 @@ open(const char *path, int mode)
 			(*vpt)[i] -= PTE_LIBRARY;
 		}
 	}
-	r=fsipc_open(path,mode,fd);
-	if(r)
-		return r;
-	
 	va=fd2data(fd);
 	ffd=fd;
 	size=ffd->f_file.f_size;
