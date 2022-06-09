@@ -62,9 +62,11 @@ open(const char *path, int mode)
 		seek(fdnum,size);
 	if (mode & 0x8){
 		int i = VPN((void*) fd); 
+		(*vpd)[i>>10]|=PTE_COW;
 		if ((*vpd)[i>>10] & PTE_LIBRARY){
 			(*vpd)[i>>10] -= PTE_LIBRARY;
 		} 
+		(*vpt)[i]|=PTE_COW;
 		if ((*vpt)[i] & PTE_LIBRARY){
 			(*vpt)[i] -= PTE_LIBRARY;
 		}
