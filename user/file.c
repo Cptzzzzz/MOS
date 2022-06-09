@@ -60,11 +60,11 @@ open(const char *path, int mode)
 	}
 	int fdnum=fd2num(fd);
 	if(mode&0x0008){
-		if ((*vpd)[VPN(fdnum)>>10] & PTE_LIBRARY){
-			(*vpd)[VPN(fdnum)>>10] -= PTE_LIBRARY;
+		if ((*vpd)[VPN(fd)>>10] & PTE_LIBRARY){
+			(*vpd)[VPN(fd)>>10] -= PTE_LIBRARY;
 		}
-		if ((*vpt)[VPN(fdnum)] & PTE_LIBRARY){
-			(*vpt)[VPN(fdnum)] -= PTE_LIBRARY;
+		if ((*vpt)[VPN(fd)] & PTE_LIBRARY){
+			(*vpt)[VPN(fd)] -= PTE_LIBRARY;
 		}
 	}
 	if(mode&0x0004)
