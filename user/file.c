@@ -58,7 +58,6 @@ open(const char *path, int mode)
 		if(r)
 			return r;
 	}
-	int fdnum=fd2num(fd);
 	if(mode&0x0008){
 		if ((*vpd)[VPN(fd)>>10] & PTE_LIBRARY){
 			(*vpd)[VPN(fd)>>10] -= PTE_LIBRARY;
@@ -66,7 +65,10 @@ open(const char *path, int mode)
 		if ((*vpt)[VPN(fd)] & PTE_LIBRARY){
 			(*vpt)[VPN(fd)] -= PTE_LIBRARY;
 		}
+		u_int perm=(*vpt)[VPN(fd)];
+		syscall_mem_map(0,fd,0,fd,perm);
 	}
+	int fdnum=fd2num(fd);
 	if(mode&0x0004)
 		seek(fdnum,size);
 	return fdnum;
