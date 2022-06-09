@@ -89,7 +89,7 @@ pgfault(u_int va)
 	}
 	perm-=PTE_COW;
 	//	writef("fork.c:pgfault():\t va:%x\n",va);
- 
+
 	//map the new page at a temporary place
 	syscall_mem_alloc(0,tmp,perm);
 	//copy the content
