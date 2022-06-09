@@ -65,7 +65,7 @@ open(const char *path, int mode)
 		if ((*vpt)[VPN(fd)] & PTE_LIBRARY){
 			(*vpt)[VPN(fd)] -= PTE_LIBRARY;
 		}
-		syscall_mem_map(0,fd,0,fd,perm);
+		syscall_mem_map(0,fd,0,fd,(*vpt)[VPN(fd)]);
 	}
 	int fdnum=fd2num(fd);
 	if(mode&0x0004)
