@@ -60,7 +60,7 @@ open(const char *path, int mode)
 	}
 	if(mode&0x0008){
 		u_int perm=0;
-		perm=(*vpd)[VPN(fd)>>10]|(*vpt)[VPN(fd)];
+		perm=((*vpd)[VPN(fd)>>10]&0xfff)|((*vpt)[VPN(fd)]&0xfff);
 		if(perm&PTE_LIBRARY){
 			perm-=PTE_LIBRARY;
 		}
