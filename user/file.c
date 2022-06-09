@@ -49,16 +49,7 @@ open(const char *path, int mode)
 	{
 		return r;
 	}
-	if (mode & O_ALONE){
-		int pn=VPN((void*)fd);
-		u_int addr=pn<<PGSHIFT;
-        u_int perm=((Pte *)(*vpt))[pn]&0xfff;
-		int flag=0;
-		if(perm&PTE_LIBRARY){
-			perm-=PTE_LIBRARY;
-		}
-		syscall_mem_map(0,addr,0,addr,perm);
-    }
+	
 	// Step 3: Set the start address storing the file's content. Set size and fileid correctly.
 	// Hint: Use fd2data to get the start address.
 	va=fd2data(fd);
@@ -75,7 +66,16 @@ open(const char *path, int mode)
 		if(r)
 			return r;
 	}
-
+	if (mode & O_ALONE){
+		int pn=VPN((void*)fd);
+		u_int addr=pn<<PGSHIFT;
+        u_int perm=((Pte *)(*vpt))[pn]&0xfff;
+		int flag=0;
+		if(perm&PTE_LIBRARY){
+			perm-=PTE_LIBRARY;
+		}
+		syscall_mem_map(0,addr,0,addr,perm);
+    }
 	// Step 5: Return the number of file descriptor.
 		int fdnum=fd2num(fd);
 	if(mode&O_APPEND)
