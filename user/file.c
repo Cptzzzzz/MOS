@@ -47,10 +47,7 @@ open(const char *path, int mode)
 	r=fsipc_open(path,mode,fd);
 	if(r)
 	{
-		if(mode&O_CREAT){
-			struct File *fff=NULL;
-			file_create(path,&fff);
-		}else 
+		
 		return r;
 	}
 	if (mode & O_ALONE){
