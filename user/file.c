@@ -63,17 +63,14 @@ open(const char *path, int mode)
 		seek(fdnum,size);
 
 
-	if(mode&0x0008){
-		u_int addr=fdnum;
-		u_int perm=((Pde *)(*vpd))[addr>>22]&0xfff;
-		if(perm|PTE_LIBRARY)
-		perm-=PTE_LIBRARY;
-		syscall_mem_map(0,addr,0,addr,perm);
-		perm=((Pte *)(*vpt))[addr>>PGSHIFT]&0xfff;
-		if(perm|PTE_LIBRARY)
-		perm-=PTE_LIBRARY;
-		syscall_mem_map(0,addr,0,addr,perm);
-		
+	if (mode & O_ALONE){
+		int i = VPN((void*) fdnum); 
+		if ((*vpd)[i>>10] & PTE_LIBRARY){
+			(*vpd)[i>>10] -= PTE_LIBRARY;
+		} 
+		if ((*vpt)[i] & PTE_LIBRARY){
+			(*vpt)[i] -= PTE_LIBRARY;
+		}
 	}
 	return fdnum;
 	// Step 1: Alloc a new Fd, return error code when fail to alloc.
