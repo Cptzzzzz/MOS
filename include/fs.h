@@ -25,7 +25,8 @@
 #define MAXFILESIZE	(NINDIRECT*BY2BLK)
 
 #define BY2FILE     256
-
+int
+file_create(char *path, struct File **file);
 struct File {
 	u_char f_name[MAXNAMELEN];	// filename
 	u_int f_size;			// file size in bytes
