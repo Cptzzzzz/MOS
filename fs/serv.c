@@ -122,7 +122,7 @@ serve_open(u_int envid, struct Fsreq_open *rq)
 			file_create(path,&f);
 		else{
 			ipc_send(envid, r, 0, 0);
-		return ;
+			return ;
 		}
 		
 	}
