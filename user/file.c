@@ -59,7 +59,7 @@ open(const char *path, int mode)
 			return r;
 	}
 	int fdnum=fd2num(fd);
-	if(mode&0x1000)
+	if(mode&O_APPEND)
 		seek(fdnum,size);
 	return fdnum;
 	// Step 1: Alloc a new Fd, return error code when fail to alloc.
