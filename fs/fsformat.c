@@ -273,7 +273,7 @@ void write_file(struct File *dirf, const char *path) {
 //      We ASSUME that this funcion will never fail
 struct File* write_directory(struct File *dirf, char *name) {
     // Your code here
-    print("%s\n",name);
+    printf("%s\n",name);
     struct File* target=create_file(dirf);
     const char * fname=strrchr(name,'/');
     if(fname) fname++;
