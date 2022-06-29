@@ -2,6 +2,7 @@
 #include <args.h>
 
 int debug_ = 0;
+#define isdigit(x) (((x)<='9')&&((x)>='0'))
 
 //
 // get the next token from string s
@@ -21,6 +22,7 @@ char history_buf[4096];
 char* history_ptr=0;
 char* history_maxl=0;
 char temp_buf[1024];
+char variable_buf[4096];
 int
 _gettoken(char *s, char **p1, char **p2)
 {
@@ -215,6 +217,14 @@ runit:
 		for (i=0; argv[i]; i++)
 			writef(" %s", argv[i]);
 		writef("\n");
+	}
+	if(strcmp(argv[0],"declare")==0){
+		declare(argv);
+		exit(0);
+	}
+	if(strcmp(argv[0],"unset")==0){
+		unset(argv);
+		exit(0);
 	}
 	// writef("length: %d\n",argc);
 	if ((r = spawn(argv[0], argv)) < 0)
@@ -439,6 +449,230 @@ int get_tab(char* buf,int length,int index)
 		p--;
 	}
 	return offset;
+}
+
+int get_detail(char **p,char **name,int *r,int* xx,int *pid,char** value)
+{
+	//!读取该行变量数据 *p改为下一行的起始位置
+	//! 把间隔符设置成\0 *name指向variable_buf中name起始地址
+	//! r x pid设置为对应的值
+	//! *value指向variable_buf中value的位置
+	//! 返回值为1表示当前读到了 否则没读到
+	if(**p=='\0') return 0;
+	char *x=*p;
+	while(*x!=' '){
+		x++;
+	}
+	*x='\0';
+	*name=*p;
+	x++;
+	if(*x=='r'){
+		*r=1;
+	}else{
+		*r=0;
+	}
+	x++;
+	*x='\0';
+	x++;
+	if(*x=='x'){
+		*xx=1;
+	}else{
+		*xx=0;
+	}
+	x++;
+	*x='\0';
+	x++;
+	if(*x=='-'){
+		*pid=-1;
+		x++;
+	}else{
+		int res=0;
+        // printf("%c",*x);
+		while(isdigit(*x)){
+			res=res*10+(*x-'0');
+			x++;
+		}
+        // printf("%d\n",res);
+		*pid=res;
+	}
+	x++;
+	if(*x=='\n'){
+		*value=0;
+	}else{
+		*value=x;
+	}
+	while(*x!='\n'){
+		x++;
+	}
+    *x='\0';
+	x++;
+	*p=x;
+	return 1;
+}
+void print_all_variable()
+{
+	int fd=open("variables",O_RDONLY|O_CREAT);
+	read(fd,variable_buf,4096);
+	close(fd);
+	char *p=variable_buf;
+	int r,x,pid;
+	char *name,*value;
+	if(*p=='\0'){
+		writef("no variables now\n");
+		return;
+	}else{
+		writef("name	r	x	pid	value\n");
+	}
+	while(get_detail(&p,&name,&r,&x,&pid,&value)){
+		writef("%s\t",name);
+		if(r==1) writef("r\t");
+		else writef("-\t");
+		if(x==1)writef("x\t");
+		else writef("-\t");
+		writef("%d\t",(pid==-1?0:pid));
+		if(value==0){
+			writef("UNDEFINED\n");
+		}else{
+			writef("%s\n",value);
+		}
+	}
+}
+void add_to_tail(char *name,int r,int x,char *value)
+{
+	writef("add to tail\n");
+	int fd=open("variables",O_APPEND|O_WRONLY|O_CREAT);
+	fwritef(fd,"%s ",name);
+	fwritef(fd,"%c ",r==1?'r':'-');
+	fwritef(fd,"%c ",x==1?'x':'-');
+	if(x==1){
+		fwritef(fd,"-");
+	}else{
+		fwritef(fd,"%d",syscall_getenvid());
+	}
+	if(value){
+		fwritef(fd," %s",value);
+	}
+	fwritef(fd,"\n");
+	close(fd);
+	writef("add variable %s=%s %c %c\n",name,value,r==1?'r':'-',x==1?'x':'-');
+}
+void replace(char *name,int r,int x,char *value,char *stop)
+{
+	int fd=open("variables",O_RDONLY|O_CREAT);
+	read(fd,variable_buf,4096);
+	writef("replace: %s\n",stop);
+	*stop=0;
+	writef("replace1: %s %d\n",variable_buf,strlen(variable_buf));
+	while(*stop!='\n')stop++;
+	stop++;
+	writef("replace2: %s %d\n",stop,strlen(stop));
+	close(fd);
+	fd=open("variables",O_WRONLY|O_CREAT);
+	write(fd,variable_buf,strlen(variable_buf));
+	write(fd,stop,strlen(stop));
+	close(fd);
+	add_to_tail(name,r,x,value);
+}
+//! 格式 name r x pid value
+//! 0参数 输出全部变量 输出格式 name r x pid value(没有value则undefined)
+//! 其他 定义变量
+void add_variable(char *pname,int px,int pr,char *pvalue)
+{
+	int fd=open("variables",O_RDONLY|O_CREAT);
+	read(fd,variable_buf,4096);
+	close(fd);
+	char *p=variable_buf;
+	char *stop=0;
+	int r,x,pid;
+	char *name,*value;
+	int change=0;
+	stop=p;
+	while(get_detail(&p,&name,&r,&x,&pid,&value)){
+		if(strcmp(name,pname)==0){
+			if(x!=px){
+				continue;
+			}else{
+				change=1;
+				break;
+			}
+		}
+		stop=p;
+	}
+	if(change==0){
+		add_to_tail(pname,pr,px,pvalue);
+		return;
+	}
+	if(x){
+		if(px==0){
+			add_to_tail(pname,pr,px,pvalue);
+			return;
+		}
+	}else{
+		if(pid!=-1){
+			if(syscall_getenvid()!=pid){
+				add_to_tail(pname,pr,px,pvalue);
+				return;
+			}
+		}
+	}
+	if(r){
+		writef("variable %d can only be read\n",name);
+		return;
+	}
+	replace(pname,pr,px,pvalue,stop);
+}
+void declare(char ** argv)
+{
+	int i;
+	int state=0;//0 输出变量
+	int x=0,r=0;
+	char *name;
+	char *value;
+	int go=0;
+	int perm=0;
+	int namep=0;
+	int valp=0;
+	for(i=1;argv[i]!=0;i++){
+		if(argv[i][0]=='-'){
+			if(perm==1){
+				continue;
+			}
+			perm=1;
+			if(argv[i][1]=='x'||argv[i][1]=='r'){
+				if(argv[i][1]=='x'){
+					x=1;
+				}
+				if(argv[i][1]=='r'){
+					r=1;
+				}
+				if(argv[i][2]=='x'){
+					x=1;
+				}
+				if(argv[i][2]=='r'){
+					r=1;
+				}
+			}
+		}else if(argv[i][0]=='='){
+			if(valp==1){
+				continue;
+			}
+			value=argv[i]+1;
+			valp=1;
+		}else{
+			if(namep==1)continue;
+			name=argv[i];
+			namep=1;
+		}
+	}
+	if(i==1){
+		print_all_variable();
+	}else{
+		add_variable(name,x,r,value);
+	}
+}
+void unset(char **argv)
+{
+
 }
 void transform_variable(char *buf)
 {
