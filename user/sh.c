@@ -267,6 +267,7 @@ void flush(char *buf,int length,int index)
 	for(i=length-index;i>0;i--){
 		writef("\033[1D");
 	}
+	// writef("%d",syscall_getenvid());
 	// writef("\033[%dD",length-index);
 }
 void addchar(char* buf,int length,int index,char t)
@@ -373,6 +374,76 @@ int history_next(char *buf,int length)
 	}
 	return 1;
 }
+char tab_buf[100];
+char command_list[][20]={
+	"cat",
+	"history",
+	"ls",
+	"touch",
+	"tree",
+	"mkdir",
+	"sh",
+	"echo",
+};
+int get_tab(char* buf,int length,int index)
+{
+	int cmd_length=sizeof(command_list)/20;
+	buf[length]=0;
+	char* p =index+buf-1;
+	char *tp;
+	while(p>buf && *p && !strchr(WHITESPACE SYMBOLS, *p)){
+		p--;
+	}
+	if(p!=buf){
+		p++;
+	}
+	tp=p;
+	int i,j;
+	for(i=0;p<buf+index;p++,i++){
+		tab_buf[i]=*p;
+	}
+	tab_buf[i]=0;
+    // printf("%d",i);
+	int pt=-1,flag=0;
+    // printf("ready\n");
+    // printf("%d\n",cmd_length);
+	for(i=0;i<cmd_length;i++){
+		flag=1;
+		for(j=0;tab_buf[j]!=0;j++){
+			if(command_list[i][j]==0||command_list[i][j]!=tab_buf[j]){
+                // printf("%d %d\n",i,j);
+				flag=0;
+				break;
+			}
+		}
+        // printf("flag=%d\n",flag);
+		if(flag){
+			if(pt==-1){
+				pt=i;
+			}else{
+				return 0;
+			}
+		}
+	}
+	if(pt==-1) return 0;
+    // printf("%d\n",pt);
+	int offset=strlen(command_list[pt])-strlen(tab_buf);
+    // printf("offset=%d ",offset);
+	for(i=length;i>=index;i--){
+		buf[i+offset]=buf[i];
+	}
+    p+=offset;
+    p--;
+	for(i=strlen(command_list[pt])-1;i>=0;i--){
+		*p=command_list[pt][i];
+		p--;
+	}
+	return offset;
+}
+void transform_variable(char *buf)
+{
+
+}
 void
 readline(char *buf, u_int n)
 {
@@ -393,7 +464,9 @@ readline(char *buf, u_int n)
 		
 		if(t==0x9){
 			//todo tab
-
+			int offset=get_tab(buf,i,index);
+			i+=offset;
+			index+=offset;
 		}else if(t==0x7f){
 			//todo backspace
 			if(index!=0){
@@ -438,6 +511,7 @@ readline(char *buf, u_int n)
 		}else if(t == '\r' || t == '\n'){
 			buf[i] = 0;
 			save_command(buf);
+			transform_variable(buf);
 			return;
 		}else{
 			addchar(buf,i,index,t);
@@ -449,6 +523,7 @@ readline(char *buf, u_int n)
 			}
 		}
 		flush(buf,i,index);
+
 	}
 	writef("line too long\n");
 	while((r = read(0, buf, 1)) == 1 && buf[0] != '\n')
