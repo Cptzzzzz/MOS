@@ -276,7 +276,6 @@ void addchar(char* buf,int length,int index,char t)
 		buf[i]=buf[i-1];
 	}
 	buf[index]=t;
-	writef("\033[1@");
 }
 void delchar(char* buf,int length,int index)
 {
@@ -448,7 +447,6 @@ readline(char *buf, u_int n)
 				buf[i]=0;
 				return;
 			}
-			continue;
 		}
 		flush(buf,i,index);
 	}
