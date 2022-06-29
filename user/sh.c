@@ -267,7 +267,6 @@ void flush(char *buf,int length,int index)
 	for(i=length-index;i>0;i--){
 		writef("\033[1D");
 	}
-	writef("\033[s");
 	// writef("\033[%dD",length-index);
 }
 void addchar(char* buf,int length,int index,char t)
@@ -336,6 +335,10 @@ int history_last(char *buf,int length)
 	if(history_ptr==history_buf){
 		return 0;
 	}
+	int i;
+	for(i=0;buf[i]!=0;i++){
+		writef("\b \b");
+	}
 	if(history_ptr==history_maxl+1){
 		strcpy(temp_buf,buf);
 	}
@@ -349,11 +352,16 @@ int history_last(char *buf,int length)
 }
 int history_next(char *buf,int length)
 {
+	buf[length]=0;
 	if(history_ptr==history_maxl){
 		return 0;
 	}
 	if(history_ptr==history_maxl+1){
 		return 0;
+	}
+	int i;
+	for(i=0;buf[i]!=0;i++){
+		writef("\b \b");
 	}
 	while(*history_ptr!='\0'){
 		history_ptr++;
@@ -406,7 +414,7 @@ readline(char *buf, u_int n)
 				if(history_last(buf,i)){
 					i=strlen(buf);
 					index=i;
-					writef("i:%d index:%d\n",i,index);
+					// writef("i:%d index:%d\n",i,index);
 				}
 			}else if(t==0x42){
 				if(history_next(buf,i)){
@@ -443,7 +451,6 @@ readline(char *buf, u_int n)
 			continue;
 		}
 		flush(buf,i,index);
-		writef("\033[u");
 	}
 	writef("line too long\n");
 	while((r = read(0, buf, 1)) == 1 && buf[0] != '\n')
@@ -497,7 +504,7 @@ umain(int argc, char **argv)
 		interactive = iscons(0);
 	for(;;){
 		if (interactive)
-			fwritef(1, "\n$ ");
+			fwritef(1, "\nCptz@MOS $ ");
 		writef("\033[s");
 		readline(buf, sizeof buf);
 		// writef("length:%d\n",strlen(buf));

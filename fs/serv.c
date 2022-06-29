@@ -249,7 +249,29 @@ serve_sync(u_int envid)
 	fs_sync();
 	ipc_send(envid, 0, 0, 0);
 }
+void serve_create(u_int envid,struct Fsreq_create *rq)
+{
+	u_char path[MAXPATHLEN];
+	int isdir = rq->req_isdir;
 
+	struct File *f;
+	int fileid;
+	int r;
+
+	// Copy in the path, making sure it's null-terminated
+	user_bcopy(rq->req_path, path, MAXPATHLEN);
+	path[MAXPATHLEN - 1] = 0;
+
+	// Open the file.
+	if ((r = file_create((char *)path, &f, (isdir & 2) != 0, isdir & 1)) < 0) {
+			//  user_panic("file_open failed: %d, invalid path: %s", r, path);
+			ipc_send(envid, r, 0, 0);
+			return;
+	}
+
+	f->f_type = isdir & 1;
+	ipc_send(envid, 0, 0, 0);
+}
 void
 serve(void)
 {
@@ -295,7 +317,9 @@ serve(void)
 			case FSREQ_SYNC:
 				serve_sync(whom);
 				break;
-
+			case FSREQ_CREATE:
+				serve_create(whom, (struct Fsreq_create *)REQVA);
+                break;
 			default:
 				writef("Invalid request code %d from %08x\n", whom, req);
 				break;

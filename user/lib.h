@@ -99,6 +99,7 @@ void set_pgfault_handler(void (*fn)(u_int va));
 int fwritef(int fd, const char *fmt, ...);
 
 // fsipc.c
+int fsipc_create(char*, int);
 int	fsipc_open(const char *, u_int, struct Fd *);
 int	fsipc_map(u_int, u_int, u_int);
 int	fsipc_set_size(u_int, u_int);
@@ -120,6 +121,7 @@ int fstat(int fdnum, struct Stat *stat);
 int	stat(const char *path, struct Stat *);
 
 // file.c
+int user_create(char* path, int isdir);
 int	open(const char *path, int mode);
 int	read_map(int fd, u_int offset, void **blk);
 int	remove(const char *path);

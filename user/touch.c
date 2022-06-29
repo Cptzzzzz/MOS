@@ -28,6 +28,8 @@ void touch(char* filename)
     }
 		
     // writef("ok%d",flag);
+    user_create(filename,2);
+    return;
     if(flag==1){
         writef("file already exist");
     }else{
