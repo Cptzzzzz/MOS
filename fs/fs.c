@@ -718,18 +718,20 @@ file_create(char *path, struct File **file)
 	char name[MAXNAMELEN];
 	int r;
 	struct File *dir, *f;
-
+	// writef("create %s\n",path);
 	if ((r = walk_path(path, &dir, &f, name)) == 0) {
 		return -E_FILE_EXISTS;
 	}
-
+	// writef("ok1");
 	if (r != -E_NOT_FOUND || dir == 0) {
 		return r;
 	}
+	// writef("ok1");
 
 	if (dir_alloc_file(dir, &f) < 0) {
 		return r;
 	}
+	// writef("ok1");
 
 	strcpy((char *)f->f_name, name);
 	*file = f;

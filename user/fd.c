@@ -197,6 +197,7 @@ read(int fdnum, void *buf, u_int n)
 	if((r=fd_lookup(fdnum,&fd))<0||(r=dev_lookup(fd->fd_dev_id,&dev))<0){
 		return r;
 	}
+	// writef("r:[%08x] ",fd->fd_omode);
 	if((fd->fd_omode&O_ACCMODE)==O_WRONLY){
 		writef("[%08x] read %d -- bad mode\n",env->env_id,fdnum);
 		return -E_INVAL;
@@ -251,7 +252,7 @@ write(int fdnum, const void *buf, u_int n)
 		||  (r = dev_lookup(fd->fd_dev_id, &dev)) < 0) {
 		return r;
 	}
-
+	// writef("w:[%08x] ",fd->fd_omode);
 	if ((fd->fd_omode & O_ACCMODE) == O_RDONLY) {
 		writef("[%08x] write %d -- bad mode\n", env->env_id, fdnum);
 		return -E_INVAL;

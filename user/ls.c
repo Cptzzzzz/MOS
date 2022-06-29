@@ -10,13 +10,17 @@ ls(char *path, char *prefix)
 {
 	int r;
 	struct Stat st;
-
+	// writef("path:-%d-\n",path);
 	if ((r=stat(path, &st)) < 0)
 		user_panic("stat %s: %e", path, r);
-	if (st.st_isdir && !flag['d'])
+	if (st.st_isdir && !flag['d']){
+		// writef("is dir\n");
 		lsdir(path, prefix);
-	else
+	}else{
+		writef("ls1\n");
 		ls1(0, st.st_isdir, st.st_size, path);
+	}
+		
 }
 
 void
@@ -42,24 +46,24 @@ ls1(char *prefix, u_int isdir, u_int size, char *name)
 	char *sep;
 
 	if(flag['l'])
-		fwritef(1, "%11d %c ", size, isdir ? 'd' : '-');
+		writef( "%11d %c ", size, isdir ? 'd' : '-');
 	if(prefix) {
 		if (prefix[0] && prefix[strlen(prefix)-1] != '/')
 			sep = "/";
 		else
 			sep = "";
-		fwritef(1, "%s%s", prefix, sep);
+		writef( "%s%s", prefix, sep);
 	}
-	fwritef(1, "%s", name);
+	writef( "%s", name);
 	if(flag['F'] && isdir)
 		fwritef(1, "/");
-	fwritef(1, " ");
+	writef( " ");
 }
 
 void
 usage(void)
 {
-	fwritef(1, "usage: ls [-dFl] [file...]\n");
+	writef("usage: ls [-dFl] [file...]\n");
 	exit();
 }
 

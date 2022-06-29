@@ -94,7 +94,7 @@ open_lookup(u_int envid, u_int fileid, struct Open **po)
 void
 serve_open(u_int envid, struct Fsreq_open *rq)
 {
-	writef("serve_open %08x %x 0x%x\n", envid, (int)rq->req_path, rq->req_omode);
+	// writef("serve_open %08x %x 0x%x\n", envid, (int)rq->req_path, rq->req_omode);
 
 	u_char path[MAXPATHLEN];
 	struct File *f;
@@ -118,8 +118,12 @@ serve_open(u_int envid, struct Fsreq_open *rq)
 	// Open the file.
 	if ((r = file_open((char *)path, &f)) < 0) {
 	//	user_panic("file_open failed: %d, invalid path: %s", r, path);
-		ipc_send(envid, r, 0, 0);
-		return ;
+		if(rq->req_omode&O_CREAT){
+			file_create(path,&f);
+		}else {
+			ipc_send(envid, r, 0, 0);
+			return ;
+		}
 	}
 
 	// Save the file pointer.

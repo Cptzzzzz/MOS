@@ -155,7 +155,8 @@ int spawn(char *prog, char **argv)
 	Elf32_Phdr *ph;
 	// Note 0: some variable may be not used,you can cancel them as you like
 	// Step 1: Open the file specified by `prog` (prog is the path of the program)
-
+			// for (i=0; argv[i]; i++)
+			// writef(" %s", argv[i]);
 	char progname[32];
 	int name_len = strlen(prog);
 	strcpy(progname, prog);
