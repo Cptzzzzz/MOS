@@ -536,38 +536,38 @@ file_dirty(struct File *f, u_int offset)
 int
 dir_lookup(struct File *dir, char *name, struct File **file, int isdir)
 {
-        int r;
-        u_int i, j, nblock;
-        void *blk;
-        struct File *f;
+	int r;
+	u_int i, j, nblock;
+	void *blk;
+	struct File *f;
 
-        // Step 1: Calculate nblock: how many blocks this dir have.
-        nblock = ROUND(dir->f_size, BY2BLK) / BY2BLK;
+	// Step 1: Calculate nblock: how many blocks this dir have.
+	nblock = ROUND(dir->f_size, BY2BLK) / BY2BLK;
 
-        for (i = 0; i < nblock; i++) {
-                // Step 2: Read the i'th block of the dir.
-                // Hint: Use file_get_block.
-                r = file_get_block(dir, i, &blk);
-                if (r < 0) {
-                        return r;
-                }
+	for (i = 0; i < nblock; i++) {
+		// Step 2: Read the i'th block of the dir.
+		// Hint: Use file_get_block.
+		r = file_get_block(dir, i, &blk);
+		if (r < 0) {
+				return r;
+		}
 
-                // Step 3: Find target file by file name in all files on this block.
-                // If we find the target file, set the result to *file and set f_dir field.
-                for (j = 0; j < FILE2BLK; j++) {
-                        f = ((struct File *)blk) + j;
-                        if (strcmp((char *)f->f_name, name) == 0) {
-                                /*if ((f->f_type == FTYPE_DIR) != isdir) {
-                                        continue;
-                                }*/
-                                f->f_dir = dir;
-                                *file = f;
-                                return 0;
-                        }
-                }
-        }
+		// Step 3: Find target file by file name in all files on this block.
+		// If we find the target file, set the result to *file and set f_dir field.
+		for (j = 0; j < FILE2BLK; j++) {
+			f = ((struct File *)blk) + j;
+			if (strcmp((char *)f->f_name, name) == 0) {
+				/*if ((f->f_type == FTYPE_DIR) != isdir) {
+						continue;
+				}*/
+				f->f_dir = dir;
+				*file = f;
+				return 0;
+			}
+		}
+	}
 
-        return -E_NOT_FOUND;
+	return -E_NOT_FOUND;
 }
 
 // Overview:
@@ -633,87 +633,87 @@ skip_slash(char *p)
 int
 walk_path(char *path, struct File **pdir, struct File **pfile, char *lastelem, char* fpath, int isdir)
 {
-        char *p;
-        char *start;
-        char name[MAXNAMELEN];
-        struct File *dir, *file;
-        int r;
+	char *p;
+	char *start;
+	char name[MAXNAMELEN];
+	struct File *dir, *file;
+	int r;
 
-        // start at the root.
-        start = path;
-        path = skip_slash(path);
-        file = &super->s_root;
-        dir = 0;
-        name[0] = 0;
+	// start at the root.
+	start = path;
+	path = skip_slash(path);
+	file = &super->s_root;
+	dir = 0;
+	name[0] = 0;
 
-        if (pdir) {
-                *pdir = 0;
-        }
+	if (pdir) {
+			*pdir = 0;
+	}
 
-        *pfile = 0;
+	*pfile = 0;
 
-        // find the target file by name recursively.
-        while (*path != '\0') {
-                dir = file;
-                p = path;
+	// find the target file by name recursively.
+	while (*path != '\0') {
+		dir = file;
+		p = path;
 
-                while (*path != '/' && *path != '\0') {
-                        path++;
-                }
+		while (*path != '/' && *path != '\0') {
+			path++;
+		}
 
-                if (path - p >= MAXNAMELEN) {
-                        writef("badpath\n");
-                        return -E_BAD_PATH;
-                }
+		if (path - p >= MAXNAMELEN) {
+			writef("badpath\n");
+			return -E_BAD_PATH;
+		}
 
-                user_bcopy(p, name, path - p);
-                name[path - p] = '\0';
-                if (fpath) {
-                        user_bcopy(start, fpath, path - start);
-                        fpath[path - start] = 0;
-                }
-                path = skip_slash(path);
+		user_bcopy(p, name, path - p);
+		name[path - p] = '\0';
+		if (fpath) {
+			user_bcopy(start, fpath, path - start);
+			fpath[path - start] = 0;
+		}
+		path = skip_slash(path);
 
-                if (dir->f_type != FTYPE_DIR) {
-                        writef("open:: ftype not DIR\n");
-                        return -E_NOT_FOUND;
-                }
+		if (dir->f_type != FTYPE_DIR) {
+			writef("open:: ftype not DIR\n");
+			return -E_NOT_FOUND;
+		}
 
-                if (*path != '\0') {
-                        if ((r = dir_lookup(dir, name, &file, 1)) < 0) {
-                                if (r == -E_NOT_FOUND) {
-                                        if (pdir) {
-                                                *pdir = NULL;
-                                        }
-                                        *pfile = 0;
-                                }
-                                //writef("file doesn't exsit!\n");
-                                return r;
-                        }
-                } else {
-                        // *path == '\0'
-                        if ((r = dir_lookup(dir, name, &file, isdir)) < 0) {
-                                if (r == -E_NOT_FOUND) {
-                                        if (pdir) {
-                                                *pdir = dir;
-                                        }
-                                        if (lastelem) {
-                                                strcpy(lastelem, name);
-                                        }
+		if (*path != '\0') {
+			if ((r = dir_lookup(dir, name, &file, 1)) < 0) {
+				if (r == -E_NOT_FOUND) {
+					if (pdir) {
+						*pdir = NULL;
+					}
+					*pfile = 0;
+				}
+				//writef("file doesn't exsit!\n");
+				return r;
+			}
+		} else {
+			// *path == '\0'
+			if ((r = dir_lookup(dir, name, &file, isdir)) < 0) {
+				if (r == -E_NOT_FOUND) {
+					if (pdir) {
+						*pdir = dir;
+					}
+					if (lastelem) {
+						strcpy(lastelem, name);
+					}
 
-                                        *pfile = 0;
-                                }
-                                return r;
-                        }
-                }
-        }
+					*pfile = 0;
+				}
+				return r;
+			}
+		}
+	}
 
-        if (pdir) {
-                *pdir = dir;
-        }
+	if (pdir) {
+		*pdir = dir;
+	}
 
-        *pfile = file;
-        return 0;
+	*pfile = file;
+	return 0;
 }
 
 // Overview:
@@ -737,48 +737,47 @@ file_open(char *path, struct File **file)
         int
 file_create(char *path, struct File **file, int recursive, int isdir)
 {
-        char name[MAXNAMELEN];
-        char fpath[MAXNAMELEN];
-        int r;
-        struct File *dir, *f;
+	char name[MAXNAMELEN];
+	char fpath[MAXNAMELEN];
+	int r;
+	struct File *dir, *f;
 
-        if (recursive) {
-                while (1) {
-                        r = walk_path(path, &dir, &f, name, fpath, isdir);
-                        // writef("fpath: %s, isdir: %d\n", fpath, isdir);
-                        // writef("r: %d, isdir: %d\n", r);
-                        if (r == 0) {
-                                return -E_FILE_EXISTS;
-                        }
-                        if (dir == 0) { // indicates path not found
-                                r = file_create(fpath, &f, 0, 1);
-                                continue;
-                        }
-                        break;
-                }
-        } else {
-                if ((r = walk_path(path, &dir, &f, name, 0, isdir)) == 0) {
-                        return -E_FILE_EXISTS;
-                }
+	if (recursive) {
+		while (1) {
+			r = walk_path(path, &dir, &f, name, fpath, isdir);
+			// writef("fpath: %s, isdir: %d\n", fpath, isdir);
+			// writef("r: %d, isdir: %d\n", r);
+			if (r == 0) {
+				return -E_FILE_EXISTS;
+			}
+			if (dir == 0) { // indicates path not found
+				r = file_create(fpath, &f, 0, 1);
+				continue;
+			}
+			break;
+		}
+	} else {
+		if ((r = walk_path(path, &dir, &f, name, 0, isdir)) == 0) {
+			return -E_FILE_EXISTS;
+		}
 
-                if (dir == 0) {
-                        return -E_DIR_NOT_EXIST;
-                }
+		if (dir == 0) {
+			return -E_DIR_NOT_EXIST;
+		}
 
-        }
-        if (r != -E_NOT_FOUND) {
-                return r;
-        }
+	}
+	if (r != -E_NOT_FOUND) {
+		return r;
+	}
 
-        if (dir_alloc_file(dir, &f) < 0) {
-                return r;
-        }
+	if (dir_alloc_file(dir, &f) < 0) {
+		return r;
+	}
 
-        strcpy((char *)f->f_name, name);
-        f->f_type = isdir;
-        *file = f;
-        return 0;
-
+	strcpy((char *)f->f_name, name);
+	f->f_type = isdir;
+	*file = f;
+	return 0;
 }
 
 // Overview:
