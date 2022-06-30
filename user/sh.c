@@ -495,7 +495,7 @@ int get_detail(char **p,char **name,int *r,int* xx,int *pid,char** value)
         // printf("%d\n",res);
 		*pid=res;
 	}
-	x++;
+	// x++;
 	if(*x=='\n'){
 		*value=0;
 	}else{
@@ -518,17 +518,17 @@ void print_all_variable()
 	int r,x,pid;
 	char *name,*value;
 	if(*p=='\0'){
-		writef("no variables now\n");
+		writef("no variables now");
 		return;
 	}else{
 		writef("name	r	x	pid	value\n");
 	}
 	while(get_detail(&p,&name,&r,&x,&pid,&value)){
 		writef("%s\t",name);
-		if(r==1) writef("r\t");
-		else writef("-\t");
-		if(x==1)writef("x\t");
-		else writef("-\t");
+		if(r==1) writef("1\t");
+		else writef("0\t");
+		if(x==1)writef("1\t");
+		else writef("0\t");
 		writef("%d\t",(pid==-1?0:pid));
 		if(value==0){
 			writef("UNDEFINED\n");
@@ -536,11 +536,12 @@ void print_all_variable()
 			writef("%s\n",value);
 		}
 	}
+	writef("declare variable list end");
 }
 void add_to_tail(char *name,int r,int x,char *value)
 {
-	writef("add to tail\n");
-	int fd=open("variables",O_APPEND|O_WRONLY|O_CREAT);
+	// writef("add to tail\n");
+	int fd=open("variables",O_WRONLY|O_CREAT|O_APPEND);
 	fwritef(fd,"%s ",name);
 	fwritef(fd,"%c ",r==1?'r':'-');
 	fwritef(fd,"%c ",x==1?'x':'-');
@@ -554,24 +555,36 @@ void add_to_tail(char *name,int r,int x,char *value)
 	}
 	fwritef(fd,"\n");
 	close(fd);
-	writef("add variable %s=%s %c %c\n",name,value,r==1?'r':'-',x==1?'x':'-');
+	if(r)
+	writef("added readonly ");
+	else 
+	writef("added ");
+	if(x)
+	writef("global ");
+	else 
+	writef("local ");
+	writef("variable ");
+	if(value)
+	writef("%s=%s",name,value);
+	else
+	writef("%s",name);
 }
-void replace(char *name,int r,int x,char *value,char *stop)
+void remove_variable(char *stop)
 {
-	int fd=open("variables",O_RDONLY|O_CREAT);
+	int fd=open("variables",O_RDONLY);
 	read(fd,variable_buf,4096);
-	writef("replace: %s\n",stop);
+	close(fd);
+	// writef("%d\n",strlen(variable_buf));
+	// writef("replace: %s\n",stop);
 	*stop=0;
-	writef("replace1: %s %d\n",variable_buf,strlen(variable_buf));
+	// writef("replace1: %s %d\n",variable_buf,strlen(variable_buf));
 	while(*stop!='\n')stop++;
 	stop++;
-	writef("replace2: %s %d\n",stop,strlen(stop));
-	close(fd);
-	fd=open("variables",O_WRONLY|O_CREAT);
+	// writef("replace2: %s %d\n",stop,strlen(stop));
+	fd=open("variables",O_WRONLY);
 	write(fd,variable_buf,strlen(variable_buf));
 	write(fd,stop,strlen(stop));
 	close(fd);
-	add_to_tail(name,r,x,value);
 }
 //! 格式 name r x pid value
 //! 0参数 输出全部变量 输出格式 name r x pid value(没有value则undefined)
@@ -590,10 +603,17 @@ void add_variable(char *pname,int px,int pr,char *pvalue)
 	while(get_detail(&p,&name,&r,&x,&pid,&value)){
 		if(strcmp(name,pname)==0){
 			if(x!=px){
-				continue;
+				// continue;
 			}else{
-				change=1;
-				break;
+				if(x==0){
+					if(syscall_getenvid()==pid){
+						change=1;
+						break;
+					}
+				}else{
+					change=1;
+					break;
+				}
 			}
 		}
 		stop=p;
@@ -602,24 +622,14 @@ void add_variable(char *pname,int px,int pr,char *pvalue)
 		add_to_tail(pname,pr,px,pvalue);
 		return;
 	}
-	if(x){
-		if(px==0){
-			add_to_tail(pname,pr,px,pvalue);
-			return;
-		}
-	}else{
-		if(pid!=-1){
-			if(syscall_getenvid()!=pid){
-				add_to_tail(pname,pr,px,pvalue);
-				return;
-			}
-		}
-	}
 	if(r){
-		writef("variable %d can only be read\n",name);
+		if(x) writef("global ");
+		else writef("local ");
+		writef("variable %s can only be read",name);
 		return;
 	}
-	replace(pname,pr,px,pvalue,stop);
+	remove_variable(stop);
+	add_to_tail(pname,pr,px,pvalue);
 }
 void declare(char ** argv)
 {
@@ -670,13 +680,151 @@ void declare(char ** argv)
 		add_variable(name,x,r,value);
 	}
 }
+void del_variable(char *pname,int px)
+{
+	int fd=open("variables",O_RDONLY|O_CREAT);
+	read(fd,variable_buf,4096);
+	close(fd);
+	char *p=variable_buf;
+	char *stop=0;
+	int r,x,pid;
+	char *name,*value;
+	stop=p;
+	int flag=0;
+	while(get_detail(&p,&name,&r,&x,&pid,&value)){
+		if(strcmp(name,pname)==0){
+			if(x==px){
+				flag=1;
+				break;
+			}
+		}
+		stop=p;
+	}
+	if(flag){
+		if(r){
+			writef("can not remove readonly ");
+			if(x)
+				writef("global variable ");
+			else
+				writef("local variable ");
+			writef("%s",name);
+			return;
+		}
+		remove_variable(stop);
+		writef("successfully remove ");
+		if(x)
+			writef("global variable ");
+		else
+			writef("local variable ");
+		writef("%s",name);
+	}else{
+		writef("no ");
+		if(px)
+		writef("global variable named %s",pname);
+		else
+		writef("local variable named %s",pname);
+	}
+}
 void unset(char **argv)
 {
-
+	char *name;
+	int x=0;
+	int i;
+	int xp=0,namep=0;
+	for(i=1;argv[i]!=0;i++){
+		if(argv[i][0]=='-'){
+			if(xp==1)continue;
+			if(argv[i][1]=='x'){
+				x=1;
+			}
+			xp=1;
+		}else{
+			if(namep==1)continue;
+			name=argv[i];
+			namep=1;
+		}
+	}
+	if(namep){
+		del_variable(name,x);
+	}else{
+		writef("usage: unset name [-x]");
+	}
+}
+void make_replace(char *dst,int dstl,char *src,int srcl)
+{
+	// writef("make replace dst:%d src:%d",dstl,srcl);
+	int offset=srcl-dstl;
+	int i=dstl;
+	if(offset>0){
+		while(dst[i]!=0)i++;
+		while(i>=dstl){
+			dst[i+offset]=dst[i];
+			i--;
+		}
+	}else{
+		while(dst[i]!=0){
+			dst[i+offset]=dst[i];
+			i++;
+		}
+		dst[i+offset]=dst[i];
+	}
+	for(i=0;i<srcl;i++){
+		dst[i]=src[i];
+	}
+}
+int replace_command(char *begin)
+{
+	char tmp_buf[200];
+	int i;
+	for(i=1;begin[i]!=' '&&begin[i]!=0;i++){
+		tmp_buf[i-1]=begin[i];
+	}
+	tmp_buf[i-1]=0;
+	int ori_length=strlen(tmp_buf);
+	// writef("%s %d\n",tmp_buf,ori_length);
+	ori_length++;//加上$ 符号
+	int r,x,pid;
+	char *name,*value;
+	char *xvalue=0;
+	
+	int fd=open("variables",O_RDONLY|O_CREAT);
+	read(fd,variable_buf,4096);
+	close(fd);
+	char *p=variable_buf;
+	int now_length;
+	while(get_detail(&p,&name,&r,&x,&pid,&value)){
+		if(strcmp(name,tmp_buf)==0){
+			if(x==0){
+				now_length=strlen(value);
+				make_replace(begin,ori_length,value,now_length);
+				return now_length-ori_length;
+			}else{
+				xvalue=value;
+			}
+		}
+	}
+	if(xvalue){
+		now_length=strlen(xvalue);
+		make_replace(begin,ori_length,xvalue,now_length);
+		return now_length-ori_length;
+	}
+	return 1;
 }
 void transform_variable(char *buf)
 {
-
+	int i;
+	int flag=0;
+	for(i=0;buf[i]!=0;i++){
+		if(buf[i]=='\"')flag=1-flag;
+		if(flag)continue;
+		if(buf[i]=='$'){
+			if(i!=0){
+				if(buf[i-1]!=' ')continue;
+			}
+			i+=replace_command(buf+i);
+			i--;
+		}
+	}
 }
 void
 readline(char *buf, u_int n)
@@ -695,7 +843,6 @@ readline(char *buf, u_int n)
 				writef("read error: %e", r);
 			exit();
 		}
-		
 		if(t==0x9){
 			//todo tab
 			int offset=get_tab(buf,i,index);

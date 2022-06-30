@@ -56,7 +56,7 @@ open(const char *path, int mode)
 	ffd=fd;
 	size=ffd->f_file.f_size;
 	fileid=ffd->f_fileid;
-
+	fd->fd_offset=0;
 	for(i=0;i<size;i+=BY2PG){
 		r=syscall_mem_alloc(0,va+i,PTE_R|PTE_V);
 		if(r)
@@ -207,11 +207,11 @@ file_write(struct Fd *fd, const void *buf, u_int n, u_int offset)
 	}
 
 	// Increase the file's size if necessary
-	if (tot > f->f_file.f_size) {
+	// if (tot > f->f_file.f_size) {
 		if ((r = ftruncate(fd2num(fd), tot)) < 0) {
 			return r;
 		}
-	}
+	// }
 
 	// Write the data
 	user_bcopy(buf, (char *)fd2data(fd) + offset, n);
