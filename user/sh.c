@@ -301,7 +301,7 @@ void delchar(char* buf,int length,int index)
 void save_command(char * buf)
 {
 	// writef("saved: %d %s\n",strlen(buf),buf);
-	int fd = open("history", O_WRONLY|O_CREAT|O_APPEND);
+	int fd = open("etc/history", O_WRONLY|O_CREAT|O_APPEND|O_PROTECT);
 	write(fd,buf,strlen(buf));
 	write(fd,"\n",1);
 	close(fd);
@@ -310,7 +310,7 @@ void init_buf()
 {
 	history_buf[0]=0;
 	temp_buf[0]=0;
-	int fd=open("history",O_RDONLY|O_CREAT);
+	int fd=open("etc/history",O_RDONLY|O_CREAT|O_PROTECT);
 	int n=read(fd,history_buf,4096);
 	close(fd);
 	// writef("ok");
@@ -394,6 +394,8 @@ char command_list[][20]={
 	"mkdir",
 	"sh",
 	"echo",
+	"unset",
+	"declare"
 };
 int get_tab(char* buf,int length,int index)
 {
@@ -511,7 +513,7 @@ int get_detail(char **p,char **name,int *r,int* xx,int *pid,char** value)
 }
 void print_all_variable()
 {
-	int fd=open("variables",O_RDONLY|O_CREAT);
+	int fd=open("etc/variables",O_RDONLY|O_CREAT|O_PROTECT);
 	read(fd,variable_buf,4096);
 	close(fd);
 	char *p=variable_buf;
@@ -541,7 +543,7 @@ void print_all_variable()
 void add_to_tail(char *name,int r,int x,char *value)
 {
 	// writef("add to tail\n");
-	int fd=open("variables",O_WRONLY|O_CREAT|O_APPEND);
+	int fd=open("etc/variables",O_WRONLY|O_CREAT|O_APPEND|O_PROTECT);
 	fwritef(fd,"%s ",name);
 	fwritef(fd,"%c ",r==1?'r':'-');
 	fwritef(fd,"%c ",x==1?'x':'-');
@@ -571,7 +573,7 @@ void add_to_tail(char *name,int r,int x,char *value)
 }
 void remove_variable(char *stop)
 {
-	int fd=open("variables",O_RDONLY);
+	int fd=open("etc/variables",O_RDONLY|O_PROTECT);
 	read(fd,variable_buf,4096);
 	close(fd);
 	// writef("%d\n",strlen(variable_buf));
@@ -581,7 +583,7 @@ void remove_variable(char *stop)
 	while(*stop!='\n')stop++;
 	stop++;
 	// writef("replace2: %s %d\n",stop,strlen(stop));
-	fd=open("variables",O_WRONLY);
+	fd=open("etc/variables",O_WRONLY|O_PROTECT);
 	write(fd,variable_buf,strlen(variable_buf));
 	write(fd,stop,strlen(stop));
 	close(fd);
@@ -591,7 +593,7 @@ void remove_variable(char *stop)
 //! 其他 定义变量
 void add_variable(char *pname,int px,int pr,char *pvalue)
 {
-	int fd=open("variables",O_RDONLY|O_CREAT);
+	int fd=open("etc/variables",O_RDONLY|O_CREAT|O_PROTECT);
 	read(fd,variable_buf,4096);
 	close(fd);
 	char *p=variable_buf;
@@ -682,7 +684,7 @@ void declare(char ** argv)
 }
 void del_variable(char *pname,int px)
 {
-	int fd=open("variables",O_RDONLY|O_CREAT);
+	int fd=open("etc/variables",O_RDONLY|O_CREAT|O_PROTECT);
 	read(fd,variable_buf,4096);
 	close(fd);
 	char *p=variable_buf;
@@ -787,7 +789,7 @@ int replace_command(char *begin)
 	char *name,*value;
 	char *xvalue=0;
 	
-	int fd=open("variables",O_RDONLY|O_CREAT);
+	int fd=open("etc/variables",O_RDONLY|O_CREAT|O_PROTECT);
 	read(fd,variable_buf,4096);
 	close(fd);
 	char *p=variable_buf;
@@ -927,6 +929,9 @@ umain(int argc, char **argv)
 	int r, interactive, echocmds;
 	interactive = '?';
 	echocmds = 0;
+	user_create("usr",1);
+	user_create("etc/history",2);
+	user_create("etc/variables",2);
 	writef("\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n");
 	writef("::                                                         ::\n");
 	writef("::              Super Shell  V0.0.0_1                      ::\n");

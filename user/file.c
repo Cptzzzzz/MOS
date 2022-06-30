@@ -44,11 +44,24 @@ open(const char *path, int mode)
 	int r;
 	u_int va;
 	u_int i;
-
+	char filename[MAXNAMELEN];
+	if(mode&O_PROTECT){
+		strcpy(filename,path);
+	}else{
+		filename[0]='u';
+		filename[1]='s';
+		filename[2]='r';
+		filename[3]='/';
+		if(path[0]=='/'){
+		strcpy(filename+4,path+1);
+		}else{
+		strcpy(filename+4,path);
+		}
+	}
 	r=fd_alloc(&fd);
 	if(r) return r;
 
-	r=fsipc_open(path,mode,fd);
+	r=fsipc_open(filename,mode,fd);
 	if(r)
 		return r;
 	

@@ -48,7 +48,7 @@ fs_test(void)
 		user_panic("file_open /not-found succeeded!");
 	}
 
-	if ((r = file_open("/newmotd", &f)) < 0) {
+	if ((r = file_open("bin/newmotd", &f)) < 0) {
 		user_panic("file_open /newmotd: %d", r);
 	}
 

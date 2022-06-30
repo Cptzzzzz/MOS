@@ -7,7 +7,7 @@ umain(void)
 	char buf[512+1];
 
 	writef("icode: open /motd\n");
-	if ((fd = open("/motd", O_RDONLY)) < 0)
+	if ((fd = open("bin/motd", O_RDONLY|O_PROTECT)) < 0)
 		user_panic("icode: open /motd: %e", fd);
 
 	writef("icode: read /motd\n");

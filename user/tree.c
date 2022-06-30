@@ -8,7 +8,7 @@ treePath(char* path, int offset) {
     struct File f;
     struct File fnext;
     struct File lastf;
-    if ((fd = open(path, O_RDONLY)) < 0) {
+    if ((fd = open(path, O_RDONLY|O_PROTECT)) < 0) {
 
         writef("open %s: %e failed!\n", path, fd);
 
@@ -76,11 +76,23 @@ treePath(char* path, int offset) {
 }
 
 void
-umain(int argvn, char** argv) {
-    if (argvn == 2 && strcmp(argv[1], "-a") == 0) {
-        treePath("/", 0);
-    }
-    else {
-        treePath(argv[1], 0);
+umain(int argc, char** argv) {
+    char pathbuf[MAXPATHLEN];
+    pathbuf[0]='u';
+    pathbuf[1]='s';
+    pathbuf[2]='r';
+    pathbuf[3]='/';
+    if(argc==1){
+        treePath("usr",0);
+    }else{
+        int i;
+        for(i=1;i<argc;i++){
+            if(argv[i][0]=='/')
+                treePath(argv[i],0);
+            else{
+                strcpy(pathbuf+4,argv[i]);
+                treePath(pathbuf,0);
+            }
+        }
     }
 }

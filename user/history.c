@@ -22,7 +22,7 @@ void
 umain(int argc, char **argv)
 {
 	int f, i;
-    f = open("history", O_RDONLY);
+    f = open("etc/history", O_RDONLY|O_PROTECT);
     if(f < 0)
         user_panic("can't open %s: %e", argv[i], f);
     else{

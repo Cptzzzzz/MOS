@@ -29,7 +29,7 @@ lsdir(char *path, char *prefix)
 	int fd, n;
 	struct File f;
 
-	if ((fd = open(path, O_RDONLY)) < 0)
+	if ((fd = open(path, O_RDONLY|O_PROTECT)) < 0)
 		user_panic("open %s: %e", path, fd);
 	while ((n = readn(fd, &f, sizeof f)) == sizeof f)
 		if (f.f_name[0])
@@ -83,7 +83,7 @@ umain(int argc, char **argv)
 	}ARGEND
 
 	if (argc == 0)
-		ls("/", "");
+		ls("usr", "");
 	else {
 		for (i=0; i<argc; i++)
 			ls(argv[i], argv[i]);

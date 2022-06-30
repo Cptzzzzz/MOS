@@ -1,41 +1,21 @@
 #include "lib.h"
+char fname[MAXNAMELEN];
 
 
 void touch(char* filename)
 {
-    struct Stat st;
-    int r;
-    int n;
-    int fd;
-    struct File f;
-    int flag=0;
-    // writef("filename: %s-\n",filename);
-    r=stat("/",&st);
-    if(r<0){
-        user_panic("stat /: %e",r);
-    }
-    // writef("ok1");
-    if ((fd = open("/", O_RDONLY)) < 0)
-		user_panic("open /: %e", fd);
-    // writef("ok2");
-	while ((n = readn(fd, &f, sizeof f)) == sizeof f){
-        // writef("%s ",f.f_name);
-        if(f.f_name[0])
-            if (strcmp(f.f_name,filename)==0){
-                flag=1;
-                break;
-            }
-    }
-		
-    // writef("ok%d",flag);
-    user_create(filename,2);
-    return;
-    if(flag==1){
-        writef("file already exist");
+    fname[0]='u';
+    fname[1]='s';
+    fname[2]='r';
+    fname[3]='/';
+    if(filename[0]=='/'){
+        strcpy(fname+4,filename+1);
     }else{
-        int fd=open(filename,O_CREAT);
-        close(fd);
+        strcpy(fname+4,filename);    
     }
+    user_create(fname,2);
+    return;
+
 }
 
 void

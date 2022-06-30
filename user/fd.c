@@ -308,7 +308,7 @@ stat(const char *path, struct Stat *stat)
 {
 	int fd, r;
 
-	if ((fd = open(path, O_RDONLY)) < 0) {
+	if ((fd = open(path, O_RDONLY|O_PROTECT)) < 0) {
 		return fd;
 	}
 

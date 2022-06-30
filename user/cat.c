@@ -14,14 +14,17 @@ cat(int f, char *s)
 	if(n < 0)
 		user_panic("error reading %s: %e", s, n);
 }
-
+void usage()
+{
+	writef("usage: cat filename ...");
+}
 void
 umain(int argc, char **argv)
 {
 	int f, i;
 
 	if(argc == 1)
-		cat(0, "<stdin>");
+		usage();
 	else for(i=1; i<argc; i++){
 		f = open(argv[i], O_RDONLY);
 		if(f < 0)

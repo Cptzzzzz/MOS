@@ -295,7 +295,8 @@ Usage: fsformat gxemul/fs.img files...\n\
        fsformat gxemul/fs.img -r DIR\n");
         exit(0);
     }
-
+    struct File *bin;
+    bin = write_directory(&super.s_root, "/bin"); 
     if(strcmp(argv[2], "-r") == 0) {
         for (i = 3; i < argc; ++i) {
             write_directory(&super.s_root, argv[i]);
@@ -303,7 +304,7 @@ Usage: fsformat gxemul/fs.img files...\n\
     }
     else {
         for(i = 2; i < argc; ++i) {
-            write_file(&super.s_root, argv[i]);
+            write_file(bin, argv[i]);
         }
     }
 
