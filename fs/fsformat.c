@@ -274,14 +274,14 @@ void write_file(struct File *dirf, const char *path) {
 struct File* write_directory(struct File *dirf, char *name) {
     // Your code here
     printf("%s\n",name);
-    struct File* target=create_file(dirf);
-    const char * fname=strrchr(name,'/');
-    if(fname) fname++;
-    else fname=name;
-    strcpy(target->f_name,fname);
-    target->f_size=0;
-    target->f_type=FTYPE_DIR;
-    return target;
+    struct File* res=create_file(dirf);
+    const char * filename=strrchr(name,'/');
+    if(filename) filename++;
+    else filename=name;
+    strcpy(res->f_name,filename);
+    res->f_size=0;
+    res->f_type=FTYPE_DIR;
+    return res;
 }
 
 int main(int argc, char **argv) {
