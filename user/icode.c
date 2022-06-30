@@ -18,7 +18,8 @@ umain(void)
 
 	writef("icode: close /motd\n");
 //	close(fd);
-
+	user_create("etc/history",2);
+	user_create("etc/variables",2);
 	writef("icode: spawn /init\n");
 	if ((r = spawnl("init.b", "init", "initarg1", "initarg2", (char*)0)) < 0)
 		user_panic("icode: spawn /init: %e", r);

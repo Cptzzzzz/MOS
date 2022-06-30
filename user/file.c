@@ -48,14 +48,15 @@ open(const char *path, int mode)
 	if(mode&O_PROTECT){
 		strcpy(filename,path);
 	}else{
-		filename[0]='u';
-		filename[1]='s';
-		filename[2]='r';
-		filename[3]='/';
+		filename[0]='h';
+		filename[1]='o';
+		filename[2]='m';
+		filename[3]='e';
+		filename[4]='/';
 		if(path[0]=='/'){
-		strcpy(filename+4,path+1);
+		strcpy(filename+5,path+1);
 		}else{
-		strcpy(filename+4,path);
+		strcpy(filename+5,path);
 		}
 	}
 	r=fd_alloc(&fd);

@@ -83,7 +83,7 @@ umain(int argc, char **argv)
 	}ARGEND
 
 	if (argc == 0)
-		ls("usr", "");
+		ls("home", "");
 	else {
 		for (i=0; i<argc; i++)
 			ls(argv[i], argv[i]);

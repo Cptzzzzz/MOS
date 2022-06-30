@@ -929,9 +929,6 @@ umain(int argc, char **argv)
 	int r, interactive, echocmds;
 	interactive = '?';
 	echocmds = 0;
-	user_create("usr",1);
-	user_create("etc/history",2);
-	user_create("etc/variables",2);
 	writef("\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n");
 	writef("::                                                         ::\n");
 	writef("::              Super Shell  V0.0.0_1                      ::\n");

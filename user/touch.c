@@ -4,14 +4,15 @@ char fname[MAXNAMELEN];
 
 void touch(char* filename)
 {
-    fname[0]='u';
-    fname[1]='s';
-    fname[2]='r';
-    fname[3]='/';
+    fname[0]='h';
+    fname[1]='o';
+    fname[2]='m';
+    fname[3]='e';
+    fname[4]='/';
     if(filename[0]=='/'){
-        strcpy(fname+4,filename+1);
+        strcpy(fname+5,filename+1);
     }else{
-        strcpy(fname+4,filename);    
+        strcpy(fname+5,filename);    
     }
     user_create(fname,2);
     return;

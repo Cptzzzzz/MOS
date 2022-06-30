@@ -78,19 +78,20 @@ treePath(char* path, int offset) {
 void
 umain(int argc, char** argv) {
     char pathbuf[MAXPATHLEN];
-    pathbuf[0]='u';
-    pathbuf[1]='s';
-    pathbuf[2]='r';
-    pathbuf[3]='/';
+    pathbuf[0]='h';
+    pathbuf[1]='o';
+    pathbuf[2]='m';
+    pathbuf[3]='e';
+    pathbuf[4]='/';
     if(argc==1){
-        treePath("usr",0);
+        treePath("home",0);
     }else{
         int i;
         for(i=1;i<argc;i++){
             if(argv[i][0]=='/')
                 treePath(argv[i],0);
             else{
-                strcpy(pathbuf+4,argv[i]);
+                strcpy(pathbuf+5,argv[i]);
                 treePath(pathbuf,0);
             }
         }
