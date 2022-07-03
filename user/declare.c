@@ -5,11 +5,6 @@ char variable_buf[4096];
 int envid;
 int get_detail(char **p,char **name,int *r,int* xx,int *pid,char** value)
 {
-	//!读取该行变量数据 *p改为下一行的起始位置
-	//! 把间隔符设置成\0 *name指向variable_buf中name起始地址
-	//! r x pid设置为对应的值
-	//! *value指向variable_buf中value的位置
-	//! 返回值为1表示当前读到了 否则没读到
 	if(**p=='\0') return 0;
 	char *x=*p;
 	while(*x!=' '){
@@ -39,15 +34,12 @@ int get_detail(char **p,char **name,int *r,int* xx,int *pid,char** value)
 		x++;
 	}else{
 		int res=0;
-        // printf("%c",*x);
 		while(isdigit(*x)){
 			res=res*10+(*x-'0');
 			x++;
 		}
-        // printf("%d\n",res);
 		*pid=res;
 	}
-	// x++;
 	if(*x=='\n'){
 		*value=0;
 	}else{
@@ -70,29 +62,28 @@ void print_all_variable()
 	int r,x,pid;
 	char *name,*value;
 	if(*p=='\0'){
-		writef("no variables now");
+		fwritef(1,"no variables now");
 		return;
 	}else{
-		writef("name	r	x	pid	value\n");
+		fwritef(1,"name	r	x	pid	value\n");
 	}
 	while(get_detail(&p,&name,&r,&x,&pid,&value)){
-		writef("%s\t",name);
-		if(r==1) writef("1\t");
-		else writef("0\t");
-		if(x==1)writef("1\t");
-		else writef("0\t");
-		writef("%d\t",(pid==-1?0:pid));
+		fwritef(1,"%s\t",name);
+		if(r==1) fwritef(1,"1\t");
+		else fwritef(1,"0\t");
+		if(x==1)fwritef(1,"1\t");
+		else fwritef(1,"0\t");
+		fwritef(1,"%d\t",(pid==-1?0:pid));
 		if(value==0){
-			writef("UNDEFINED\n");
+			fwritef(1,"UNDEFINED\n");
 		}else{
-			writef("%s\n",value);
+			fwritef(1,"%s\n",value);
 		}
 	}
-	writef("declare variable list end");
+	fwritef(1,"declare variable list end");
 }
 void add_to_tail(char *name,int r,int x,char *value)
 {
-	// writef("add to tail\n");
 	int fd=open("etc/variables",O_WRONLY|O_CREAT|O_APPEND|O_PROTECT);
 	fwritef(fd,"%s ",name);
 	fwritef(fd,"%c ",r==1?'r':'-');
@@ -108,39 +99,33 @@ void add_to_tail(char *name,int r,int x,char *value)
 	fwritef(fd,"\n");
 	close(fd);
 	if(r)
-	writef("added readonly ");
+	fwritef(1,"added readonly ");
 	else 
-	writef("added ");
+	fwritef(1,"added ");
 	if(x)
-	writef("global ");
+	fwritef(1,"global ");
 	else 
-	writef("local ");
-	writef("variable ");
+	fwritef(1,"local ");
+	fwritef(1,"variable ");
 	if(value)
-	writef("%s=%s",name,value);
+	fwritef(1,"%s=%s",name,value);
 	else
-	writef("%s",name);
+	fwritef(1,"%s",name);
 }
 void remove_variable(char *stop)
 {
 	int fd=open("etc/variables",O_RDONLY|O_PROTECT);
 	read(fd,variable_buf,4096);
 	close(fd);
-	// writef("%d\n",strlen(variable_buf));
-	// writef("replace: %s\n",stop);
 	*stop=0;
-	// writef("replace1: %s %d\n",variable_buf,strlen(variable_buf));
 	while(*stop!='\n')stop++;
 	stop++;
-	// writef("replace2: %s %d\n",stop,strlen(stop));
 	fd=open("etc/variables",O_WRONLY|O_PROTECT);
 	write(fd,variable_buf,strlen(variable_buf));
 	write(fd,stop,strlen(stop));
 	close(fd);
 }
-//! 格式 name r x pid value
-//! 0参数 输出全部变量 输出格式 name r x pid value(没有value则undefined)
-//! 其他 定义变量
+
 void add_variable(char *pname,int px,int pr,char *pvalue)
 {
 	int fd=open("etc/variables",O_RDONLY|O_CREAT|O_PROTECT);
@@ -155,7 +140,7 @@ void add_variable(char *pname,int px,int pr,char *pvalue)
 	while(get_detail(&p,&name,&r,&x,&pid,&value)){
 		if(strcmp(name,pname)==0){
 			if(x!=px){
-				// continue;
+
 			}else{
 				if(x==0){
 					if(envid==pid){
@@ -175,9 +160,9 @@ void add_variable(char *pname,int px,int pr,char *pvalue)
 		return;
 	}
 	if(r){
-		if(x) writef("global ");
-		else writef("local ");
-		writef("variable %s can only be read",name);
+		if(x) fwritef(1,"global ");
+		else fwritef(1,"local ");
+		fwritef(1,"variable %s can only be read",name);
 		return;
 	}
 	remove_variable(stop);
@@ -194,11 +179,8 @@ int atoi(char *buf)
 }
 void umain(int argc, char ** argv)
 {
-	// writef("argc:%d\n",argc);
     envid=atoi(argv[0]);
-    // writef("envid:%d\n",envid);
     int i;
-	int state=0;//0 输出变量
 	int x=0,r=0;
 	char *name;
 	char *value=0;
@@ -243,5 +225,6 @@ void umain(int argc, char ** argv)
 	}else{
 		add_variable(name,x,r,value);
 	}
+    fwritef(1,"\n");
 }
 

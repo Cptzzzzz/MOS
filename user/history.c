@@ -9,9 +9,6 @@ history(int f, char *s)
 	int r;
 
 	while((n=read(f, buf, (long)sizeof buf))>0){
-        if(n<8192){
-            buf[n-1]=0;
-        }
 		writef("%s",buf);
     }
 	if(n < 0)

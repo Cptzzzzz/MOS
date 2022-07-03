@@ -22,7 +22,7 @@ void touch(char* filename)
 void
 usage(void)
 {
-	writef("touch: [filename...]\n");
+	fwritef(1,"touch: [filename...]\n");
 	exit();
 }
 

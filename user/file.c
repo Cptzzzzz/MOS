@@ -24,9 +24,8 @@ int user_create(char* path,int isdir)
 {
 	int r=0;
 	fsipc_create(path,isdir);
-	if((r=open(path,O_RDONLY))<0){
-		return r;
-	}
+	if((r=open(path,O_RDONLY))<0) return r;
+	return 0;
 }
 // Overview:
 //	Open a file (or directory).

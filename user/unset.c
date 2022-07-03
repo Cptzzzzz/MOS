@@ -5,11 +5,6 @@ char variable_buf[4096];
 
 int get_detail(char **p,char **name,int *r,int* xx,int *pid,char** value)
 {
-	//!读取该行变量数据 *p改为下一行的起始位置
-	//! 把间隔符设置成\0 *name指向variable_buf中name起始地址
-	//! r x pid设置为对应的值
-	//! *value指向variable_buf中value的位置
-	//! 返回值为1表示当前读到了 否则没读到
 	if(**p=='\0') return 0;
 	char *x=*p;
 	while(*x!=' '){
@@ -39,15 +34,12 @@ int get_detail(char **p,char **name,int *r,int* xx,int *pid,char** value)
 		x++;
 	}else{
 		int res=0;
-        // printf("%c",*x);
 		while(isdigit(*x)){
 			res=res*10+(*x-'0');
 			x++;
 		}
-        // printf("%d\n",res);
 		*pid=res;
 	}
-	// x++;
 	if(*x=='\n'){
 		*value=0;
 	}else{
@@ -66,13 +58,9 @@ void remove_variable(char *stop)
 	int fd=open("etc/variables",O_RDONLY|O_PROTECT);
 	read(fd,variable_buf,4096);
 	close(fd);
-	// writef("%d\n",strlen(variable_buf));
-	// writef("replace: %s\n",stop);
 	*stop=0;
-	// writef("replace1: %s %d\n",variable_buf,strlen(variable_buf));
 	while(*stop!='\n')stop++;
 	stop++;
-	// writef("replace2: %s %d\n",stop,strlen(stop));
 	fd=open("etc/variables",O_WRONLY|O_PROTECT);
 	write(fd,variable_buf,strlen(variable_buf));
 	write(fd,stop,strlen(stop));
@@ -106,27 +94,27 @@ void del_variable(char *pname,int px)
 	}
 	if(flag){
 		if(r){
-			writef("can not remove readonly ");
+			fwritef(1,"can not remove readonly ");
 			if(x)
-				writef("global variable ");
+				fwritef(1,"global variable ");
 			else
-				writef("local variable ");
-			writef("%s",name);
+				fwritef(1,"local variable ");
+			fwritef(1,"%s",name);
 			return;
 		}
 		remove_variable(stop);
-		writef("successfully remove ");
+		fwritef(1,"successfully remove ");
 		if(x)
-			writef("global variable ");
+			fwritef(1,"global variable ");
 		else
-			writef("local variable ");
-		writef("%s",name);
+			fwritef(1,"local variable ");
+		fwritef(1,"%s",name);
 	}else{
-		writef("no ");
+		fwritef(1,"no ");
 		if(px)
-		writef("global variable named %s",pname);
+		fwritef(1,"global variable named %s",pname);
 		else
-		writef("local variable named %s",pname);
+		fwritef(1,"local variable named %s",pname);
 	}
 }
 int atoi(char *buf)
@@ -140,7 +128,6 @@ int atoi(char *buf)
 }
 void umain(int argc,char **argv)
 {
-    // writef("unst");
     envid=atoi(argv[0]);
 	char *name;
 	int x=0;
@@ -160,10 +147,9 @@ void umain(int argc,char **argv)
 		}
 	}
 	if(namep){
-        // writef("??\n");
 		del_variable(name,x);
 	}else{
-        // writef("??\n");
-		writef("usage: unset name [-x]");
+		fwritef(1,"usage: unset name [-x]");
 	}
+    fwritef(1,"\n");
 }

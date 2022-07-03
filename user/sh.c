@@ -80,11 +80,10 @@ gettoken(char *s, char **p1)
 	static int c, nc;
 	static char *np1, *np2;
 
-	if (s) {//第一次调用gettoken
+	if (s) {
 		nc = _gettoken(s, &np1, &np2);
 		return 0;
 	}
-	//后续调用gettoken
 	// writef("c=%c-\n",nc);
 	c = nc;
 	*p1 = np1;
@@ -476,11 +475,6 @@ int get_tab(char* buf,int length,int index)
 }
 int get_detail(char **p,char **name,int *r,int* xx,int *pid,char** value)
 {
-	//!读取该行变量数据 *p改为下一行的起始位置
-	//! 把间隔符设置成\0 *name指向variable_buf中name起始地址
-	//! r x pid设置为对应的值
-	//! *value指向variable_buf中value的位置
-	//! 返回值为1表示当前读到了 否则没读到
 	if(**p=='\0') return 0;
 	char *x=*p;
 	while(*x!=' '){
@@ -564,7 +558,7 @@ int replace_command(char *begin)
 	tmp_buf[i-1]=0;
 	int ori_length=strlen(tmp_buf);
 	// writef("%s %d\n",tmp_buf,ori_length);
-	ori_length++;//加上$ 符号
+	ori_length++;
 	int r,x,pid;
 	char *name,*value;
 	char *xvalue=0;
@@ -740,7 +734,7 @@ umain(int argc, char **argv)
 		interactive = iscons(0);
 	for(;;){
 		if (interactive)
-			fwritef(1, "\nCptz@MOS $ ");
+			fwritef(1, "Cptz@WSL20.04:~/home# $ ");
 		writef("\033[s");
 		readline(buf, sizeof buf);
 		// writef("length:%d\n",strlen(buf));

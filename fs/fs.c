@@ -691,7 +691,6 @@ walk_path(char *path, struct File **pdir, struct File **pfile, char *lastelem, c
 				return r;
 			}
 		} else {
-			// *path == '\0'
 			if ((r = dir_lookup(dir, name, &file, isdir)) < 0) {
 				if (r == -E_NOT_FOUND) {
 					if (pdir) {
@@ -700,7 +699,6 @@ walk_path(char *path, struct File **pdir, struct File **pfile, char *lastelem, c
 					if (lastelem) {
 						strcpy(lastelem, name);
 					}
-
 					*pfile = 0;
 				}
 				return r;
@@ -741,17 +739,14 @@ file_create(char *path, struct File **file, int recursive, int isdir)
 	char fpath[MAXNAMELEN];
 	int r;
 	struct File *dir, *f;
-
-	if (recursive) {
+	if (recursive){
 		while (1) {
-			r = walk_path(path, &dir, &f, name, fpath, isdir);
-			// writef("fpath: %s, isdir: %d\n", fpath, isdir);
-			// writef("r: %d, isdir: %d\n", r);
+			r = walk_path(path,&dir,&f,name,fpath,isdir);
 			if (r == 0) {
 				return -E_FILE_EXISTS;
 			}
 			if (dir == 0) { // indicates path not found
-				r = file_create(fpath, &f, 0, 1);
+				r=file_create(fpath,&f,0,1);
 				continue;
 			}
 			break;
@@ -766,14 +761,11 @@ file_create(char *path, struct File **file, int recursive, int isdir)
 		}
 
 	}
-	if (r != -E_NOT_FOUND) {
+	if(r!=-E_NOT_FOUND){
 		return r;
 	}
 
-	if (dir_alloc_file(dir, &f) < 0) {
-		return r;
-	}
-
+	if(dir_alloc_file(dir,&f)<0) return r;
 	strcpy((char *)f->f_name, name);
 	f->f_type = isdir;
 	*file = f;

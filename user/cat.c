@@ -24,12 +24,12 @@ umain(int argc, char **argv)
 	int f, i;
 
 	if(argc == 1)
-		usage();
+		cat(0,"<stdin>");
 	else for(i=1; i<argc; i++){
 		f = open(argv[i], O_RDONLY);
 		if(f < 0)
 			// user_panic("can't open %s: %e", argv[i], f);
-			writef("can't open %s: %e", argv[i], f);
+			fwritef(1,"can't open %s: %e", argv[i], f);
 		else{
 			cat(f, argv[i]);
 			close(f);

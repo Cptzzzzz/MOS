@@ -33,14 +33,9 @@ int fsipc_create(char *path,int isdir)
 	u_int perm;
     struct Fsreq_create *req;
     req = (struct Fsreq_open*) fsipcbuf;
-
-    if (strlen(path) >= MAXPATHLEN) {
-        return -E_BAD_PATH;
-    }
-
+    if(strlen(path)>=MAXPATHLEN) return -E_BAD_PATH;
     strcpy((char*)req->req_path, path);
     req->req_isdir = isdir;
-
     return fsipc(FSREQ_CREATE, req, 0, &perm);
 }
 // Overview:
