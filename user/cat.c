@@ -29,7 +29,7 @@ umain(int argc, char **argv)
 		f = open(argv[i], O_RDONLY);
 		if(f < 0)
 			// user_panic("can't open %s: %e", argv[i], f);
-			fwritef(1,"can't open %s: %e", argv[i], f);
+			fwritef(1,"can't open %s: %e\n", argv[i], f);
 		else{
 			cat(f, argv[i]);
 			close(f);
