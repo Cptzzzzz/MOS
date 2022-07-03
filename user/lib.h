@@ -14,7 +14,7 @@ extern void exit();
 
 extern struct Env *env;
 
-
+#define isdigit(x) (((x)<='9')&&((x)>='0'))
 #define USED(x) (void)(x)
 //////////////////////////////////////////////////////printf
 #include <stdarg.h>

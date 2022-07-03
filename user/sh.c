@@ -2,7 +2,6 @@
 #include <args.h>
 
 int debug_ = 0;
-#define isdigit(x) (((x)<='9')&&((x)>='0'))
 
 //
 // get the next token from string s
@@ -92,7 +91,23 @@ gettoken(char *s, char **p1)
 	nc = _gettoken(np2, &np1, &np2);
 	return c;
 }
-
+void itoa(char *buff,int number)
+{
+	int i=0,j;
+	while(number>0){
+		buff[i]=number%10;
+		number/=10;
+		i++;
+	}
+	buff[i]='\0';
+    // printf("%s %d\n",buff,number);
+	char x;
+	for(j=0,i=i-1;j<i;j++,i--){
+		x=buff[i];
+		buff[i]=buff[j];
+		buff[j]=x;
+	}
+}
 #define MAXARGS 16
 int backstage=0;
 int runnow=0;
@@ -218,21 +233,27 @@ runit:
 			writef(" %s", argv[i]);
 		writef("\n");
 	}
-	if(strcmp(argv[0],"declare")==0){
-		declare(argv);
-		exit(0);
-	}
-	if(strcmp(argv[0],"unset")==0){
-		unset(argv);
-		exit(0);
-	}
+	// if(strcmp(argv[0],"declare")==0){
+	// 	declare(argv);
+	// 	exit(0);
+	// }
+	// if(strcmp(argv[0],"unset")==0){
+	// 	unset(argv);
+	// 	exit(0);
+	// }
+	char numbuf[100];
+	char cmdname[100];
+	strcpy(cmdname,argv[0]);
+	itoa(numbuf,syscall_getenvid());
+	// writef("main: %d\n",syscall_getenvid());
+	argv[0]=numbuf;
 	// writef("length: %d\n",argc);
-	if ((r = spawn(argv[0], argv)) < 0)
-		writef("spawn %s: %e\n", argv[0], r);
+	if ((r = spawn(cmdname, argv)) < 0)
+		writef("spawn %s: %e\n", cmdname, r);
 	close_all();
 	// writef("isrun: %d\n",isrun);
 	if (r >= 0) {
-		if (debug_) writef("[%08x] WAIT %s %08x\n", env->env_id, argv[0], r);
+		if (debug_) writef("[%08x] WAIT %s %08x\n", env->env_id, cmdname, r);
 		// if(isrun==0)
 		if(backstage==0)
 			wait(r);
@@ -397,6 +418,7 @@ char command_list[][20]={
 	"unset",
 	"declare"
 };
+
 int get_tab(char* buf,int length,int index)
 {
 	int cmd_length=sizeof(command_list)/20;
@@ -452,7 +474,6 @@ int get_tab(char* buf,int length,int index)
 	}
 	return offset;
 }
-
 int get_detail(char **p,char **name,int *r,int* xx,int *pid,char** value)
 {
 	//!读取该行变量数据 *p改为下一行的起始位置
@@ -510,247 +531,6 @@ int get_detail(char **p,char **name,int *r,int* xx,int *pid,char** value)
 	x++;
 	*p=x;
 	return 1;
-}
-void print_all_variable()
-{
-	int fd=open("etc/variables",O_RDONLY|O_CREAT|O_PROTECT);
-	read(fd,variable_buf,4096);
-	close(fd);
-	char *p=variable_buf;
-	int r,x,pid;
-	char *name,*value;
-	if(*p=='\0'){
-		writef("no variables now");
-		return;
-	}else{
-		writef("name	r	x	pid	value\n");
-	}
-	while(get_detail(&p,&name,&r,&x,&pid,&value)){
-		writef("%s\t",name);
-		if(r==1) writef("1\t");
-		else writef("0\t");
-		if(x==1)writef("1\t");
-		else writef("0\t");
-		writef("%d\t",(pid==-1?0:pid));
-		if(value==0){
-			writef("UNDEFINED\n");
-		}else{
-			writef("%s\n",value);
-		}
-	}
-	writef("declare variable list end");
-}
-void add_to_tail(char *name,int r,int x,char *value)
-{
-	// writef("add to tail\n");
-	int fd=open("etc/variables",O_WRONLY|O_CREAT|O_APPEND|O_PROTECT);
-	fwritef(fd,"%s ",name);
-	fwritef(fd,"%c ",r==1?'r':'-');
-	fwritef(fd,"%c ",x==1?'x':'-');
-	if(x==1){
-		fwritef(fd,"-");
-	}else{
-		fwritef(fd,"%d",syscall_getenvid());
-	}
-	if(value){
-		fwritef(fd," %s",value);
-	}
-	fwritef(fd,"\n");
-	close(fd);
-	if(r)
-	writef("added readonly ");
-	else 
-	writef("added ");
-	if(x)
-	writef("global ");
-	else 
-	writef("local ");
-	writef("variable ");
-	if(value)
-	writef("%s=%s",name,value);
-	else
-	writef("%s",name);
-}
-void remove_variable(char *stop)
-{
-	int fd=open("etc/variables",O_RDONLY|O_PROTECT);
-	read(fd,variable_buf,4096);
-	close(fd);
-	// writef("%d\n",strlen(variable_buf));
-	// writef("replace: %s\n",stop);
-	*stop=0;
-	// writef("replace1: %s %d\n",variable_buf,strlen(variable_buf));
-	while(*stop!='\n')stop++;
-	stop++;
-	// writef("replace2: %s %d\n",stop,strlen(stop));
-	fd=open("etc/variables",O_WRONLY|O_PROTECT);
-	write(fd,variable_buf,strlen(variable_buf));
-	write(fd,stop,strlen(stop));
-	close(fd);
-}
-//! 格式 name r x pid value
-//! 0参数 输出全部变量 输出格式 name r x pid value(没有value则undefined)
-//! 其他 定义变量
-void add_variable(char *pname,int px,int pr,char *pvalue)
-{
-	int fd=open("etc/variables",O_RDONLY|O_CREAT|O_PROTECT);
-	read(fd,variable_buf,4096);
-	close(fd);
-	char *p=variable_buf;
-	char *stop=0;
-	int r,x,pid;
-	char *name,*value;
-	int change=0;
-	stop=p;
-	while(get_detail(&p,&name,&r,&x,&pid,&value)){
-		if(strcmp(name,pname)==0){
-			if(x!=px){
-				// continue;
-			}else{
-				if(x==0){
-					if(syscall_getenvid()==pid){
-						change=1;
-						break;
-					}
-				}else{
-					change=1;
-					break;
-				}
-			}
-		}
-		stop=p;
-	}
-	if(change==0){
-		add_to_tail(pname,pr,px,pvalue);
-		return;
-	}
-	if(r){
-		if(x) writef("global ");
-		else writef("local ");
-		writef("variable %s can only be read",name);
-		return;
-	}
-	remove_variable(stop);
-	add_to_tail(pname,pr,px,pvalue);
-}
-void declare(char ** argv)
-{
-	int i;
-	int state=0;//0 输出变量
-	int x=0,r=0;
-	char *name;
-	char *value;
-	int go=0;
-	int perm=0;
-	int namep=0;
-	int valp=0;
-	for(i=1;argv[i]!=0;i++){
-		if(argv[i][0]=='-'){
-			if(perm==1){
-				continue;
-			}
-			perm=1;
-			if(argv[i][1]=='x'||argv[i][1]=='r'){
-				if(argv[i][1]=='x'){
-					x=1;
-				}
-				if(argv[i][1]=='r'){
-					r=1;
-				}
-				if(argv[i][2]=='x'){
-					x=1;
-				}
-				if(argv[i][2]=='r'){
-					r=1;
-				}
-			}
-		}else if(argv[i][0]=='='){
-			if(valp==1){
-				continue;
-			}
-			value=argv[i]+1;
-			valp=1;
-		}else{
-			if(namep==1)continue;
-			name=argv[i];
-			namep=1;
-		}
-	}
-	if(i==1){
-		print_all_variable();
-	}else{
-		add_variable(name,x,r,value);
-	}
-}
-void del_variable(char *pname,int px)
-{
-	int fd=open("etc/variables",O_RDONLY|O_CREAT|O_PROTECT);
-	read(fd,variable_buf,4096);
-	close(fd);
-	char *p=variable_buf;
-	char *stop=0;
-	int r,x,pid;
-	char *name,*value;
-	stop=p;
-	int flag=0;
-	while(get_detail(&p,&name,&r,&x,&pid,&value)){
-		if(strcmp(name,pname)==0){
-			if(x==px){
-				flag=1;
-				break;
-			}
-		}
-		stop=p;
-	}
-	if(flag){
-		if(r){
-			writef("can not remove readonly ");
-			if(x)
-				writef("global variable ");
-			else
-				writef("local variable ");
-			writef("%s",name);
-			return;
-		}
-		remove_variable(stop);
-		writef("successfully remove ");
-		if(x)
-			writef("global variable ");
-		else
-			writef("local variable ");
-		writef("%s",name);
-	}else{
-		writef("no ");
-		if(px)
-		writef("global variable named %s",pname);
-		else
-		writef("local variable named %s",pname);
-	}
-}
-void unset(char **argv)
-{
-	char *name;
-	int x=0;
-	int i;
-	int xp=0,namep=0;
-	for(i=1;argv[i]!=0;i++){
-		if(argv[i][0]=='-'){
-			if(xp==1)continue;
-			if(argv[i][1]=='x'){
-				x=1;
-			}
-			xp=1;
-		}else{
-			if(namep==1)continue;
-			name=argv[i];
-			namep=1;
-		}
-	}
-	if(namep){
-		del_variable(name,x);
-	}else{
-		writef("usage: unset name [-x]");
-	}
 }
 void make_replace(char *dst,int dstl,char *src,int srcl)
 {
