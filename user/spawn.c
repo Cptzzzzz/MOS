@@ -158,26 +158,15 @@ int spawn(char *prog, char **argv)
 	char progname[40];
 	int name_len = strlen(prog);
 	strcpy(progname, prog);
-
-	if (name_len <= 2 || prog[name_len - 1] != 'b' || prog[name_len - 2] != '.')
-	{
-        int length=strlen(progname);
-        progname[length]='.';
-        progname[length+1]='b';
-        progname[length+2]='\0';
-	}
-
 	int length=strlen(progname);
 	int cnt;
 	for(cnt=length;cnt>=0;cnt--){
 		progname[cnt+4]=progname[cnt];
 	}
-
 	progname[0]='b';
 	progname[1]='i';
 	progname[2]='n';
 	progname[3]='/';
-
 	if ((r = open(progname, O_RDONLY|O_PROTECT)) < 0)
 	{
 		// user_panic("spawn ::open line 102 RDONLY wrong !\n");

@@ -40,7 +40,7 @@ USERAPPS :=  $(user_dir)/num.b  \
 		 $(user_dir)/unset.b
 
 
-FSIMGFILES := motd newmotd $(user_dir)/testarg.b $(user_dir)/init.b $(USERAPPS)
+FSIMGFILES := $(user_dir)/testarg.b $(user_dir)/init.b $(USERAPPS)
 
 CFLAGS += -nostdlib -static
 

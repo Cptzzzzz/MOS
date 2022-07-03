@@ -252,7 +252,9 @@ void write_file(struct File *dirf, const char *path) {
     else
         fname = path;
     strcpy(target->f_name, fname);
- 
+    if(strcmp(target->f_name+strlen(target->f_name)-2,".b")==0){
+        target->f_name[strlen(target->f_name)-2]='\0';
+    }
     target->f_size = lseek(fd, 0, SEEK_END);
     target->f_type = FTYPE_REG;
  
@@ -295,10 +297,10 @@ Usage: fsformat gxemul/fs.img files...\n\
        fsformat gxemul/fs.img -r DIR\n");
         exit(0);
     }
-    struct File *bin;
+    struct File *bin,*home,*etc;
     bin = write_directory(&super.s_root, "/bin"); 
-    write_directory(&super.s_root, "/etc"); 
-    write_directory(&super.s_root, "/home"); 
+    etc=write_directory(&super.s_root, "/etc"); 
+    home=write_directory(&super.s_root, "/home"); 
 
     if(strcmp(argv[2], "-r") == 0) {
         for (i = 3; i < argc; ++i) {
@@ -310,7 +312,8 @@ Usage: fsformat gxemul/fs.img files...\n\
             write_file(bin, argv[i]);
         }
     }
-
+    write_file(home,"motd");
+    write_file(home,"newmotd");
     flush_bitmap();
     finish_fs(argv[1]);
 
