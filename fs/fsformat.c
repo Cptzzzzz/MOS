@@ -301,7 +301,6 @@ Usage: fsformat gxemul/fs.img files...\n\
     bin = write_directory(&super.s_root, "/bin"); 
     etc=write_directory(&super.s_root, "/etc"); 
     home=write_directory(&super.s_root, "/home"); 
-
     if(strcmp(argv[2], "-r") == 0) {
         for (i = 3; i < argc; ++i) {
             write_directory(&super.s_root, argv[i]);

@@ -247,8 +247,9 @@ runit:
 	// writef("main: %d\n",syscall_getenvid());
 	argv[0]=numbuf;
 	// writef("length: %d\n",argc);
-	if ((r = spawn(cmdname, argv)) < 0)
-		writef("spawn %s: %e\n", cmdname, r);
+	if ((r = spawn(cmdname, argv)) < 0){
+		// writef("spawn %s: %e\n", cmdname, r);
+	}
 	close_all();
 	// writef("isrun: %d\n",isrun);
 	if (r >= 0) {
@@ -282,23 +283,15 @@ void debug_msg(int index,int length)
 }
 void flush(char *buf,int length,int index)
 {
-	// writef("\033[%dX",length-index);
-	// int i;
-	// for(i=0;i<index;i++){
-	// 	writef("\b \b");
-	// }
-	// debug_msg(index,length);
 	writef("\033[u");
 	writef("\033[K");
-	// writef("\033[0K");
 	int i;
 	for(i=0;i<length;i++)
 	writef("%c",buf[i]);
 	for(i=length-index;i>0;i--){
 		writef("\033[1D");
 	}
-	// writef("%d",syscall_getenvid());
-	// writef("\033[%dD",length-index);
+
 }
 void addchar(char* buf,int length,int index,char t)
 {
@@ -320,7 +313,6 @@ void delchar(char* buf,int length,int index)
 }
 void save_command(char * buf)
 {
-	// writef("saved: %d %s\n",strlen(buf),buf);
 	int fd = open("etc/history", O_WRONLY|O_CREAT|O_APPEND|O_PROTECT);
 	write(fd,buf,strlen(buf));
 	write(fd,"\n",1);
@@ -333,8 +325,6 @@ void init_buf()
 	int fd=open("etc/history",O_RDONLY|O_CREAT|O_PROTECT);
 	int n=read(fd,history_buf,4096);
 	close(fd);
-	// writef("ok");
-	// writef("-%d-\n",strlen(history_buf));
 	if(n<0)
 		user_panic("error reading history");
 	if(history_buf[0]==0){
@@ -358,7 +348,6 @@ void init_buf()
 int history_last(char *buf,int length)
 {
 	buf[length]=0;
-	// writef("up");
 	if(history_ptr==history_maxl){
 		return 0;
 	}

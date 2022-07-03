@@ -2,7 +2,7 @@
 
 int arr[50];
 void
-tree(char* path,int offset){
+tree(char* path,int depth){
     int fd, n;
     struct File f;
     struct File fnext;
@@ -12,8 +12,8 @@ tree(char* path,int offset){
         return;
     } 
     int m=0;
-    if(offset==0){
-        for(m=0;m<offset;m++) writef(" ");
+    if(depth==0){
+        for(m=0;m<depth;m++) writef(" ");
         fwritef(1,"%s\n\033[1A",path);
     }
     char* tempath[1024];
@@ -27,8 +27,8 @@ tree(char* path,int offset){
         if((n=readn(fd,&fnext,sizeof f))!=sizeof f||fnext.f_name[0]==0){
             end=1;
         }
-        for(m=0;m<offset;m++) {
-            if(arr[m/3]==1&&m%3==0&&(!end||m!=offset-offset%3)){
+        for(m=0;m<depth;m++) {
+            if(arr[m/3]==1&&m%3==0&&(!end||m!=depth-depth%3)){
                 fwritef(1,"│");
             }else{
                 fwritef(1," ");
@@ -45,11 +45,11 @@ tree(char* path,int offset){
             strcpy((tempath+strlen(tempath)),"/");
             strcpy((tempath+strlen(tempath)),f.f_name);
             if(end==1){
-                arr[offset/3]=0;
+                arr[depth/3]=0;
             }else{
-                arr[offset/3]=1;
+                arr[depth/3]=1;
             }
-            tree(tempath,offset+3);
+            tree(tempath,depth+3);
         }else if(f.f_name[0]!=0){
             if(end) fwritef(1,"└──");
             else fwritef(1,"├──");
