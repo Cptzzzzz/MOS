@@ -6,7 +6,7 @@
 
 课上测试成绩如下 （extra为通过制，>=60为通过，获得全部分数)
 
-![image-20220724160350797](README-img\image-20220724160350797.png)
+![image-20220724160350797](https://raw.githubusercontent.com/Cptzzzzz/MOS/main/README-img/image-20220724160350797.png)
 
 完成并通过了lab6-challenge的申优答辩
 
