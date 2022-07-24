@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)https://judge.buaa.edu.cn/exam/showProcessMsg.jsp -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    
+    <meta http-equiv="Expires" content="0"> 
+    <meta http-equiv="Cache-Control" content="no-cache"> 
+    <meta http-equiv="Pragma" content="no-cache"> 
+    <link rel="shortcut icon" href="https://judge.buaa.edu.cn/images/cgicon.png">
+
+    <title></title>
+    
+    <!-- Bootstrap core CSS -->
+    <link href="./bootstrap.min.css" rel="stylesheet">
+   
+    <link href="./all.css" rel="stylesheet">
+    <link href="./sticky-footer-navbar.css" rel="stylesheet">
+    <link href="./cg_sv2.css" rel="stylesheet">
+    
+    <script src="./jquery-3.5.1.min.js.下载"></script>
+    
+    <script src="./bootstrap.bundle.min.js.下载"></script>
+
+  </head>
+
+<body marginwidth="0" marginheight="0">
+<div class="container-fluid">
+<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+
+ <tbody><tr> 
+ <td height="100%">
+        
+ 	<small class="text-primary">初次提交时间: 2022-06-18 19:04:10&nbsp;&nbsp;&nbsp;&nbsp;最后一次修改时间: 2022-06-18 20:25:09</small>
+   
+ </td>
+ </tr>
+ 
+ 
+ 
+ 
+ 
+</tbody></table>
+</div>
+
+<script type="text/javascript" language="javascript">
+    
+        parent.document.getElementById("Submit").disabled=false;
+        parent.document.getElementById("Submit").value="提交";
+    
+    
+    
+        try {
+            var cgLoadExamSubmits;
+            if (localStorage.cgExamSubmits) {
+                cgLoadExamSubmits = JSON.parse(localStorage.getItem("cgExamSubmits")); 
+            }
+            var kindJsonKey = "kind4";
+            var kindJsonObj = cgLoadExamSubmits[kindJsonKey];
+            var problemJsonKey = "problem4043";
+            var problemJsonObj = kindJsonObj[problemJsonKey];
+            problemJsonObj.isSubmit=true;
+
+            localStorage.setItem('cgExamSubmits', JSON.stringify(cgLoadExamSubmits));
+
+            //console.log(kindJsonKey);
+            //console.log(problemJsonKey);
+            //console.log(cgLoadExamSubmits);
+
+            parent.parent.$("#index_problems").load("index_problems_local.jsp");
+
+        } catch(e){
+            parent.parent.$("#index_problems").load("index_problems.jsp", {examParam:'xqvd1TLrptWEy8re3b3LrA'});
+        }
+        parent.parent.$("#indexProsByKindDIV4").load("index_refresh.jsp", {examParam:'xqvd1TLrptWEy8re3b3LrA'});
+        
+    
+</script>
+
+
+
+
+</body></html>

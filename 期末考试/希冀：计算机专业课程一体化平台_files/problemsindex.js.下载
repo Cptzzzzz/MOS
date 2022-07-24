@@ -1,0 +1,57 @@
+
+
+function modalEdit(myuri) {
+    
+    document.getElementById('iframeModal').src = myuri;
+    
+    $('#addModal').addClass('modal-show');
+    $('#iframeModal').addClass('modal-show');
+
+};
+
+function closeModal() {   
+    event.stopPropagation();
+    $('#addModal').removeClass('modal-show');
+    $('#iframeModal').removeClass('modal-show');
+};
+$(function () {
+
+if($('.get-navbar-height').length!=0){
+    var headerHeight=$('.get-navbar-height').innerHeight();
+    $('.add-style-header').css("height","calc(100vh-"+headerHeight+")");
+    $('.add-style-header').css("margin-top",headerHeight) 
+}
+
+    
+    $('#typeAll span').on('click', function () {
+        $(this).siblings().removeClass('current')
+        $(this).addClass('current');
+        let index = $(this).index() - 1;
+        $('#tabs div.tabs').removeClass('add-tabs-current');
+        $('#tabs div.tabs').eq(index).addClass('add-tabs-current');
+        $('#addName').text($(this).text())
+    });
+    
+
+})
+
+/*
+var maxtime = 60 * 60; 
+function CountDown() {
+    if (maxtime >= 0) {
+        hours = Math.floor(maxtime / 60);
+        minutes = Math.floor(maxtime / 60);
+        seconds = Math.floor(maxtime % 60);
+        msg = minutes + "鍒�" + seconds + "绉�";
+        document.all["timer"].innerHTML = msg;
+        if (maxtime == 5 * 60) alert("杩樺墿5鍒嗛挓");
+        --maxtime;
+    } else {
+        clearInterval(timer);
+        alert("鏃堕棿鍒帮紝缁撴潫!");
+    }
+}
+timer = setInterval("CountDown()", 1000);
+*/
+
+

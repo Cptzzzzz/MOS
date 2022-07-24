@@ -1,0 +1,41 @@
+ function DrawQrCode(text, canvas) {
+		// Get canvas
+		var canvas = getElem(canvas);
+
+        // Compute QR Code
+        var ecl = qrcodegen.QrCode.Ecc.LOW;
+        var segs = qrcodegen.QrSegment.makeSegments(text);
+        var minVer = 1;
+        var maxVer = 40;
+        var mask = -1;
+        var boostEcc = true;
+        var qr = qrcodegen.QrCode.encodeSegments(segs, ecl, minVer, maxVer, mask, boostEcc);
+		
+        // Draw image output
+        var border = 1;
+        var lightColor = "white";
+        var darkColor = "black";
+        var border = 1;
+        var scale = 4;
+        drawCanvas(qr, scale, border, lightColor, darkColor, canvas);
+    }
+    function drawCanvas(qr, scale, border, lightColor, darkColor, canvas) {
+        if (scale <= 0 || border < 0)
+            throw new RangeError("Value out of range");
+        var width = (qr.size + border * 2) * scale;
+        canvas.width = width;
+        canvas.height = width;
+        var ctx = canvas.getContext("2d");
+        for (var y = -border; y < qr.size + border; y++) {
+            for (var x = -border; x < qr.size + border; x++) {
+                ctx.fillStyle = qr.getModule(x, y) ? darkColor : lightColor;
+                ctx.fillRect((x + border) * scale, (y + border) * scale, scale, scale);
+            }
+        }
+    }
+	function getElem(id) {
+        var result = document.getElementById(id);
+        if (result instanceof HTMLElement)
+            return result;
+        throw new Error("Assertion error");
+    }

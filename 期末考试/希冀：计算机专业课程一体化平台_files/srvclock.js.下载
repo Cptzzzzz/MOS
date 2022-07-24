@@ -1,0 +1,78 @@
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+var ServerClock = 
+            function(s_year,s_month,s_day,s_hour,s_min,s_sec)
+{    
+    var _delay = 10;    
+    
+    var serverTime = null;
+    if(arguments.length == 0)
+    {        
+        serverTime = new Date(); 
+        _delay = 0;
+    }
+    else
+        serverTime = 
+            new Date(s_year,s_month,s_day,s_hour,s_min,s_sec);
+
+   
+    var clientTime = new Date();
+   
+    var _diff = serverTime.getTime() - clientTime.getTime(); 
+
+   
+    this.set_delay = function(value){_delay=value;};
+    
+    
+   
+    this.get_ServerTime = function(formatstring)
+    {
+        clientTime = new Date();
+        serverTime.setTime(clientTime.getTime()+_diff+_delay);
+        
+        var monthStr=serverTime.getMonth() + 1;
+        
+        var minuteStr = serverTime.getMinutes();
+        if(minuteStr < 10) {
+            minuteStr="0"+minuteStr;
+        }
+        
+        var secondStr = serverTime.getSeconds();        
+        if(secondStr < 10) {
+            secondStr = "0" + secondStr;
+        }
+        //if(formatstring == null) {
+        var formatedTime=serverTime.getFullYear()+"-"+ monthStr +"-"+serverTime.getDate() +
+                         " " + serverTime.getHours()+":" + minuteStr +":" + secondStr ;
+        return formatedTime;
+        //} else
+           // return serverTime.format(formatstring);
+    };    
+    
+    this.get_SimpleDate = function(formatstring)
+    {
+        clientTime = new Date();
+        serverTime.setTime(clientTime.getTime()+_diff+_delay);
+        
+        var monthStr=serverTime.getMonth() + 1;
+        
+        var minuteStr = serverTime.getMinutes();
+        if(minuteStr < 10) {
+            minuteStr="0"+minuteStr;
+        }
+        
+        var secondStr = serverTime.getSeconds();        
+        if(secondStr < 10) {
+            secondStr = "0" + secondStr;
+        }
+        //if(formatstring == null) {
+        var formatedTime= serverTime.getHours()+":" + minuteStr +":" + secondStr ;
+        return formatedTime;
+        //} else
+           // return serverTime.format(formatstring);
+    };    
+};

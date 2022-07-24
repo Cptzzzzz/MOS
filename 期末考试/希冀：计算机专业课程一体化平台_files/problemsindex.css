@@ -1,0 +1,209 @@
+.add-style-title{
+  
+    height: 30px;
+    line-height: 30px;
+    color: #fff;
+    padding-left: 10px;
+    border-radius: 6px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.add-style-type-all p{
+    font-weight: bold;
+}
+.add-style-type-all span{
+    cursor: pointer;
+    border: 1px solid #6c757d;
+    padding: 1px 10px;
+        border-radius: 6px;
+        /* color: #17a2b8; */
+        display: inline-block;
+        margin-bottom: 6px;
+}
+.add-style-type-all span.current{
+    background:#6c757d;
+    color:#fff;
+}
+.add-style-form{
+    position: absolute;
+    left: 50%;
+    
+    margin-left: -40px;
+}
+.cgoms-left-bottom{
+    position: absolute;
+    left: 0px;    
+    bottom: 60px;
+    margin-left: 10px;
+}
+.add-style-tr{
+    background: #f8f9fa !important;
+    margin-bottom:10px;
+    border: 1px solid #e1e1e1;
+}
+.table td, .table th{
+    border-top: none;
+}
+.add-style-right{
+    font-size: 20px !important;
+    color: #ff0202;
+}
+.add-style-margin{
+    height:10px;width:100%;
+
+}
+.add-style-color input{
+    margin-right:10px;
+}
+
+.add-style-left{
+    height: 100vh;
+    background: #3088d3;
+}
+.add-style-position{
+    position: absolute;
+    right: 0;
+}
+.add-style-header{
+    position: fixed;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    height: 100vh;
+}
+.add-style-type-all{
+    font-size: 16px;
+    padding: 6px 5px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #cdd2d5;
+}
+.add-style-type{
+    width:65%;
+}
+.add-style-detail{
+    line-height: 40px;
+    height: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    padding-left: 5px;
+}
+.content {
+    background-color: #FFFFFF;
+    overflow: auto;
+    border-radius: 10px;
+    margin-top:5px;
+    border: 1px solid #cdd2d5;
+    max-height:45vh;
+    overflow: auto;
+ }
+.toggle {  margin:20px auto; }
+.toggle dl{
+    width: 93%;
+    margin: 0 auto;
+}
+.toggle dl dt { 
+    background: #ebf4f7 ;
+    background-size: 5%;
+height:30px; line-height:30px; font-size:15px; font-weight:400; color:#17a2b8; cursor:pointer; margin:8px 0; padding-left:13px; display:block; }
+.toggle dl dt.current { background:#ebf4f7 ;
+    background-size: 4%; }
+.toggle dl dd { padding-left:10px; line-height:24px; }
+.toggle dl dd h2 { font-size:15px; }
+.toggle dl dd ul { padding:0; }
+.toggle dl dd ul li { list-style:decimal inside none; padding: 5px;background: #f7f7f7;
+    margin-bottom: 5px;}
+    .add-style-timer{
+        font-size:16px;
+        color:#000;
+        margin-top: 1px;
+        border: 1px solid #cdd2d5;
+            border-radius: 10px;
+            padding: 6px 5px;
+            font-weight: bold;
+    }
+    .add-style-timer span{
+        color:#dc3545;
+        font-size:16px;
+    }
+    
+    .add-style-srv-time{
+        font-size:16px;
+        color:#000;
+        margin-top: 20px;
+        border: 1px solid #cdd2d5;
+            border-radius: 10px;
+            padding: 6px 5px;
+            
+    }
+    
+    .add-style-btn{
+        padding:5px 20px;
+        font-size: 20px;
+    }
+    .tabs{
+        display:none;
+    }
+    .add-tabs-current{
+        display: block;
+
+    }
+    .table{
+        margin-bottom:3rem;
+    }
+    .add-style-modal{
+        display: none;
+        width:100vw;
+        height:100vh;
+        position: fixed;
+        left:0;
+        top:0;
+        bottom:0;
+        right:0;
+        background:#000;
+        opacity: .9;
+        z-index: 101;
+    }
+    .add-style-iframe{
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 102;
+        width: 90vw;
+        height: 98vh;
+        margin-left: 2vw;
+        margin-top: 1vh;
+        padding-bottom: 50px;
+    }
+    .add-modal-del{
+        float: right;
+        padding: 6px 20px;
+        margin: 10px 20px 0 0;
+        color: #fff;
+        background: #dc3545;
+        border-radius: 11px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    @media screen and (max-width:1350px){
+        .add-modal-del{
+        padding: 6px 10px;
+        margin: 10px 20px 0 0;
+        width: 40px;
+        text-align: center;
+    }
+}
+    .modal-show{
+        display: block;
+    }
+    
+    .cgsavetip {
+        z-index: 100;
+        position: absolute;
+        right:15px;
+        padding: 5px;
+        font-size: 14px
+    }

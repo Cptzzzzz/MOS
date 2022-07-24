@@ -1,0 +1,268 @@
+
+    var mobilePic0Saved=false;
+    var mobilePic1Saved=false;
+    var curUserID=0;
+    function cgGetImageList(userid, uid, qid, jobid) {
+        curUserID = userid;
+        cgGetImageData(uid, qid, jobid);
+        mobilePic0Saved = false;
+        mobilePic1Saved = false;
+    }
+    
+    function cgDataURLtoFile(dataurl, filename) {
+        var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, {type:mime});
+    }
+    
+    
+    function mobileResizeImageUpload(datas, MAX_WIDTH, MAX_HEIGHT, imgid) {
+        // We create an image to receive the Data URI
+        var img = document.createElement('img');
+
+        // When the event "onload" is triggered we can resize the image.
+        img.onload = function()
+            {        
+                // We create a canvas and get its context.
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+
+                var width = img.width;
+                var height = img.height;
+
+                var newDataUri = 0;
+                for(var cutNum = 0; cutNum < 6; cutNum++) {
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    // We set the dimensions at the wanted size.
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // We resize the image with the canvas method drawImage();
+                    ctx.drawImage(this, 0, 0, width, height);
+
+                    newDataUri = canvas.toDataURL();
+
+                    if(newDataUri.length > 1900000) {
+                        MAX_WIDTH = MAX_WIDTH - 100;
+                        MAX_HEIGHT = MAX_HEIGHT - 100;
+
+                        width = img.width;
+                        height = img.height;
+                    } else {
+                        break;
+                    }
+                }
+                if(newDataUri.length > 1900000) {
+                    alert("原图太大了！请将图片大小缩小至2MB以下，或者调低拍照的分辨率。");
+                    return;
+                }
+                /////////////////////////////////////////
+                // upload image !! //
+                /////////////////////////////////////////      
+                
+                var now = new Date();
+                
+                var ext=newDataUri.substring("data:image/".length, newDataUri.indexOf(";base64"));
+                var imgPath = now.getFullYear() + "_" + (now.getMonth() + 1);
+                var imgName = curUserID + "ll" + Math.floor(Date.now() / 1000) + "." + ext;
+                
+                
+                var file = cgDataURLtoFile(newDataUri, imgName);
+                
+                document.getElementById("localimgprocess").className="d-inline";
+
+                var imgFullName = imgPath + "-" + imgName;
+
+                var webImgPath = "/userfiles/client/imagemobile/" + imgPath + "/" + imgName;
+                var newFormData = new FormData();
+                newFormData.append('file', file, imgName);
+                $.ajax({
+                    // Your server script to process the upload
+                    url: 'mobileFileHelper_save.jsp?doLocalImgSave=true&imgName='+imgFullName,
+                    type: 'POST',
+
+                    // Form data
+                    data: newFormData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+
+                    // Custom XMLHttpRequest
+                    xhr: function() {
+                        var myXhr = $.ajaxSettings.xhr();
+                        if (myXhr.upload) {
+                            // For handling the progress of the upload
+                            myXhr.upload.addEventListener('progress', function(e) {
+                                if (e.lengthComputable) {
+                                    $('progress').attr({
+                                        value: e.loaded,
+                                        max: e.total,
+                                    });
+                                }
+                            } , false);
+                        }
+                        return myXhr;
+                    }
+                }).done(function(msg){ 
+                    document.getElementById("localimgprocess").className="d-none";
+                   
+                  
+                    document.getElementById(imgid).src=webImgPath;
+                    document.getElementById(imgid+"btn").innerHTML ="复制完成，编辑器内 ctrl+ v 插入图片";
+                    document.getElementById(imgid+"btn").disabled = false;
+                   
+                    if(imgid=="mimg0") {
+                        mobilePic0Saved = true;
+                    }
+                    if(imgid=="mimg1") {
+                        mobilePic1Saved = true;
+                    }
+                                       
+                    
+                    //alert("finishUpload");
+                    cgCopyImage(imgid);
+                });
+                
+
+            };
+
+        // We put the Data URI in the image's src attribute
+        img.src = datas;
+    }
+    
+    //Cross-browser function to select content
+    function cgSelectText(element) {
+        var doc = document;
+        if (doc.body.createTextRange) {
+          var range = document.body.createTextRange();
+          range.moveToElementText(element);
+          range.select();
+        } else if (window.getSelection) {
+          var selection = window.getSelection();
+          var range = document.createRange();
+          range.selectNodeContents(element);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+    }
+    
+    function cgCopyImage(imageid) {
+        var imageObj = document.getElementById(imageid+"copyable");
+        //Make the container Div contenteditable
+        $(imageObj).attr("contenteditable", true);
+        //Select the image
+        cgSelectText($(imageObj).get(0));
+        //Execute copy Command
+        //Note: This will ONLY work directly inside a click listenner
+        document.execCommand('copy');
+        //Unselect the content
+        window.getSelection().removeAllRanges();
+        //Make the container Div uneditable again
+        $(imageObj).removeAttr("contenteditable");
+        //Success!!
+    }
+    
+    function cgGetBase(url, imgid) {
+        if((imgid == "mimg0") && (mobilePic0Saved == true)) {
+            cgCopyImage(imgid);
+            document.getElementById("imageCopyTip").innerHTML="已经复制到剪贴板，ctrl + v 插入编辑器";
+            return;
+        }
+        if((imgid == "mimg1") && (mobilePic1Saved == true)) {
+            cgCopyImage(imgid);
+            document.getElementById("imageCopyTip").innerHTML="已经复制到剪贴板，ctrl + v 插入编辑器";
+            return;
+        }
+        
+        cgGetBase64(url, imgid);
+        document.getElementById(imgid+"btn").innerHTML ="正在复制所选的图片......";
+        document.getElementById(imgid+"btn").disabled = true;
+    }
+    
+    function cgGetBase64(imgUrl, imgid) {
+
+        window.URL = window.URL || window.webkitURL;
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("get", imgUrl, true);
+        xhr.responseType = "blob";
+
+        xhr.onload = function () {
+            if (this.status == 200) {
+                var blob = this.response;
+                var oFileReader = new FileReader();
+                oFileReader.onload = function(e){
+                    mobileResizeImageUpload(e.target.result, 1000, 1000, imgid);
+                }
+                oFileReader.readAsDataURL(blob);
+            }
+
+        }
+        xhr.send();
+    }
+
+   
+    function cgGetImageData(uid, qid, jobid) {
+        $.ajax({
+            url: 'https://fs.api.eduxiji.net/testimages/imgList.do',
+            type: 'POST',
+            data: {
+                'uid': uid,
+                'jobid': jobid,
+                'qid': qid
+            },
+            success(res) {
+                $('#mobilePic1').html('')
+                $('#mobilePic0').html('')
+                var info = res;//JSON.parse(res);
+                if (info.status == 1 && info.data.length != 0) {
+                    
+                   
+                    for (var i = (info.data.length - 1); i >= 0; i--) {
+                        var imgUrl = "https://fs.api.eduxiji.net" + info.data[i];
+                        
+                        var myimgid = 'mimg';
+                        if(info.data.length < 2) {
+                            myimgid = 'mimg1';
+                        } else {
+                            myimgid = 'mimg' + i;
+                        }
+                        
+                        var str = "<button class=\"btn btn-info mb-1\" id=\"" + myimgid + "btn\" onclick=\"cgGetBase('" + imgUrl + "', '" + myimgid +  "')\" ><i class=\"fas fa-copy\"></i>复制图片</button><div id=\"" + myimgid + "copyable\"><img id=\"" + myimgid + "\" src=\"" + imgUrl + "\" class=\"img-fluid\"></div>";
+                        if(info.data.length < 2) {
+                            $('#mobilePic1').append(str);
+                        } else {
+                            $('#mobilePic' + i).append(str);
+                        }
+                    }
+                    
+                }
+                else if (info.status == 1 && info.data.length == 0) {
+                    $('#mobilePic1').html('还没上传图片，手机拍照上传，然后点击同步手机拍照图片');
+                }
+                else {
+                    // 接口异常
+                    $('#mobilePic1').html("图片同步异常："+ res.message);
+                }
+            }
+        });
+    }
+    
+    function mobileImgRightClick() {
+        alert("如果要复制图片，请点击图片上方的 复制图片 按钮。");
+        return false;
+    }

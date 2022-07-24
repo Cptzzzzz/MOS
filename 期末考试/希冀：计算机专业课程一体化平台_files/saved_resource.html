@@ -1,0 +1,32 @@
+
+<!-- saved from url=(0051)https://judge.buaa.edu.cn/exam/stuAnswerHandler.jsp -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=GBK"><script>
+    parent.document.getElementById("saveTip4071").innerHTML="<i>成功提交！</i>";
+    
+    try {
+        var cgLoadExamSubmits;
+        if (localStorage.cgExamSubmits) {
+            cgLoadExamSubmits = JSON.parse(localStorage.getItem("cgExamSubmits")); 
+        }
+        var kindJsonKey = "kind65536";
+        var kindJsonObj = cgLoadExamSubmits[kindJsonKey];
+        var problemJsonKey = "problem4071";
+        var problemJsonObj = kindJsonObj[problemJsonKey];
+        problemJsonObj.isSubmit=true;
+
+        localStorage.setItem('cgExamSubmits', JSON.stringify(cgLoadExamSubmits));
+
+       // console.log(kindJsonKey);
+       // console.log(problemJsonKey);
+       // console.log(cgLoadExamSubmits);
+
+        parent.$("#index_problems").load("index_problems_local.jsp");
+    
+    } catch(e){
+        parent.$("#index_problems").load("index_problems.jsp", {examParam:'xqvd1TLrptXmmkLAUXU3Ug'});
+    }
+    
+    
+</script>
+
+</head><body marginwidth="0" marginheight="0"></body></html>
