@@ -74,7 +74,9 @@ struct Page_list{
 
 #### 2.4
 
-请你寻找上述两个 boot_\* (boot_pgdir_walk,boot_map_segment)函数在何处被调用。![1](img\1.jpg)
+请你寻找上述两个 boot_\* (boot_pgdir_walk,boot_map_segment)函数在何处被调用。
+
+![wadwadaw](https://raw.githubusercontent.com/Cptzzzzz/image/image/wadwadaw.jpg)
 
 **boot_pgdir_walk在boot_map_segment中被调用**
 

@@ -99,7 +99,7 @@ OPT：[90, 64, 48, 37, 29, 22, 16, 12, 11, 10]
 LRU：[90, 80, 67, 59, 47, 39, 30, 20, 12, 10]
 FIFO：[90, 79, 71, 58, 52, 42, 28, 17, 13, 10]
 
-![fig1](fig1.png)
+![fig1](https://raw.githubusercontent.com/Cptzzzzz/image/image/fig1.png)
 
 #### T2
 

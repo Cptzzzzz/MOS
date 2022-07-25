@@ -4,11 +4,11 @@
 
 原先的lab6中 运行指令的流程是
 
-![image-20220630152822323](Lab6-Challenge 实验报告-img\image-20220630152822323.png)
+![image-20220630152230078](https://raw.githubusercontent.com/Cptzzzzz/image/image/image-20220630152230078.png)
 
 在实现完challenge的功能后，这部分的流程主体没有太大变化，变化主要体现在readline的实现，下面给出readline函数的处理逻辑 图片分辨率有点大
 
-![](Lab6-Challenge 实验报告-img\未命名文件.png)
+![未命名文件](https://raw.githubusercontent.com/Cptzzzzz/image/image/%E6%9C%AA%E5%91%BD%E5%90%8D%E6%96%87%E4%BB%B6.png)
 
 #### 后台运行功能(easy)
 

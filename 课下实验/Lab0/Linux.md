@@ -26,7 +26,7 @@
 
 #### Thinking0.2
 
-![](git-change.jpg)
+![git-change](https://raw.githubusercontent.com/Cptzzzzz/image/image/git-change.jpg)
 
 |      操作       |          命令          |
 | :-------------: | :--------------------: |
@@ -72,7 +72,7 @@
 
 1. **克隆时所有分支均被克隆，但只有HEAD指向的分支被检出。**
 
-   ![](git-clone.jpg)
+   ![git-clone](https://raw.githubusercontent.com/Cptzzzzz/image/image/git-clone.jpg)
 
    如图，在clone至本地后，HEAD指向的分支被克隆且被检出，其他分支没有被克隆，当切换分支时对应分支才被克隆并检出。
 
@@ -139,7 +139,7 @@
 
 使用你知道的方法（包括重定向）创建下图内容的文件（文件命名为test），将创建该文件的命令序列保存在command文件中，并将test文件作为批处理文件运行，将运行结果输出至result文件中。给出command文件和result文件的内容，并对最后的结果进行解释说明（可以从test文件的内容入手）. 具体实现的过程中思考下列问题: echo echo Shell Start 与 echo 'echo Shell Start'效果是否有区别; echo echo \$c>file1 与 echo 'echo \$c>file1'效果是否有区别.
 
-![](download.jpg)
+![download](https://raw.githubusercontent.com/Cptzzzzz/image/image/download.jpg)
 
 ##### 分析
 
@@ -415,7 +415,7 @@ target: dependencies
 
 ​	git 的对象库只保存了文件信息，而没有目录结构，因此我们的本地仓库由 git 还维 护了三个目录。第一个目录我们称为**工作区**，在本地计算机文件系统中能看到这个目录， 它保存实际文件。第二个目录是**暂存区**（英语是 Index，有时也称 Stage），是.git/index 文件，用于暂存工作区中被追踪的文件。将工作区的文件内容放入暂存区，可理解为给 工作区做了一个快照（snapshot）。当工作区文件被破坏的时候，可以根据暂存区的快照对工作区进行恢复。最后一个目录是**版本库**，是 HEAD 指向最近一次提交（commit）后 的结果。在项目开发的一定阶段，将可以在将暂存区的内容归档，放入版本库。如下图：
 
-![](git-stage.jpg)
+![git-stage](https://raw.githubusercontent.com/Cptzzzzz/image/image/git-stage.jpg)
 
 - 当对工作区修改（或新增）的文件执行 “git add” 命令时，暂存区的目录树被更新，同时工作区修改（或新增）的文件内容被写入到对象库中的一个新的对象中，而该对象的ID 被记录在暂存区的文件索引中。
 - 当执行提交操作（git commit）时，会将**暂存区**的目录树写到**版本库**（对象库）中，master 分支会做相应的更新。即 master 指向的目录树就是提交时暂存区的目录树。
@@ -437,7 +437,7 @@ target: dependencies
 
 状态转移图谱
 
-![](git-change.jpg)
+![git-change](D:\aaaaaaawork\2022春\操作系统\课下实验\Lab0\git-change.jpg)
 
 |      操作       |          命令          |
 | :-------------: | :--------------------: |

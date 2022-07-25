@@ -94,5 +94,4 @@
 
 完成并通过了lab6-challenge的申优答辩
 
-![image-20220724160350797](https://raw.githubusercontent.com/Cptzzzzz/MOS/main/README-img/image-20220724160350797.png)
-
+![image-20220724160350797](https://raw.githubusercontent.com/Cptzzzzz/image/image/image-20220724160350797.png)

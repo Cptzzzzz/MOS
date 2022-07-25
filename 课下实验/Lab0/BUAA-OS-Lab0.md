@@ -71,7 +71,7 @@ done
 
 将补全后的palindrome.c、Makefile、hello_os.sh依次复制到路径/dst/palindrome.c   /dst/Makefile   /dst/sh_test/hello_os.sh **[注意：文件名和路径必须与题目要求相同]**
 
-![p1](pic_1.jpg)
+![pic_1](https://raw.githubusercontent.com/Cptzzzzz/image/image/pic_1.jpg)
 
 ## Exercise0.2
 
@@ -109,7 +109,7 @@ done
 
    结果**文件内容格式**应如下图所示：
 
-![](pic_2.png)
+![pic_2](https://raw.githubusercontent.com/Cptzzzzz/image/image/pic_2.png)
 
 ```shell
 grep int file -n | awk -F: '{print $1}' > output
@@ -133,9 +133,9 @@ lab0工作区的csc/code/fibo.c成功更换字段后(bash modify.sh fibo.c char 
 
    make后、make clean后(csc文件夹内)应如下图从左到右所示(**最终提交时文件中fibo和.o文件可有可无**)： 
 
-![](pic_3.jpg)
+![pic_3](https://raw.githubusercontent.com/Cptzzzzz/image/image/pic_3.jpg)
 
-![](pic_4.jpg)
+![pic_4](https://raw.githubusercontent.com/Cptzzzzz/image/image/pic_4.jpg)
 
 Makefile:
 
