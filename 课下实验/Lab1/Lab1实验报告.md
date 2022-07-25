@@ -4,9 +4,9 @@
 
 **请查阅并给出前述objdump 中使用的参数的含义。使用其它体系结构的编译器（如课程平台的MIPS交叉编译器）重复上述各步编译过程，观察并在实验报告中提交相应结果。![2](D:\aaaaaaawork\2022春\操作系统\实验\Lab1\img\2.jpg)**
 
-![3](D:\aaaaaaawork\2022春\操作系统\实验\Lab1\img\3.jpg)
+![3](img\3.jpg)
 
-![1](D:\aaaaaaawork\2022春\操作系统\实验\Lab1\img\1.jpg)
+![1](img\1.jpg)
 
 objdump指令详情
 

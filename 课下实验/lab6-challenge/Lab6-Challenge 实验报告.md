@@ -1,18 +1,14 @@
 # Lab6-Challenge 实验报告
 
-> 扶星辰
->
-> 19377251
-
 ## 实现思路
 
 原先的lab6中 运行指令的流程是
 
-![image-20220630152822323](D:\aaaaaaawork\2022春\操作系统\实验\lab6\Lab6-Challenge 实验报告-img\image-20220630152822323.png)
+![image-20220630152822323](Lab6-Challenge 实验报告-img\image-20220630152822323.png)
 
 在实现完challenge的功能后，这部分的流程主体没有太大变化，变化主要体现在readline的实现，下面给出readline函数的处理逻辑 图片分辨率有点大
 
-![](D:\aaaaaaawork\2022春\操作系统\实验\lab6\Lab6-Challenge 实验报告-img\未命名文件 (1).png)
+![](Lab6-Challenge 实验报告-img\未命名文件.png)
 
 #### 后台运行功能(easy)
 
